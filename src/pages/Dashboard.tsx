@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AISuggestions } from "@/components/AISuggestions";
+import { ConnectionManager } from "@/components/ConnectionManager";
 
 // Demo data
 const stats = [
@@ -96,6 +97,11 @@ const Dashboard = () => {
           <p className="text-muted-foreground">
             Översikt över dina sociala medier med AI-drivna insikter
           </p>
+        </div>
+
+        {/* Connection Manager */}
+        <div className="mb-8">
+          <ConnectionManager />
         </div>
 
         {/* AI Suggestions */}

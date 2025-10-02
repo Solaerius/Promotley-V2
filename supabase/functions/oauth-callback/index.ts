@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
     const url = new URL(req.url);
     const code = url.searchParams.get('code');
     const state = url.searchParams.get('state');
-    const provider = url.searchParams.get('provider') || 'facebook';
+    const provider = url.searchParams.get('provider') || 'meta_fb';
 
     console.log('OAuth callback received:', { provider, hasCode: !!code, hasState: !!state });
 
@@ -26,20 +26,13 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get user from state (passed from frontend)
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      throw new Error('No authorization header');
+    // Get user ID from state parameter
+    const userId = state;
+    if (!userId) {
+      throw new Error('Missing user ID in state');
     }
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
-
-    if (userError || !user) {
-      throw new Error('Unauthorized');
-    }
-
-    console.log('User authenticated:', user.id);
+    console.log('User ID from state:', userId);
 
     // Exchange code for access token based on provider
     let accessToken: string;
@@ -48,10 +41,10 @@ Deno.serve(async (req) => {
     let accountId: string;
     let username: string | null = null;
 
-    if (provider === 'facebook') {
+    if (provider === 'meta_fb') {
       const metaAppId = Deno.env.get('META_APP_ID');
       const metaAppSecret = Deno.env.get('META_APP_SECRET');
-      const redirectUri = `${supabaseUrl}/functions/v1/oauth-callback?provider=facebook`;
+      const redirectUri = `${supabaseUrl}/functions/v1/oauth-callback?provider=meta_fb`;
 
       if (!metaAppId || !metaAppSecret) {
         throw new Error('Meta app credentials not configured');
@@ -104,7 +97,7 @@ Deno.serve(async (req) => {
     const { error: tokenError } = await supabase
       .from('tokens')
       .upsert({
-        user_id: user.id,
+        user_id: userId,
         provider: provider,
         access_token_enc: accessToken,
         refresh_token_enc: refreshToken,
@@ -124,7 +117,7 @@ Deno.serve(async (req) => {
     const { error: connectionError } = await supabase
       .from('connections')
       .upsert({
-        user_id: user.id,
+        user_id: userId,
         provider: provider,
         account_id: accountId,
         username: username,
@@ -140,7 +133,7 @@ Deno.serve(async (req) => {
     console.log('Connection created successfully');
 
     // Redirect back to app
-    const appUrl = supabaseUrl.replace('.supabase.co', '.lovable.app').replace('https://', 'https://');
+    const appUrl = supabaseUrl.replace('.supabase.co', '.lovable.app');
     return new Response(null, {
       status: 302,
       headers: {
