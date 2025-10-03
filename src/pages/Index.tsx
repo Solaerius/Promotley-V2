@@ -20,9 +20,12 @@ const Index = () => {
       <footer className="border-t py-12 px-4">
         <div className="container mx-auto text-center text-muted-foreground">
           <p>© 2025 Promotley. AI-driven marknadsföring för UF-företag.</p>
-          <div className="mt-4">
+          <div className="mt-4 flex gap-6 justify-center">
             <Link to="/privacy-policy" className="hover:text-foreground transition-colors">
               Integritetspolicy
+            </Link>
+            <Link to="/terms-of-service" className="hover:text-foreground transition-colors">
+              Användarvillkor
             </Link>
           </div>
         </div>
