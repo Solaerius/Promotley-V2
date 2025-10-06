@@ -31,16 +31,6 @@ const BeforeAfterSlider = () => {
 
   return (
     <div ref={containerRef} className="relative p-8">
-      {/* Labels */}
-      <div className="flex justify-between mb-8">
-        <div className="text-white/60 font-semibold text-sm uppercase tracking-wide">
-          Före
-        </div>
-        <div className="text-primary-glow font-semibold text-sm uppercase tracking-wide">
-          Efter
-        </div>
-      </div>
-
       {/* Stats Display with Transition */}
       <div className="mb-8 space-y-4">
         <div className="flex items-center justify-between text-lg">
@@ -83,6 +73,16 @@ const BeforeAfterSlider = () => {
           >
             {currentStats.kommentarer.toLocaleString()}
           </span>
+        </div>
+      </div>
+
+      {/* Labels */}
+      <div className="flex justify-between mb-4">
+        <div className="text-white/60 font-semibold text-sm uppercase tracking-wide">
+          Före
+        </div>
+        <div className="text-primary-glow font-semibold text-sm uppercase tracking-wide">
+          Efter
         </div>
       </div>
 
