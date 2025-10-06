@@ -95,7 +95,7 @@ const BeforeAfterSlider = () => {
   return (
     <div 
       ref={containerRef}
-      className="relative overflow-hidden select-none bg-card rounded-lg"
+      className="relative overflow-hidden select-none bg-card rounded-lg min-h-[350px]"
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
