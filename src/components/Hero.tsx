@@ -14,36 +14,36 @@ const Hero = () => {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-card/80 backdrop-blur-sm rounded-full border shadow-elegant">
             <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium">AI-driven marknadsföring för UF-företag</span>
+            <span className="text-sm font-medium">För UF-företag som vill växa snabbare</span>
           </div>
 
           {/* Heading */}
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
-            Väx snabbare med{" "}
+            Få fler kunder med{" "}
             <span className="bg-gradient-primary bg-clip-text text-transparent">
-              AI-analys
+              smart AI
             </span>
           </h1>
 
           {/* Subheading */}
           <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Promotley analyserar dina sociala medier och ger dig personliga AI-förslag 
-            för att maximera engagemang och tillväxt.
+            Dubbla ditt engagemang och nå rätt målgrupp. Få personliga förslag som faktiskt 
+            ökar din försäljning och hjälper ditt UF-företag växa.
           </p>
 
           {/* Features */}
           <div className="flex flex-wrap justify-center gap-6 pt-4">
             <div className="flex items-center gap-2 text-muted-foreground">
               <TrendingUp className="w-5 h-5 text-accent" />
-              <span>Smart statistikanalys</span>
+              <span>Dubbla ditt engagemang</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <Sparkles className="w-5 h-5 text-accent" />
-              <span>AI-genererade förslag</span>
+              <span>Nå fler kunder</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <Zap className="w-5 h-5 text-accent" />
-              <span>Automatiserade insikter</span>
+              <span>Spara 5+ timmar/vecka</span>
             </div>
           </div>
 
