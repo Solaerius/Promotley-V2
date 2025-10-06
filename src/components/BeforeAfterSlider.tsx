@@ -86,14 +86,6 @@ const BeforeAfterSlider = () => {
         </div>
       </div>
 
-      {/* Visual Progress Bar */}
-      <div className="relative h-2 bg-white/10 rounded-full mb-4 overflow-hidden">
-        <div 
-          className="absolute top-0 left-0 h-full bg-gradient-primary transition-all duration-300 ease-out"
-          style={{ width: `${sliderValue[0]}%` }}
-        />
-      </div>
-
       {/* Slider Control */}
       <div className="relative">
         <Slider
