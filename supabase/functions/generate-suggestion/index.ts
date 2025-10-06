@@ -82,6 +82,19 @@ Deno.serve(async (req) => {
 
     if (!rateLimitOk) {
       console.log('Rate limit exceeded for user:', user.id);
+      
+      // Log rate limit exceeded event with IP and user agent
+      await supabaseAdmin.rpc('log_security_event', {
+        _user_id: user.id,
+        _event_type: 'rate_limit_exceeded',
+        _event_details: {
+          endpoint: 'generate-suggestion',
+          timestamp: new Date().toISOString()
+        },
+        _ip_address: clientIp,
+        _user_agent: userAgent
+      });
+      
       return new Response(
         JSON.stringify({ 
           error: 'För många förfrågningar. Vänta en stund innan du försöker igen.' 
@@ -282,6 +295,18 @@ Håll tonen professionell men ungdomlig, perfekt för UF-företag.`;
     }
 
     console.log("Förslag genererat och sparat:", suggestion);
+
+    // Log successful AI suggestion generation
+    await supabaseAdmin.rpc('log_security_event', {
+      _user_id: user.id,
+      _event_type: 'ai_suggestion_generated',
+      _event_details: {
+        platform,
+        timestamp: new Date().toISOString()
+      },
+      _ip_address: clientIp,
+      _user_agent: userAgent
+    });
 
     return new Response(JSON.stringify(suggestion), {
       headers: { ...corsHeaders, ...securityHeaders, "Content-Type": "application/json" },
