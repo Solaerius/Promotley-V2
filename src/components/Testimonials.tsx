@@ -7,28 +7,24 @@ const testimonials = [
     company: "GreenTech UF",
     text: "Vi gick från 300 till 12 000 visningar på två veckor! AI:n gav oss exakt vad vi behövde.",
     rating: 5,
-    emoji: "🔥",
   },
   {
     name: "Oscar Nilsson",
     company: "StreetStyle AB",
     text: "Promotley är som att ha en marknadsförare som jobbar 24/7. Spartid och får bättre resultat!",
     rating: 5,
-    emoji: "🚀",
   },
   {
     name: "Lisa Bergström",
     company: "FoodieBox UF",
     text: "Hashtag-förslagen var spot on! Vårt engagemang har mer än fördubblats sedan vi började.",
     rating: 5,
-    emoji: "💬",
   },
   {
     name: "Viktor Larsson",
     company: "TechHub Startup",
     text: "AI-analyserna hjälpte oss hitta rätt målgrupp. Nu växer vi exponentiellt varje vecka.",
     rating: 5,
-    emoji: "📈",
   },
 ];
 
@@ -65,11 +61,8 @@ const Testimonials = () => {
                   ))}
                 </div>
 
-                {/* Emoji */}
-                <div className="text-4xl">{testimonial.emoji}</div>
-
                 {/* Text */}
-                <p className="text-white leading-relaxed">
+                <p className="text-white leading-relaxed mt-4">
                   "{testimonial.text}"
                 </p>
 

@@ -39,7 +39,7 @@ const Hero = () => {
                 size="lg" 
                 className="text-lg px-8 py-6 bg-white text-primary hover:bg-white/90 hover:scale-105 transition-all duration-300 shadow-glow font-semibold"
               >
-                🚀 Testa gratis
+                Testa gratis
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
@@ -49,7 +49,7 @@ const Hero = () => {
                 size="lg" 
                 className="text-lg px-8 py-6 border-2 border-white/40 text-white hover:bg-white/10 backdrop-blur-sm hover:scale-105 transition-all duration-300 font-semibold"
               >
-                📈 Se hur det funkar
+                Se hur det funkar
               </Button>
             </Link>
           </div>

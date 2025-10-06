@@ -64,7 +64,7 @@ const AIDemoSection = () => {
               <div className="flex items-start gap-4 p-6 rounded-xl bg-gradient-hero border-2 border-primary/20 animate-fade-in">
                 <Sparkles className="w-6 h-6 text-primary shrink-0 animate-pulse" />
                 <div className="space-y-2">
-                  <div className="font-bold text-lg">🧠 Promotley föreslår:</div>
+                  <div className="font-bold text-lg">Promotley föreslår:</div>
                   <p className="text-foreground leading-relaxed">
                     "Dina Reels får <span className="font-bold text-primary">3× mer engagemang</span> än vanliga inlägg. Lägg upp fler Reels mellan 18-20 när din publik är mest aktiv."
                   </p>
@@ -74,7 +74,7 @@ const AIDemoSection = () => {
               <div className="flex items-start gap-4 p-6 rounded-xl bg-gradient-hero border-2 border-primary/20 animate-fade-in" style={{ animationDelay: "0.2s" }}>
                 <Sparkles className="w-6 h-6 text-accent shrink-0 animate-pulse" />
                 <div className="space-y-2">
-                  <div className="font-bold text-lg">💡 Innehållsidé:</div>
+                  <div className="font-bold text-lg">Innehållsidé:</div>
                   <p className="text-foreground leading-relaxed">
                     "Skapa en 'bakom kulisserna'-serie. Inlägg med #ufföretag och #entrepren&ouml;r får <span className="font-bold text-accent">+240% mer räckvidd</span> i din nisch."
                   </p>
@@ -84,7 +84,7 @@ const AIDemoSection = () => {
               <div className="flex items-start gap-4 p-6 rounded-xl bg-gradient-hero border-2 border-primary/20 animate-fade-in" style={{ animationDelay: "0.4s" }}>
                 <Sparkles className="w-6 h-6 text-primary-glow shrink-0 animate-pulse" />
                 <div className="space-y-2">
-                  <div className="font-bold text-lg">🎯 Optimering:</div>
+                  <div className="font-bold text-lg">Optimering:</div>
                   <p className="text-foreground leading-relaxed">
                     "Lägg till en tydligare call-to-action i din bio. Profiler med CTA får <span className="font-bold text-primary-glow">+180% fler klick</span>."
                   </p>
@@ -99,7 +99,7 @@ const AIDemoSection = () => {
                     size="lg" 
                     className="w-full text-lg py-6 shadow-glow hover:scale-105 transition-transform"
                   >
-                    Få ditt första AI-förslag gratis 🚀
+                    Få ditt första AI-förslag gratis
                   </Button>
                 </Link>
               </div>

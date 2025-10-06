@@ -126,7 +126,7 @@ const Pricing = () => {
 
         {/* Bottom note */}
         <p className="text-center text-muted-foreground mt-12 text-lg">
-          ✨ Börja gratis med 1 AI-förslag · Ingen betalmetod krävs · Avsluta när du vill
+          Börja gratis med 1 AI-förslag · Ingen betalmetod krävs · Avsluta när du vill
         </p>
       </div>
     </section>

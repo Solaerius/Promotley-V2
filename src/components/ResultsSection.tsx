@@ -1,4 +1,4 @@
-import { TrendingUp, Users, Clock } from "lucide-react";
+import { TrendingUp, Users, Clock, ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 const stats = [
@@ -71,16 +71,16 @@ const ResultsSection = () => {
               <div className="space-y-4">
                 <div className="text-white/60 font-semibold text-sm uppercase tracking-wide">Före</div>
                 <div className="space-y-2">
-                  <div className="text-white/80">📊 Visningar: <span className="font-bold">1,200</span></div>
-                  <div className="text-white/80">❤️ Likes: <span className="font-bold">45</span></div>
-                  <div className="text-white/80">💬 Kommentarer: <span className="font-bold">3</span></div>
+                  <div className="text-white/80">Visningar: <span className="font-bold">1,200</span></div>
+                  <div className="text-white/80">Likes: <span className="font-bold">45</span></div>
+                  <div className="text-white/80">Kommentarer: <span className="font-bold">3</span></div>
                 </div>
               </div>
 
               {/* Arrow */}
               <div className="flex items-center justify-center">
                 <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center animate-pulse">
-                  <span className="text-2xl text-white">→</span>
+                  <ArrowRight className="w-6 h-6 text-white" />
                 </div>
               </div>
 
@@ -88,9 +88,9 @@ const ResultsSection = () => {
               <div className="space-y-4">
                 <div className="text-primary-glow font-semibold text-sm uppercase tracking-wide">Efter</div>
                 <div className="space-y-2">
-                  <div className="text-white">📊 Visningar: <span className="font-bold text-primary-glow">5,280</span></div>
-                  <div className="text-white">❤️ Likes: <span className="font-bold text-primary-glow">420</span></div>
-                  <div className="text-white">💬 Kommentarer: <span className="font-bold text-primary-glow">38</span></div>
+                  <div className="text-white">Visningar: <span className="font-bold text-primary-glow">5,280</span></div>
+                  <div className="text-white">Likes: <span className="font-bold text-primary-glow">420</span></div>
+                  <div className="text-white">Kommentarer: <span className="font-bold text-primary-glow">38</span></div>
                 </div>
               </div>
             </div>

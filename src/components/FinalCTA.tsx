@@ -39,7 +39,7 @@ const FinalCTA = () => {
                 size="lg"
                 className="text-xl px-12 py-8 bg-white text-primary hover:bg-white/90 hover:scale-110 transition-all duration-300 shadow-glow font-bold"
               >
-                Kom igång nu 🚀
+                Kom igång nu
                 <ArrowRight className="w-6 h-6 ml-2" />
               </Button>
             </Link>
@@ -48,17 +48,14 @@ const FinalCTA = () => {
           {/* Social proof */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8 text-white/80">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">✨</span>
               <span className="font-medium">1 gratis AI-förslag</span>
             </div>
             <div className="hidden sm:block w-1 h-1 rounded-full bg-white/40" />
             <div className="flex items-center gap-2">
-              <span className="text-2xl">🚀</span>
               <span className="font-medium">Ingen betalmetod krävs</span>
             </div>
             <div className="hidden sm:block w-1 h-1 rounded-full bg-white/40" />
             <div className="flex items-center gap-2">
-              <span className="text-2xl">💪</span>
               <span className="font-medium">Avsluta när du vill</span>
             </div>
           </div>
