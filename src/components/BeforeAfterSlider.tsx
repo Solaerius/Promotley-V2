@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { TrendingUp, TrendingDown, Instagram } from "lucide-react";
 
 const BeforeAfterSlider = () => {
-  const [sliderPosition, setSliderPosition] = useState(0);
+  const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const [hasAnimated, setHasAnimated] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -31,17 +31,22 @@ const BeforeAfterSlider = () => {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && !hasAnimated) {
-            // Quick animation to show it's interactive
+            // Quick animation: 50% -> 100% -> 0% -> 50%
             let frame = 0;
             const animateOnce = setInterval(() => {
               frame++;
-              if (frame <= 15) {
-                setSliderPosition(frame * 6.67); // Go to 100% in 15 frames
+              if (frame <= 10) {
+                // 50% to 100% (10 frames)
+                setSliderPosition(50 + (frame * 5));
               } else if (frame <= 30) {
-                setSliderPosition((30 - frame) * 6.67); // Go back to 0% in 15 frames
+                // 100% to 0% (20 frames)
+                setSliderPosition(100 - ((frame - 10) * 5));
+              } else if (frame <= 40) {
+                // 0% to 50% (10 frames)
+                setSliderPosition((frame - 30) * 5);
               } else {
                 clearInterval(animateOnce);
-                setSliderPosition(0);
+                setSliderPosition(50);
                 setHasAnimated(true);
               }
             }, 30);
