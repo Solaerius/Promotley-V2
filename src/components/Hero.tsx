@@ -1,12 +1,22 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
+import gamlastan from "@/assets/gamlastan.png";
 
 const Hero = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden font-poppins">
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 bg-gradient-warm opacity-90" />
+      {/* Background image with blur */}
+      <div className="absolute inset-0">
+        <img 
+          src={gamlastan} 
+          alt="Stockholm Gamla Stan background" 
+          className="w-full h-full object-cover blur-sm opacity-30"
+        />
+      </div>
+      
+      {/* Animated gradient background overlay */}
+      <div className="absolute inset-0 bg-gradient-warm opacity-80" />
       
       {/* Floating glow elements */}
       <div className="absolute top-20 left-10 w-96 h-96 bg-primary/30 rounded-full blur-3xl animate-float" />
