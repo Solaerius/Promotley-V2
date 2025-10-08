@@ -112,7 +112,7 @@ const Pricing = () => {
                 {/* CTA */}
                 <Link to="/auth" className="block">
                   <Button
-                    variant={plan.popular ? "gradient" : "outline"}
+                    variant="gradient"
                     className="w-full"
                     size="lg"
                   >
