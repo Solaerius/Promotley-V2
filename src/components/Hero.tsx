@@ -23,10 +23,10 @@ const Hero = () => {
       <div className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-accent/30 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }} />
       
       {/* Content */}
-      <div className="container relative z-10 px-4 py-32 mx-auto">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
+      <div className="container relative z-10 px-4 py-20 md:py-32 mx-auto">
+        <div className="max-w-4xl mx-auto text-center space-y-6 md:space-y-8">
           {/* Main Headline */}
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight animate-fade-in text-white">
+          <h1 className="text-4xl md:text-7xl lg:text-8xl font-extrabold tracking-tight animate-fade-in text-white leading-tight">
             Bli företaget alla{" "}
             <span className="relative inline-block">
               <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-white via-primary-glow to-white">
@@ -37,27 +37,27 @@ const Hero = () => {
           </h1>
 
           {/* Subheadline */}
-          <p className="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto leading-relaxed animate-slide-up font-medium">
+          <p className="text-base md:text-2xl text-white/90 max-w-2xl mx-auto leading-relaxed animate-slide-up font-medium px-4 md:px-0">
             AI som skapar din personliga innehållsstrategi baserat på budget, företagstyp och optimal postningsfrekvens
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8 animate-slide-up" style={{ animationDelay: "0.2s" }}>
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center pt-6 md:pt-8 animate-slide-up" style={{ animationDelay: "0.2s" }}>
             <Link to="/auth">
               <Button 
                 variant="default" 
                 size="lg" 
-                className="text-lg px-8 py-6 bg-white text-primary hover:bg-white/90 hover:scale-105 transition-all duration-300 shadow-glow font-semibold"
+                className="text-base md:text-lg px-6 py-5 md:px-8 md:py-6 bg-white text-primary hover:bg-white/90 hover:scale-105 transition-all duration-300 shadow-glow font-semibold w-full sm:w-auto"
               >
                 Testa gratis
-                <ArrowRight className="w-5 h-5 ml-2" />
+                <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2" />
               </Button>
             </Link>
-            <a href="#how-it-works">
+            <a href="#how-it-works" className="w-full sm:w-auto">
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="text-lg px-8 py-6 border-2 border-white/40 text-white hover:bg-white/10 backdrop-blur-sm hover:scale-105 transition-all duration-300 font-semibold"
+                className="text-base md:text-lg px-6 py-5 md:px-8 md:py-6 border-2 border-white/40 text-white hover:bg-white/10 backdrop-blur-sm hover:scale-105 transition-all duration-300 font-semibold w-full"
               >
                 Se hur det funkar
               </Button>
@@ -65,9 +65,9 @@ const Hero = () => {
           </div>
 
           {/* Social proof badge */}
-          <div className="flex items-center justify-center gap-3 pt-8 text-white/80 animate-fade-in" style={{ animationDelay: "0.4s" }}>
-            <TrendingUp className="w-5 h-5 text-primary-glow" />
-            <p className="text-sm font-medium">
+          <div className="flex items-center justify-center gap-2 md:gap-3 pt-6 md:pt-8 text-white/80 animate-fade-in" style={{ animationDelay: "0.4s" }}>
+            <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-primary-glow" />
+            <p className="text-xs md:text-sm font-medium">
               <span className="font-bold text-white">100+</span> UF-företag växer redan med Promotley
             </p>
           </div>
