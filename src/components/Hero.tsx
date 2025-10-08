@@ -11,7 +11,7 @@ const Hero = () => {
         <img 
           src={gamlastan} 
           alt="Stockholm Gamla Stan background" 
-          className="w-full h-full object-cover blur-[2px] opacity-60"
+          className="w-full h-full object-cover object-[center_60%] blur-[2px] opacity-60"
         />
       </div>
       
