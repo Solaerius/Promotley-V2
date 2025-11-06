@@ -17,57 +17,126 @@ import { Link } from "react-router-dom";
 import { AISuggestions } from "@/components/AISuggestions";
 import { ConnectionManager } from "@/components/ConnectionManager";
 import { useAuth } from "@/hooks/useAuth";
+import { useTikTokData } from "@/hooks/useTikTokData";
+import { useConnections } from "@/hooks/useConnections";
 import logo from "@/assets/logo.png";
 
-// Demo data
-const stats = [
-  {
-    platform: "Instagram",
-    icon: Instagram,
-    color: "from-pink-500 to-purple-500",
-    metrics: [
-      { label: "Följare", value: "2,847", change: "+12%", trending: "up" },
-      { label: "Engagemang", value: "8.4%", change: "+2.1%", trending: "up" },
-      { label: "Räckvidd", value: "15.2k", change: "-3%", trending: "down" },
-      { label: "CTR", value: "2.8%", change: "+0.5%", trending: "up" },
-    ],
-    aiInsight: {
-      metric: "CTR",
-      message: "Prova en tydligare CTA i början av dina Reels för att öka CTR",
-      type: "suggestion"
-    }
-  },
-  {
-    platform: "TikTok",
-    icon: Music2,
-    color: "from-cyan-500 to-pink-500",
-    metrics: [
-      { label: "Visningar", value: "45.3k", change: "+24%", trending: "up" },
-      { label: "Likes", value: "3.2k", change: "+18%", trending: "up" },
-      { label: "Delningar", value: "432", change: "+31%", trending: "up" },
-      { label: "Genomsnitt tid", value: "8.2s", change: "+1.2s", trending: "up" },
-    ],
-    aiInsight: {
-      metric: "Visningar",
-      message: "Dina senaste videor presterar 24% bättre! Fortsätt med liknande innehåll",
-      type: "success"
-    }
-  },
-  {
-    platform: "Facebook",
-    icon: Facebook,
-    color: "from-blue-600 to-blue-400",
-    metrics: [
-      { label: "Följare", value: "1,234", change: "+5%", trending: "up" },
-      { label: "Interaktioner", value: "892", change: "-8%", trending: "down" },
-      { label: "Sidvisningar", value: "2.1k", change: "+12%", trending: "up" },
-      { label: "Post räckvidd", value: "4.5k", change: "+3%", trending: "up" },
-    ],
-  },
-];
+// Format number for display
+const formatNumber = (num: number): string => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'k';
+  }
+  return num.toString();
+};
+
+interface Metric {
+  label: string;
+  value: string;
+  change: string;
+  trending: "up" | "down" | "neutral";
+}
+
+interface AIInsight {
+  metric: string;
+  message: string;
+  type: "success" | "suggestion";
+}
+
+interface PlatformStat {
+  platform: string;
+  icon: any;
+  color: string;
+  username?: string;
+  metrics: Metric[];
+  aiInsight?: AIInsight;
+}
 
 const Dashboard = () => {
   const { signOut } = useAuth();
+  const { isConnected } = useConnections();
+  const tiktokData = useTikTokData();
+
+  // Build stats array dynamically based on connected platforms
+  const stats: PlatformStat[] = [];
+
+  // Instagram (demo data for now)
+  if (isConnected('meta_ig')) {
+    stats.push({
+      platform: "Instagram",
+      icon: Instagram,
+      color: "from-pink-500 to-purple-500",
+      metrics: [
+        { label: "Följare", value: "2,847", change: "+12%", trending: "up" },
+        { label: "Engagemang", value: "8.4%", change: "+2.1%", trending: "up" },
+        { label: "Räckvidd", value: "15.2k", change: "-3%", trending: "down" },
+        { label: "CTR", value: "2.8%", change: "+0.5%", trending: "up" },
+      ],
+      aiInsight: {
+        metric: "CTR",
+        message: "Prova en tydligare CTA i början av dina Reels för att öka CTR",
+        type: "suggestion"
+      }
+    });
+  }
+
+  // TikTok (real data)
+  if (isConnected('tiktok') && tiktokData.user && tiktokData.stats) {
+    stats.push({
+      platform: "TikTok",
+      icon: Music2,
+      color: "from-cyan-500 to-pink-500",
+      username: tiktokData.user.display_name,
+      metrics: [
+        { 
+          label: "Följare", 
+          value: formatNumber(tiktokData.user.follower_count || 0), 
+          change: "", 
+          trending: "neutral" as const
+        },
+        { 
+          label: "Visningar", 
+          value: formatNumber(tiktokData.stats.totalViews), 
+          change: "", 
+          trending: "neutral" as const
+        },
+        { 
+          label: "Likes", 
+          value: formatNumber(tiktokData.stats.totalLikes), 
+          change: "", 
+          trending: "neutral" as const
+        },
+        { 
+          label: "Engagemang", 
+          value: tiktokData.stats.avgEngagementRate + "%", 
+          change: "", 
+          trending: "neutral" as const
+        },
+      ],
+      aiInsight: tiktokData.stats.totalViews > 0 ? {
+        metric: "Engagemang",
+        message: `Du har ${tiktokData.stats.videoCount} videor med totalt ${formatNumber(tiktokData.stats.totalViews)} visningar!`,
+        type: "success" as const
+      } : undefined
+    });
+  }
+
+  // Facebook (demo data for now)
+  if (isConnected('meta_fb')) {
+    stats.push({
+      platform: "Facebook",
+      icon: Facebook,
+      color: "from-blue-600 to-blue-400",
+      metrics: [
+        { label: "Följare", value: "1,234", change: "+5%", trending: "up" },
+        { label: "Interaktioner", value: "892", change: "-8%", trending: "down" },
+        { label: "Sidvisningar", value: "2.1k", change: "+12%", trending: "up" },
+        { label: "Post räckvidd", value: "4.5k", change: "+3%", trending: "up" },
+      ],
+    });
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -113,66 +182,86 @@ const Dashboard = () => {
 
         {/* Platform stats */}
         <div className="space-y-6">
-          {stats.map((platform, index) => {
-            const PlatformIcon = platform.icon;
-            return (
-              <Card key={index} className="p-6 hover:shadow-elegant transition-all duration-300">
-                {/* Platform header */}
-                <div className="flex items-center gap-3 mb-6">
-                  <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${platform.color} flex items-center justify-center`}>
-                    <PlatformIcon className="w-6 h-6 text-white" />
+          {stats.length === 0 ? (
+            <Card className="p-8 text-center">
+              <p className="text-muted-foreground mb-4">
+                Anslut dina sociala media-konton för att se statistik och AI-insikter
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Använd Connection Manager ovan för att komma igång
+              </p>
+            </Card>
+          ) : (
+            stats.map((platform, index) => {
+              const PlatformIcon = platform.icon;
+              return (
+                <Card key={index} className="p-6 hover:shadow-elegant transition-all duration-300">
+                  {/* Platform header */}
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${platform.color} flex items-center justify-center`}>
+                      <PlatformIcon className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold">{platform.platform}</h2>
+                      {platform.username && (
+                        <p className="text-sm text-muted-foreground">@{platform.username}</p>
+                      )}
+                      {!platform.username && (
+                        <p className="text-sm text-muted-foreground">Senaste 30 dagarna</p>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-2xl font-bold">{platform.platform}</h2>
-                    <p className="text-sm text-muted-foreground">Senaste 30 dagarna</p>
-                  </div>
-                </div>
 
-                {/* Metrics grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                  {platform.metrics.map((metric, mIndex) => (
-                    <div key={mIndex} className="space-y-2">
-                      <p className="text-sm text-muted-foreground">{metric.label}</p>
-                      <p className="text-2xl font-bold">{metric.value}</p>
-                      <div className="flex items-center gap-1">
-                        {metric.trending === "up" ? (
-                          <TrendingUp className="w-4 h-4 text-accent" />
-                        ) : (
-                          <TrendingDown className="w-4 h-4 text-destructive" />
+                  {/* Metrics grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    {platform.metrics.map((metric, mIndex) => (
+                      <div key={mIndex} className="space-y-2">
+                        <p className="text-sm text-muted-foreground">{metric.label}</p>
+                        <p className="text-2xl font-bold">{metric.value}</p>
+                        {metric.change && (
+                          <div className="flex items-center gap-1">
+                            {metric.trending === "up" ? (
+                              <TrendingUp className="w-4 h-4 text-accent" />
+                            ) : metric.trending === "down" ? (
+                              <TrendingDown className="w-4 h-4 text-destructive" />
+                            ) : null}
+                            <span className={`text-sm font-medium ${
+                              metric.trending === "up" ? "text-accent" : 
+                              metric.trending === "down" ? "text-destructive" : 
+                              "text-muted-foreground"
+                            }`}>
+                              {metric.change}
+                            </span>
+                          </div>
                         )}
-                        <span className={`text-sm font-medium ${
-                          metric.trending === "up" ? "text-accent" : "text-destructive"
-                        }`}>
-                          {metric.change}
-                        </span>
                       </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* AI Insight */}
-                {platform.aiInsight && (
-                  <div className={`p-4 rounded-lg border-l-4 ${
-                    platform.aiInsight.type === "success" 
-                      ? "bg-accent/10 border-accent" 
-                      : "bg-primary/10 border-primary"
-                  }`}>
-                    <div className="flex items-start gap-3">
-                      <Sparkles className={`w-5 h-5 mt-0.5 ${
-                        platform.aiInsight.type === "success" ? "text-accent" : "text-primary"
-                      }`} />
-                      <div className="flex-1">
-                        <p className="font-medium mb-1">AI-insikt · {platform.aiInsight.metric}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {platform.aiInsight.message}
-                        </p>
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                )}
-              </Card>
-            );
-          })}
+
+                  {/* AI Insight */}
+                  {platform.aiInsight && (
+                    <div className={`p-4 rounded-lg border-l-4 ${
+                      platform.aiInsight.type === "success" 
+                        ? "bg-accent/10 border-accent" 
+                        : "bg-primary/10 border-primary"
+                    }`}>
+                      <div className="flex items-start gap-3">
+                        <Sparkles className={`w-5 h-5 mt-0.5 ${
+                          platform.aiInsight.type === "success" ? "text-accent" : "text-primary"
+                        }`} />
+                        <div className="flex-1">
+                          <p className="font-medium mb-1">AI-insikt · {platform.aiInsight.metric}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {platform.aiInsight.message}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              );
+            })
+          )}
         </div>
 
         {/* Bottom CTA */}
