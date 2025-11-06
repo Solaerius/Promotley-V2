@@ -140,6 +140,17 @@ export const ConnectionManager = () => {
         return;
       }
 
+      // Check if already connected
+      if (isConnected('tiktok')) {
+        toast({
+          title: "⚠️ Redan ansluten",
+          description: "TikTok är redan anslutet. Använd 'Reconnect' för att uppdatera behörigheter.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
       // Call edge function to initiate TikTok OAuth
       const { data, error } = await supabase.functions.invoke('init-tiktok-oauth', {
         headers: {
@@ -169,29 +180,45 @@ export const ConnectionManager = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      // Delete connection
-      const { error: connectionError } = await supabase
+      console.log('Disconnecting provider:', provider, 'for user:', session.user.id);
+
+      // Delete connection first with verification
+      const { data: deletedConnection, error: connectionError } = await supabase
         .from('connections')
         .delete()
         .eq('user_id', session.user.id)
-        .eq('provider', provider as any);
+        .eq('provider', provider as any)
+        .select();
 
-      if (connectionError) throw connectionError;
+      if (connectionError) {
+        console.error('Failed to delete connection:', connectionError);
+        throw connectionError;
+      }
 
-      // Also delete associated tokens
-      const { error: tokenError } = await supabase
+      console.log('Deleted connection:', deletedConnection);
+
+      if (!deletedConnection || deletedConnection.length === 0) {
+        throw new Error('No connection was deleted - connection may not exist');
+      }
+
+      // Then delete associated tokens with verification
+      const { data: deletedTokens, error: tokenError } = await supabase
         .from('tokens')
         .delete()
         .eq('user_id', session.user.id)
-        .eq('provider', provider as any);
+        .eq('provider', provider as any)
+        .select();
 
       if (tokenError) {
-        console.error('Error deleting tokens:', tokenError);
-        // Don't throw - connection is already deleted
+        console.error('Failed to delete tokens:', tokenError);
+        throw tokenError;
       }
 
+      console.log('Deleted tokens:', deletedTokens);
+
+      // ONLY show success if both operations succeeded
       toast({
-        title: "Frånkopplad",
+        title: "✓ Frånkopplad",
         description: `${provider} har kopplats från ditt konto`,
       });
 
@@ -200,8 +227,8 @@ export const ConnectionManager = () => {
     } catch (error) {
       console.error('Error disconnecting:', error);
       toast({
-        title: "Fel",
-        description: "Kunde inte koppla från kontot",
+        title: "❌ Fel vid frånkoppling",
+        description: error instanceof Error ? error.message : "Kunde inte koppla från kontot",
         variant: "destructive",
       });
     }
