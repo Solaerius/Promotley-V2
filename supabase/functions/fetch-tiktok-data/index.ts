@@ -35,6 +35,45 @@ async function getEncryptionKey(): Promise<CryptoKey> {
   );
 }
 
+// Refresh TikTok token if expired or expiring soon
+async function refreshTokenIfNeeded(supabase: any, userId: string, tokenData: any, encryptionKey: CryptoKey): Promise<string> {
+  const expiresAt = new Date(tokenData.expires_at);
+  const now = new Date();
+  const hourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
+  
+  // If token expires within the next hour, refresh it
+  if (expiresAt <= hourFromNow) {
+    console.log('Token expires soon or has expired, refreshing...');
+    
+    const { data, error } = await supabase.functions.invoke('refresh-tiktok-token', {
+      headers: {
+        Authorization: `Bearer ${tokenData.user_id}`,
+      },
+    });
+    
+    if (error) {
+      console.error('Failed to refresh token:', error);
+      throw new Error('Token expired and refresh failed. Please reconnect your TikTok account.');
+    }
+    
+    // Re-fetch the updated token
+    const { data: updatedToken, error: fetchError } = await supabase
+      .from('tokens')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('provider', 'tiktok')
+      .maybeSingle();
+    
+    if (fetchError || !updatedToken) {
+      throw new Error('Failed to fetch refreshed token');
+    }
+    
+    return await decryptToken(updatedToken.access_token_enc, encryptionKey);
+  }
+  
+  return await decryptToken(tokenData.access_token_enc, encryptionKey);
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -66,7 +105,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log('Fetching TikTok data for user:', user.id);
+    console.log('✅ Fetching TikTok data for user:', user.id);
 
     // Get token from database
     const { data: tokenData, error: tokenError } = await supabase
@@ -77,7 +116,7 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (tokenError) {
-      console.error('Error fetching token:', tokenError);
+      console.error('❌ Error fetching token:', tokenError);
       return new Response(
         JSON.stringify({ success: false, error: 'Database error fetching token' }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -85,32 +124,34 @@ Deno.serve(async (req) => {
     }
 
     if (!tokenData) {
-      console.log('No TikTok connection found for user');
+      console.log('⚠️ No TikTok connection found for user');
       return new Response(
-        JSON.stringify({ success: false, error: 'TikTok connection not found. Please connect your account.' }),
+        JSON.stringify({ success: false, error: 'TikTok-kontot är inte kopplat. Vänligen anslut ditt konto.' }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Check if token is expired or expires soon
-    const expiresAt = new Date(tokenData.expires_at);
-    const now = new Date();
-    if (expiresAt <= now) {
-      console.error('Token expired');
-      return new Response(
-        JSON.stringify({ success: false, error: 'Token expired. Please reconnect your TikTok account.' }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Decrypt access token
+    // Decrypt and refresh token if needed
     const encryptionKey = await getEncryptionKey();
-    const accessToken = await decryptToken(tokenData.access_token_enc, encryptionKey);
+    let accessToken: string;
+    
+    try {
+      accessToken = await refreshTokenIfNeeded(supabase, user.id, tokenData, encryptionKey);
+    } catch (refreshError) {
+      console.error('❌ Token refresh failed:', refreshError);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: refreshError instanceof Error ? refreshError.message : 'Token refresh failed' 
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-    console.log('Fetching TikTok user info...');
-    // Fetch user info
+    console.log('📱 Fetching TikTok user info...');
+    // Fetch user info with stats
     const userInfoResponse = await fetch(
-      'https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,bio_description,profile_deep_link,follower_count,following_count,likes_count,video_count',
+      'https://open.tiktokapis.com/v2/user/info/?fields=open_id,display_name,avatar_url,bio_description,likes_count,follower_count,following_count,video_count',
       {
         method: 'GET',
         headers: {
@@ -120,28 +161,43 @@ Deno.serve(async (req) => {
     );
 
     const userInfoText = await userInfoResponse.text();
-    console.log('TikTok user info response:', { status: userInfoResponse.status, text: userInfoText });
+    console.log('📊 TikTok API response:', { 
+      status: userInfoResponse.status, 
+      statusText: userInfoResponse.statusText 
+    });
 
     if (!userInfoResponse.ok) {
-      console.error('Failed to fetch user info');
+      console.error('❌ Failed to fetch user info');
       
-      // Check for scope_not_authorized error
-      let errorMessage = 'Failed to fetch user info from TikTok';
+      let errorMessage = 'Kunde inte hämta TikTok-data';
+      let logId = 'unknown';
+      
       try {
         const errorData = JSON.parse(userInfoText);
+        logId = errorData.error?.log_id || 'unknown';
+        
         if (errorData.error?.code === 'scope_not_authorized') {
-          errorMessage = 'Du måste reconnecta ditt TikTok-konto med uppdaterade behörigheter. Koppla från och anslut igen.';
+          errorMessage = 'Ditt TikTok-konto saknar nödvändiga behörigheter. Koppla från och anslut kontot igen för att ge åtkomst till statistik och videor.';
+        } else if (errorData.error?.code === 'access_token_invalid') {
+          errorMessage = 'Token är ogiltig. Koppla från och anslut ditt TikTok-konto igen.';
         } else {
-          errorMessage = `${errorMessage}: ${userInfoText}. You may need to reconnect your account.`;
+          errorMessage = `TikTok API-fel: ${errorData.error?.message || errorData.error?.code || 'okänt fel'}`;
         }
+        
+        console.error('🔍 TikTok error details:', { 
+          code: errorData.error?.code, 
+          message: errorData.error?.message,
+          log_id: logId 
+        });
       } catch {
-        errorMessage = `${errorMessage}: ${userInfoText}. You may need to reconnect your account.`;
+        console.error('🔍 Raw error response:', userInfoText);
       }
       
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: errorMessage
+          error: errorMessage,
+          tiktok_log_id: logId
         }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
@@ -151,28 +207,29 @@ Deno.serve(async (req) => {
     try {
       userInfo = JSON.parse(userInfoText);
     } catch (e) {
-      console.error('Failed to parse user info JSON:', e);
+      console.error('❌ Failed to parse user info JSON:', e);
       return new Response(
-        JSON.stringify({ success: false, error: 'Invalid response from TikTok API' }),
+        JSON.stringify({ success: false, error: 'Ogiltigt svar från TikTok API' }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     if (userInfo.error && userInfo.error.code !== 'ok') {
-      console.error('TikTok API error:', userInfo.error);
+      console.error('❌ TikTok API error:', userInfo.error);
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: `TikTok API error: ${userInfo.error.message || userInfo.error.code}` 
+          error: `TikTok API-fel: ${userInfo.error.message || userInfo.error.code}`,
+          tiktok_log_id: userInfo.error.log_id
         }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Fetching TikTok video list...');
+    console.log('🎥 Fetching TikTok video list...');
     // Fetch video list (last 20 videos)
     const videoListResponse = await fetch(
-      'https://open.tiktokapis.com/v2/video/list/?fields=id,create_time,cover_image_url,share_url,video_description,duration,height,width,title,embed_html,embed_link,like_count,comment_count,share_count,view_count',
+      'https://open.tiktokapis.com/v2/video/list/?fields=id,create_time,cover_image_url,share_url,video_description,duration,title,like_count,comment_count,share_count,view_count',
       {
         method: 'POST',
         headers: {
@@ -186,20 +243,32 @@ Deno.serve(async (req) => {
     );
 
     const videoListText = await videoListResponse.text();
-    console.log('TikTok video list response:', { status: videoListResponse.status, text: videoListText });
+    console.log('📹 Video list response status:', videoListResponse.status);
 
-    let videos = [];
+    let videos: any[] = [];
     if (videoListResponse.ok) {
       try {
         const videoListData = JSON.parse(videoListText);
         if (videoListData.data && videoListData.data.videos) {
-          videos = videoListData.data.videos;
+          videos = videoListData.data.videos.map((video: any) => ({
+            id: video.id,
+            title: video.title || video.video_description || 'Untitled',
+            views: video.view_count || 0,
+            likes: video.like_count || 0,
+            shares: video.share_count || 0,
+            comments: video.comment_count || 0,
+            created_at: video.create_time ? new Date(video.create_time * 1000).toISOString() : null,
+            cover_image_url: video.cover_image_url,
+            share_url: video.share_url,
+            duration: video.duration,
+          }));
+          console.log(`✅ Successfully fetched ${videos.length} videos`);
         }
       } catch (e) {
-        console.warn('Could not parse video list:', e);
+        console.warn('⚠️ Could not parse video list:', e);
       }
     } else {
-      console.warn('Could not fetch videos:', videoListText);
+      console.warn('⚠️ Could not fetch videos:', videoListText);
     }
 
     // Calculate aggregate stats from videos
@@ -209,20 +278,30 @@ Deno.serve(async (req) => {
     let totalComments = 0;
 
     videos.forEach((video: any) => {
-      totalViews += video.view_count || 0;
-      totalLikes += video.like_count || 0;
-      totalShares += video.share_count || 0;
-      totalComments += video.comment_count || 0;
+      totalViews += video.views || 0;
+      totalLikes += video.likes || 0;
+      totalShares += video.shares || 0;
+      totalComments += video.comments || 0;
     });
 
     const avgEngagementRate = videos.length > 0 && totalViews > 0
-      ? ((totalLikes + totalComments + totalShares) / totalViews * 100).toFixed(2)
-      : '0';
+      ? `${((totalLikes + totalComments + totalShares) / totalViews * 100).toFixed(2)}%`
+      : '0%';
 
+    // Extract user data from response
+    const userData = userInfo.data?.user || userInfo.user || {};
+    
     const response = {
       success: true,
-      user: userInfo.data?.user || userInfo.user,
-      videos: videos,
+      user: {
+        display_name: userData.display_name || 'Unknown',
+        avatar_url: userData.avatar_url || '',
+        bio_description: userData.bio_description || '',
+        follower_count: userData.follower_count || 0,
+        following_count: userData.following_count || 0,
+        likes_count: userData.likes_count || 0,
+        video_count: userData.video_count || 0,
+      },
       stats: {
         totalViews,
         totalLikes,
@@ -231,9 +310,14 @@ Deno.serve(async (req) => {
         avgEngagementRate,
         videoCount: videos.length,
       },
+      videos: videos,
     };
 
-    console.log('Successfully fetched TikTok data');
+    console.log('✅ Successfully fetched TikTok data:', {
+      user: response.user.display_name,
+      videoCount: videos.length,
+      totalViews,
+    });
 
     return new Response(
       JSON.stringify(response),
@@ -241,11 +325,15 @@ Deno.serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Error fetching TikTok data:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('❌ Error fetching TikTok data:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Okänt fel uppstod';
     
     return new Response(
-      JSON.stringify({ success: false, error: errorMessage }),
+      JSON.stringify({ 
+        success: false, 
+        error: errorMessage,
+        details: error instanceof Error ? error.stack : String(error)
+      }),
       { 
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
