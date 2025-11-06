@@ -29,18 +29,15 @@ export const ConnectionManager = () => {
         description: `${connected} har kopplats till ditt konto`,
       });
       
-      // Check if TikTok connection succeeded but may have limited scopes
+      // Show additional info for TikTok about limited scopes
       if (connected.toLowerCase() === 'tiktok') {
-        const error = params.get('scope_error');
-        if (error === 'limited') {
-          setTimeout(() => {
-            toast({
-              title: "ℹ️ Begränsad åtkomst",
-              description: "För full statistikåtkomst krävs Content Posting API med video.query och video.data.",
-              duration: 10000,
-            });
-          }, 2000);
-        }
+        setTimeout(() => {
+          toast({
+            title: "ℹ️ Begränsad åtkomst",
+            description: "För full statistikåtkomst krävs TikTok API-behörigheterna video.query och video.data. Ansök via TikTok Developer Portal.",
+            duration: 8000,
+          });
+        }, 2000);
       }
       
       // Clean up URL
@@ -389,35 +386,25 @@ export const ConnectionManager = () => {
           </div>
           
           {isConnected('tiktok') ? (
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-accent" />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={reconnectTikTok}
-                  disabled={loading}
-                >
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Reconnect
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => disconnectProvider('tiktok')}
-                  disabled={loading}
-                >
-                  Koppla från
-                </Button>
-              </div>
-              <a 
-                href="https://developers.tiktok.com/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-xs text-primary hover:underline"
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-accent" />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={reconnectTikTok}
+                disabled={loading}
               >
-                → Ansök om full åtkomst (Content Posting API)
-              </a>
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Reconnect
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => disconnectProvider('tiktok')}
+                disabled={loading}
+              >
+                Koppla från
+              </Button>
             </div>
           ) : (
             <Button
