@@ -361,7 +361,12 @@ Deno.serve(async (req) => {
     await supabase.rpc('cleanup_expired_oauth_states');
 
     // Redirect back to app
-    const appUrl = supabaseUrl.replace('.supabase.co', '.lovable.app');
+    // Use custom domain if configured, otherwise fall back to lovable.app
+    const customDomain = Deno.env.get('CUSTOM_DOMAIN');
+    const appUrl = customDomain || supabaseUrl.replace('.supabase.co', '.lovable.app');
+    
+    console.log('Redirecting to:', `${appUrl}/dashboard?connected=${provider}`);
+    
     return new Response(null, {
       status: 302,
       headers: {
