@@ -44,11 +44,26 @@ const Auth = () => {
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already logged in
+  // Handle OAuth callback and redirect if logged in
   useEffect(() => {
-    if (user) {
-      navigate("/dashboard");
-    }
+    // Check for OAuth hash fragments in URL
+    const handleOAuthCallback = async () => {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const accessToken = hashParams.get('access_token');
+      
+      if (accessToken) {
+        // OAuth callback detected, wait for session to be established
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          navigate("/dashboard");
+        }
+      } else if (user) {
+        // Regular redirect for already logged in users
+        navigate("/dashboard");
+      }
+    };
+
+    handleOAuthCallback();
   }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
