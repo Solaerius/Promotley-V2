@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
 import { useEffect, useState } from "react";
+import { DarkModeToggle } from "./DarkModeToggle";
 
 const Navbar = () => {
   const [isBubble, setIsBubble] = useState(false);
@@ -62,6 +63,7 @@ const Navbar = () => {
 
           {/* Auth buttons */}
           <div className="flex items-center gap-3">
+            <DarkModeToggle />
             <Link to="/auth">
               <Button variant="ghost">Logga in</Button>
             </Link>
