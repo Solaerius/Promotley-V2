@@ -168,19 +168,19 @@ const ChatWidget = () => {
       {!isOpen && (
         <button
           onClick={handleOpen}
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-[hsl(25,95%,53%)] to-[hsl(280,100%,70%)] text-white shadow-elegant hover:shadow-glow transition-all duration-300 hover:scale-110 flex items-center justify-center group"
+          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-elegant hover:shadow-glow transition-all duration-300 hover:scale-110 flex items-center justify-center group"
           aria-label="Öppna chat"
         >
           <MessageCircle className="w-6 h-6 group-hover:rotate-12 transition-transform" />
-          <span className="absolute -top-1 -right-1 w-3 h-3 bg-[hsl(140,80%,50%)] rounded-full animate-pulse" />
+          <span className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse" />
         </button>
       )}
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-[380px] h-[550px] bg-background/95 backdrop-blur-xl rounded-2xl shadow-elegant border border-border/50 flex flex-col animate-scale-in overflow-hidden">
+        <div className="fixed bottom-6 right-6 z-50 w-[380px] h-[550px] bg-background/95 backdrop-blur-xl rounded-2xl shadow-elegant border border-border/50 flex flex-col overflow-hidden animate-in slide-in-from-bottom-8 fade-in duration-300">
           {/* Header */}
-          <div className="bg-gradient-to-r from-[hsl(25,95%,53%)] to-[hsl(280,100%,70%)] text-white p-4 flex items-center justify-between">
+          <div className="bg-gradient-to-r from-primary to-secondary text-primary-foreground p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                 <MessageCircle className="w-5 h-5" />
@@ -214,7 +214,7 @@ const ChatWidget = () => {
                   <div
                     className={`max-w-[75%] rounded-2xl px-4 py-2 ${
                       message.sender_type === "user"
-                        ? "bg-gradient-to-r from-[hsl(25,95%,53%)] to-[hsl(280,100%,70%)] text-white rounded-br-sm"
+                        ? "bg-gradient-primary text-primary-foreground rounded-br-sm"
                         : message.sender_type === "system"
                         ? "bg-muted/50 text-muted-foreground text-center w-full"
                         : "bg-muted text-foreground rounded-bl-sm"
@@ -255,7 +255,7 @@ const ChatWidget = () => {
                 onClick={handleSend}
                 size="icon"
                 disabled={isLoading || !inputValue.trim()}
-                className="bg-gradient-to-r from-[hsl(25,95%,53%)] to-[hsl(280,100%,70%)] hover:shadow-glow"
+                className="bg-gradient-primary hover:shadow-glow"
               >
                 <Send className="w-4 h-4" />
               </Button>
