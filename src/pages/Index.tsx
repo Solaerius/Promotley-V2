@@ -9,6 +9,8 @@ import Testimonials from "@/components/Testimonials";
 import TrustSection from "@/components/TrustSection";
 import FinalCTA from "@/components/FinalCTA";
 import CookieConsent from "@/components/CookieConsent";
+import ChatWidget from "@/components/ChatWidget";
+import BackToTop from "@/components/BackToTop";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
 
@@ -109,6 +111,12 @@ const Index = () => {
           </div>
         </div>
       </footer>
+      
+      {/* Chat Widget */}
+      <ChatWidget />
+      
+      {/* Back to Top Button */}
+      <BackToTop />
     </div>
   );
 };
