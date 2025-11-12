@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      chat_messages: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          id: string
+          message: string
+          read_at: string | null
+          sender_id: string | null
+          sender_type: string
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          id?: string
+          message: string
+          read_at?: string | null
+          sender_id?: string | null
+          sender_type: string
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          read_at?: string | null
+          sender_id?: string | null
+          sender_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       connections: {
         Row: {
           account_id: string
@@ -77,6 +115,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          last_message_at: string | null
+          status: string
+          updated_at: string
+          user_email: string | null
+          user_id: string | null
+          user_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          status?: string
+          updated_at?: string
+          user_email?: string | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          status?: string
+          updated_at?: string
+          user_email?: string | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Relationships: []
       }
       metrics: {
         Row: {
