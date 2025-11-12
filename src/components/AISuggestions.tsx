@@ -133,11 +133,31 @@ export const AISuggestions = () => {
               disabled={loading}
               className="gap-2"
               variant="gradient"
+              aria-label="Generate AI content suggestions"
             >
               <Sparkles className="h-4 w-4" />
-              {loading ? "Genererar..." : "Generera förslag"}
+              {loading ? "Generating..." : "Generate suggestions"}
             </Button>
           </div>
+
+          {/* Example AI-Generated Post Preview */}
+          {!suggestion && (
+            <div className="mt-6 space-y-3 p-6 rounded-lg border border-dashed border-primary/30 bg-muted/20">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="h-4 w-4 text-primary" />
+                <p className="text-sm font-semibold text-muted-foreground">Example AI-Generated Post</p>
+              </div>
+              <div className="space-y-2 opacity-75">
+                <p className="text-sm font-medium">💡 Idé: Behind-the-scenes av er produktutveckling</p>
+                <p className="text-sm">📝 Caption: "Från idé till verklighet! 🚀 Här är hur vi skapar våra produkter..."</p>
+                <div className="flex flex-wrap gap-1">
+                  <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">#ufföretag</span>
+                  <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">#bakomkulisserna</span>
+                  <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">#startup</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {suggestion && (
             <div className="mt-6 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">

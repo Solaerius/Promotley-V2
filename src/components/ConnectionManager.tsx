@@ -331,12 +331,13 @@ export const ConnectionManager = () => {
             <div>
               <p className="font-medium">Facebook</p>
               {isConnected('meta_fb') ? (
-                <p className="text-sm text-muted-foreground">
-                  Ansluten som {getConnection('meta_fb')?.username || 'Okänd'}
+                <p className="text-sm text-accent flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  Connected as {getConnection('meta_fb')?.username || 'Okänd'}
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Inte ansluten
+                  Connect to unlock personalized insights
                 </p>
               )}
             </div>
@@ -359,8 +360,9 @@ export const ConnectionManager = () => {
               size="sm"
               onClick={connectFacebook}
               disabled={loading}
+              aria-label="Connect Facebook account"
             >
-              {loading ? "Ansluter..." : "Anslut"}
+              {loading ? "Connecting..." : "Connect account"}
             </Button>
           )}
         </div>
@@ -374,12 +376,13 @@ export const ConnectionManager = () => {
             <div>
               <p className="font-medium">TikTok</p>
               {isConnected('tiktok') ? (
-                <p className="text-sm text-muted-foreground">
-                  Ansluten som {getConnection('tiktok')?.username || 'Okänd'}
+                <p className="text-sm text-accent flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  Connected as {getConnection('tiktok')?.username || 'Okänd'}
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Inte ansluten
+                  Connect to unlock personalized insights
                 </p>
               )}
             </div>
@@ -412,8 +415,9 @@ export const ConnectionManager = () => {
               size="sm"
               onClick={connectTikTok}
               disabled={loading}
+              aria-label="Connect TikTok account"
             >
-              {loading ? "Ansluter..." : "Anslut"}
+              {loading ? "Connecting..." : "Connect account"}
             </Button>
           )}
         </div>

@@ -1,5 +1,6 @@
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -38,6 +39,7 @@ interface Metric {
   value: string;
   change: string;
   trending: "up" | "down" | "neutral";
+  tooltip?: string;
 }
 
 interface AIInsight {
@@ -179,9 +181,10 @@ const Dashboard = () => {
           },
           { 
             label: "Engagemang", 
-            value: tiktokData.stats.avgEngagementRate + "%", 
+            value: (parseFloat(tiktokData.stats.avgEngagementRate as any) === 0 ? "0%" : tiktokData.stats.avgEngagementRate + "%"), 
             change: "", 
-            trending: "neutral" as const
+            trending: "neutral" as const,
+            tooltip: "Genomsnittlig engagemangsgrad de senaste 30 dagarna"
           },
         ],
         aiInsight: tiktokData.stats.totalViews > 0 ? {
@@ -258,11 +261,13 @@ const Dashboard = () => {
 
       {/* Main content */}
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Din Dashboard</h1>
-          <p className="text-muted-foreground">
-            Översikt över dina sociala medier med AI-drivna insikter
+        {/* Hero Header */}
+        <div className="mb-12 text-center max-w-3xl mx-auto">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent">
+            Maximize your social growth with AI-driven content insights
+          </h1>
+          <p className="text-lg text-muted-foreground">
+            Få personliga AI-förslag för att växa snabbare på sociala medier
           </p>
         </div>
 
@@ -275,6 +280,34 @@ const Dashboard = () => {
         <div className="mb-8">
           <AISuggestions />
         </div>
+
+        {/* Social Proof Section */}
+        <Card className="mb-8 bg-gradient-to-br from-background to-muted/20 border-primary/10">
+          <CardContent className="p-8">
+            <div className="text-center mb-6">
+              <p className="text-2xl font-bold mb-2">
+                Används av 50+ UF-team för att tredubbla engagemang på 4 veckor
+              </p>
+              <p className="text-muted-foreground">
+                Tusentals innehållsförslag genererade • 95% användarnas nöjdhet
+              </p>
+            </div>
+            <div className="flex justify-center items-center gap-8 flex-wrap">
+              <div className="text-center">
+                <p className="text-3xl font-bold text-primary">50+</p>
+                <p className="text-sm text-muted-foreground">UF-företag</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-primary">3x</p>
+                <p className="text-sm text-muted-foreground">Högre engagemang</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-primary">4v</p>
+                <p className="text-sm text-muted-foreground">Till resultat</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Platform stats */}
         <div className="space-y-6">
@@ -309,30 +342,44 @@ const Dashboard = () => {
                   </div>
 
                   {/* Metrics grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                    {platform.metrics.map((metric, mIndex) => (
-                      <div key={mIndex} className="space-y-2">
-                        <p className="text-sm text-muted-foreground">{metric.label}</p>
-                        <p className="text-2xl font-bold">{metric.value}</p>
-                        {metric.change && (
+                  <TooltipProvider>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                      {platform.metrics.map((metric, mIndex) => (
+                        <div key={mIndex} className="space-y-2">
                           <div className="flex items-center gap-1">
-                            {metric.trending === "up" ? (
-                              <TrendingUp className="w-4 h-4 text-accent" />
-                            ) : metric.trending === "down" ? (
-                              <TrendingDown className="w-4 h-4 text-destructive" />
-                            ) : null}
-                            <span className={`text-sm font-medium ${
-                              metric.trending === "up" ? "text-accent" : 
-                              metric.trending === "down" ? "text-destructive" : 
-                              "text-muted-foreground"
-                            }`}>
-                              {metric.change}
-                            </span>
+                            <p className="text-sm text-muted-foreground">{metric.label}</p>
+                            {metric.tooltip && (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span className="text-muted-foreground cursor-help">ⓘ</span>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p className="max-w-xs">{metric.tooltip}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                          <p className="text-2xl font-bold">{metric.value}</p>
+                          {metric.change && (
+                            <div className="flex items-center gap-1">
+                              {metric.trending === "up" ? (
+                                <TrendingUp className="w-4 h-4 text-accent" />
+                              ) : metric.trending === "down" ? (
+                                <TrendingDown className="w-4 h-4 text-destructive" />
+                              ) : null}
+                              <span className={`text-sm font-medium ${
+                                metric.trending === "up" ? "text-accent" : 
+                                metric.trending === "down" ? "text-destructive" : 
+                                "text-muted-foreground"
+                              }`}>
+                                {metric.change}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </TooltipProvider>
 
                   {/* AI Insight */}
                   {platform.aiInsight && (
@@ -361,17 +408,41 @@ const Dashboard = () => {
         </div>
 
         {/* Bottom CTA */}
-        <Card className="mt-8 p-8 text-center bg-gradient-hero">
-          <h3 className="text-2xl font-bold mb-2">Vill du ha fler AI-insikter?</h3>
-          <p className="text-muted-foreground mb-6">
-            Uppgradera till Pro och få obegränsad tillgång till AI-genererade förslag
-          </p>
-          <Link to="/auth">
-            <Button variant="gradient" size="lg">
-              Se priser
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-          </Link>
+        <Card className="mt-8 p-8 bg-gradient-hero border-primary/20">
+          <div className="max-w-2xl mx-auto text-center">
+            <h3 className="text-3xl font-bold mb-3">
+              Upgrade to Pro — unlimited AI suggestions, exportable content calendars, and priority support
+            </h3>
+            <div className="grid md:grid-cols-3 gap-4 my-6 text-left">
+              <div className="flex items-start gap-2">
+                <Sparkles className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-semibold">Unlimited suggestions</p>
+                  <p className="text-sm text-muted-foreground">Obegränsat med AI-genererade förslag</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Share2 className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-semibold">Export to CSV</p>
+                  <p className="text-sm text-muted-foreground">Exportera innehållskalender</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Heart className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-semibold">Priority support</p>
+                  <p className="text-sm text-muted-foreground">Få hjälp snabbare</p>
+                </div>
+              </div>
+            </div>
+            <Link to="/auth">
+              <Button variant="gradient" size="lg" aria-label="View pricing plans">
+                View pricing plans
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </Link>
+          </div>
         </Card>
       </div>
     </div>
