@@ -38,7 +38,7 @@ const Hero = () => {
 
           {/* Subheadline */}
           <p className="text-base md:text-2xl text-white/90 max-w-2xl mx-auto leading-relaxed animate-slide-up font-medium px-4 md:px-0">
-            Få AI-genererade innehållsförslag som ökar engagemang med 30% på 4 veckor
+            AI som hjälper UF-företag och startups att växa snabbare på sociala medier
           </p>
 
           {/* Email Capture */}
@@ -59,7 +59,9 @@ const Hero = () => {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </form>
-            <p className="text-xs md:text-sm text-white/70 mt-3 text-center">Ingen betalmetod krävs · Avsluta när du vill</p>
+            <p className="text-xs md:text-sm text-white/70 mt-3 text-center">
+              Ingen kortinformation krävs. Börja på 30 sekunder.
+            </p>
           </div>
 
           {/* Secondary CTA */}

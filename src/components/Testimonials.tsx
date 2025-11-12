@@ -51,7 +51,7 @@ const Testimonials = () => {
           {testimonials.map((testimonial, index) => (
             <Card
               key={index}
-              className="p-6 bg-white/10 backdrop-blur-md border-2 border-white/20 hover:bg-white/15 transition-all duration-300 hover:-translate-y-2"
+              className="p-6 bg-white/10 backdrop-blur-md border-2 border-white/20 hover:bg-white/15 transition-all duration-300 hover:-translate-y-2 rounded-2xl"
             >
               <div className="space-y-4">
                 {/* Rating */}

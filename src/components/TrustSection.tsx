@@ -68,9 +68,12 @@ const TrustSection = () => {
 
           {/* Additional info */}
           <div className="mt-12 p-8 rounded-2xl bg-white/5 backdrop-blur-md border border-white/20 text-center">
-            <p className="text-white/90 text-lg">
+            <p className="text-white/90 text-lg mb-3">
               Vi använder samma säkerhetsstandarder som banker och följer alla GDPR-krav. 
               Din data är krypterad både i transit och i vila.
+            </p>
+            <p className="text-white/80 text-base">
+              Data lagras säkert inom EU.
             </p>
           </div>
         </div>

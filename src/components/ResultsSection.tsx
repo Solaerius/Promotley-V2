@@ -4,20 +4,23 @@ import { Card } from "@/components/ui/card";
 const stats = [
   {
     icon: TrendingUp,
-    value: "+340%",
-    label: "Ökade visningar",
+    value: "Markant",
+    label: "Ökat engagemang",
+    description: "Visat sig öka engagemanget markant för företag som följer strategin",
     color: "text-primary",
   },
   {
     icon: Users,
-    value: "10×",
-    label: "Mer engagemang",
+    value: "Fler",
+    label: "Nådda följare",
+    description: "Större räckvidd genom optimerad timing och innehåll",
     color: "text-primary",
   },
   {
     icon: Clock,
-    value: "5h/v",
-    label: "Sparad tid",
+    value: "Timmar",
+    label: "Sparad tid per vecka",
+    description: "Färdig innehållsplan och AI-genererat material",
     color: "text-primary-glow",
   },
 ];
@@ -52,12 +55,15 @@ const ResultsSection = () => {
                 className="p-8 bg-white/10 backdrop-blur-md border-2 border-white/20 hover:bg-white/15 transition-all duration-300 text-center group hover:scale-105"
               >
                 <Icon className={`w-12 h-12 mx-auto mb-4 ${stat.color} group-hover:scale-110 transition-transform`} />
-                <div className={`text-5xl font-extrabold mb-2 ${stat.color}`}>
+                <div className={`text-4xl font-extrabold mb-3 ${stat.color}`}>
                   {stat.value}
                 </div>
-                <div className="text-white/90 text-lg font-medium">
+                <div className="text-white/90 text-lg font-medium mb-2">
                   {stat.label}
                 </div>
+                <p className="text-white/70 text-sm leading-relaxed">
+                  {stat.description}
+                </p>
               </Card>
             );
           })}

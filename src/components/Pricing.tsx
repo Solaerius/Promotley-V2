@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
+import PricingFAQ from "./PricingFAQ";
 
 const plans = [
   {
@@ -122,7 +123,7 @@ const Pricing = () => {
                     className="w-full"
                     size="lg"
                   >
-                    Kom igång
+                    Starta gratis
                   </Button>
                 </Link>
               </div>
@@ -134,6 +135,9 @@ const Pricing = () => {
         <p className="text-center text-muted-foreground mt-12 text-lg">
           Skapa din första strategi gratis · Ingen betalmetod krävs · Avsluta när du vill
         </p>
+
+        {/* FAQ Section */}
+        <PricingFAQ />
       </div>
     </section>
   );

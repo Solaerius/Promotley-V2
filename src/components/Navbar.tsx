@@ -32,7 +32,7 @@ const Navbar = () => {
               <Button variant="ghost">Logga in</Button>
             </Link>
             <Link to="/auth">
-              <Button variant="gradient">Kom igång</Button>
+              <Button variant="gradient">Starta gratis</Button>
             </Link>
           </div>
         </div>
