@@ -12,9 +12,14 @@ const Navbar = () => {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsBubble(entry.isIntersecting);
+        // Only update bubble state based on scroll position relative to sentinel
+        const sentinelTop = entry.boundingClientRect.top;
+        const isAboveSentinel = sentinelTop > 0;
+        
+        // Activate bubble when scrolled past sentinel, keep it active until scrolled back above
+        setIsBubble(!isAboveSentinel);
       },
-      { rootMargin: '-8px 0px 0px 0px', threshold: 0 }
+      { rootMargin: '0px', threshold: 0 }
     );
 
     observer.observe(sentinel);
