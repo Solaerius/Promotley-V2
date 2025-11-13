@@ -4,8 +4,10 @@ import logo from "@/assets/logo.png";
 import { useEffect, useState } from "react";
 import { DarkModeToggle } from "./DarkModeToggle";
 import { Menu, X } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const Navbar = () => {
+  const { user } = useAuth();
   const [isBubble, setIsBubble] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -66,19 +68,27 @@ const Navbar = () => {
           {/* Desktop Auth buttons */}
           <div className="hidden md:flex items-center gap-3">
             <DarkModeToggle />
-            <Link to="/auth">
-              <Button variant="ghost">Logga in</Button>
-            </Link>
-            <Link to="/auth">
-              <Button 
-                variant="gradient"
-                className={`transition-shadow duration-300 ${
-                  isBubble ? 'shadow-[0_6px_18px_rgba(238,89,61,0.35)] hover:shadow-[0_8px_24px_rgba(238,89,61,0.45)]' : ''
-                }`}
-              >
-                Starta gratis
-              </Button>
-            </Link>
+            {user ? (
+              <Link to="/dashboard">
+                <Button variant="gradient">Dashboard</Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/auth">
+                  <Button variant="ghost">Logga in</Button>
+                </Link>
+                <Link to="/auth">
+                  <Button 
+                    variant="gradient"
+                    className={`transition-shadow duration-300 ${
+                      isBubble ? 'shadow-[0_6px_18px_rgba(238,89,61,0.35)] hover:shadow-[0_8px_24px_rgba(238,89,61,0.45)]' : ''
+                    }`}
+                  >
+                    Starta gratis
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -121,14 +131,22 @@ const Navbar = () => {
                 Demo
               </Link>
               <div className="flex flex-col gap-2 pt-2 border-t border-border/50">
-                <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start">Logga in</Button>
-                </Link>
-                <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="gradient" className="w-full">
-                    Starta gratis
-                  </Button>
-                </Link>
+                {user ? (
+                  <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="gradient" className="w-full">Dashboard</Button>
+                  </Link>
+                ) : (
+                  <>
+                    <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="ghost" className="w-full justify-start">Logga in</Button>
+                    </Link>
+                    <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="gradient" className="w-full">
+                        Starta gratis
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>

@@ -285,7 +285,7 @@ const Dashboard = () => {
         {/* Hero Header */}
         <div className="mb-12 text-center max-w-3xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
-            Maximize your social growth with AI-driven content insights
+            Maximera din tillväxt med AI-drivna innehållsinsikter
           </h1>
           <p className="text-lg text-muted-foreground">
             Få personliga AI-förslag för att växa snabbare på sociala medier
@@ -432,13 +432,13 @@ const Dashboard = () => {
         <Card className="mt-8 p-8 bg-gradient-hero border-primary/20">
           <div className="max-w-2xl mx-auto text-center">
             <h3 className="text-3xl font-bold mb-3">
-              Upgrade to Pro — unlimited AI suggestions, exportable content calendars, and priority support
+              Uppgradera till Pro — obegränsade AI-förslag, exporterbara innehållskalendrar och prioriterad support
             </h3>
             <div className="grid md:grid-cols-3 gap-4 my-6 text-left">
               <div className="flex items-start gap-2">
                 <Sparkles className="w-5 h-5 text-primary mt-0.5 shrink-0" />
                 <div>
-                  <p className="font-semibold">Unlimited suggestions</p>
+                  <p className="font-semibold">Obegränsade förslag</p>
                   <p className="text-sm text-muted-foreground">Obegränsat med AI-genererade förslag</p>
                 </div>
               </div>
