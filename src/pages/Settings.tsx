@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/useAuth";
+import { useConnections } from "@/hooks/useConnections";
 import logo from "@/assets/logo.png";
 import {
   AlertDialog,
@@ -24,11 +25,13 @@ const Settings = () => {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
   const { signOut, user } = useAuth();
+  const { connections, loadConnections, isConnected, getConnection } = useConnections();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [companyName, setCompanyName] = useState("");
   const [originalCompanyName, setOriginalCompanyName] = useState("");
   const [isSavingCompanyName, setIsSavingCompanyName] = useState(false);
+  const [connectingProvider, setConnectingProvider] = useState<string | null>(null);
 
   // Fetch user's company name
   useEffect(() => {
@@ -57,11 +60,133 @@ const Settings = () => {
     });
   };
 
-  const handleDisconnect = (platform: string) => {
-    toast({
-      title: `${platform} frånkopplad`,
-      description: "Inga fler data kommer att hämtas från denna plattform.",
-    });
+  const connectFacebook = async () => {
+    setConnectingProvider('facebook');
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Inte inloggad",
+          description: "Du måste vara inloggad för att ansluta konton",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const stateToken = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+
+      const { error: stateError } = await supabase
+        .from('oauth_states')
+        .insert({
+          state_token: stateToken,
+          user_id: session.user.id,
+          provider: 'meta_fb'
+        });
+
+      if (stateError) {
+        throw new Error('Failed to create OAuth state');
+      }
+
+      const { data: appIdData, error: appIdError } = await supabase.functions.invoke('get-meta-app-id');
+      
+      if (appIdError || !appIdData?.app_id) {
+        throw new Error('Could not get Meta App ID');
+      }
+
+      const metaAppId = appIdData.app_id;
+      const redirectUri = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/oauth-callback?provider=meta_fb`;
+      
+      const permissions = [
+        'pages_show_list',
+        'pages_read_engagement',
+        'pages_manage_posts',
+        'read_insights'
+      ].join(',');
+
+      const authUrl = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${metaAppId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${stateToken}&scope=${permissions}`;
+      
+      window.location.href = authUrl;
+    } catch (error) {
+      console.error('Error connecting Facebook:', error);
+      toast({
+        title: "Anslutning misslyckades",
+        description: "Kunde inte ansluta till Facebook",
+        variant: "destructive",
+      });
+      setConnectingProvider(null);
+    }
+  };
+
+  const connectTikTok = async () => {
+    setConnectingProvider('tiktok');
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Inte inloggad",
+          description: "Du måste vara inloggad för att ansluta konton",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('init-tiktok-oauth');
+
+      if (error || !data?.url) {
+        throw new Error(error?.message || 'Failed to initialize TikTok OAuth');
+      }
+
+      window.location.href = data.url;
+    } catch (error) {
+      console.error('Error connecting TikTok:', error);
+      toast({
+        title: "Anslutning misslyckades",
+        description: "Kunde inte ansluta till TikTok",
+        variant: "destructive",
+      });
+      setConnectingProvider(null);
+    }
+  };
+
+  const disconnectProvider = async (provider: 'tiktok' | 'meta_fb' | 'meta_ig') => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const connection = getConnection(provider);
+      if (!connection) return;
+
+      const { error: tokenError } = await supabase
+        .from('tokens')
+        .delete()
+        .eq('user_id', session.user.id)
+        .eq('provider', provider);
+
+      if (tokenError) throw tokenError;
+
+      const { error: connectionError } = await supabase
+        .from('connections')
+        .delete()
+        .eq('id', connection.id);
+
+      if (connectionError) throw connectionError;
+
+      await loadConnections();
+      
+      toast({
+        title: "Frånkopplad",
+        description: `${provider === 'tiktok' ? 'TikTok' : 'Facebook'} har kopplats från ditt konto`,
+      });
+    } catch (error) {
+      console.error('Error disconnecting:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte koppla från kontot",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleDeleteAccount = () => {
@@ -246,13 +371,16 @@ const Settings = () => {
 
             <div className="space-y-4">
               {[
-                { name: "Instagram", icon: Instagram, connected: true, color: "from-pink-500 to-purple-500" },
-                { name: "TikTok", icon: Music2, connected: true, color: "from-cyan-500 to-pink-500" },
-                { name: "Facebook", icon: Facebook, connected: false, color: "from-blue-600 to-blue-400" },
-              ].map((platform, index) => {
+                { name: "TikTok", provider: "tiktok" as const, icon: Music2, color: "from-cyan-500 to-pink-500", connect: connectTikTok },
+                { name: "Facebook", provider: "meta_fb" as const, icon: Facebook, color: "from-blue-600 to-blue-400", connect: connectFacebook },
+              ].map((platform) => {
                 const Icon = platform.icon;
+                const connected = isConnected(platform.provider);
+                const connection = getConnection(platform.provider);
+                const isConnecting = connectingProvider === platform.provider.replace('meta_fb', 'facebook');
+                
                 return (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div key={platform.provider} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${platform.color} flex items-center justify-center`}>
                         <Icon className="w-5 h-5 text-white" />
@@ -260,22 +388,31 @@ const Settings = () => {
                       <div>
                         <p className="font-medium">{platform.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          {platform.connected ? "Ansluten" : "Ej ansluten"}
+                          {connected ? (
+                            <>Ansluten {connection?.username && `som @${connection.username}`}</>
+                          ) : (
+                            "Ej ansluten"
+                          )}
                         </p>
                       </div>
                     </div>
-                    {platform.connected ? (
+                    {connected ? (
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => handleDisconnect(platform.name)}
+                        onClick={() => disconnectProvider(platform.provider)}
                       >
                         Koppla från
                       </Button>
                     ) : (
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={platform.connect}
+                        disabled={isConnecting}
+                      >
                         <LinkIcon className="w-4 h-4 mr-2" />
-                        Anslut
+                        {isConnecting ? "Kopplar..." : "Anslut"}
                       </Button>
                     )}
                   </div>
