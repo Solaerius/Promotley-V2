@@ -14,6 +14,96 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics: {
+        Row: {
+          engagement: number | null
+          followers: number | null
+          history: Json | null
+          id: string
+          platform: string
+          reach: number | null
+          updated_at: string | null
+          user_id: string
+          views: number | null
+        }
+        Insert: {
+          engagement?: number | null
+          followers?: number | null
+          history?: Json | null
+          id?: string
+          platform: string
+          reach?: number | null
+          updated_at?: string | null
+          user_id: string
+          views?: number | null
+        }
+        Update: {
+          engagement?: number | null
+          followers?: number | null
+          history?: Json | null
+          id?: string
+          platform?: string
+          reach?: number | null
+          updated_at?: string | null
+          user_id?: string
+          views?: number | null
+        }
+        Relationships: []
+      }
+      calendar_posts: {
+        Row: {
+          created_at: string | null
+          date: string
+          description: string | null
+          id: string
+          platform: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          description?: string | null
+          id?: string
+          platform: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          description?: string | null
+          id?: string
+          platform?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      chat_history: {
+        Row: {
+          id: string
+          message: string
+          role: string
+          timestamp: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          message: string
+          role: string
+          timestamp?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          message?: string
+          role?: string
+          timestamp?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           conversation_id: string
@@ -196,6 +286,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string
+          read: boolean | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message: string
+          read?: boolean | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string
+          read?: boolean | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       oauth_states: {
         Row: {
