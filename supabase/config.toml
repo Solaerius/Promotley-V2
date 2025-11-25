@@ -6,6 +6,21 @@ enabled = true
 [functions.generate-suggestion]
 verify_jwt = true
 
+[functions.analytics]
+verify_jwt = true
+
+[functions.calendar]
+verify_jwt = true
+
+[functions.ai-assistant]
+verify_jwt = true
+
+[functions.notifications]
+verify_jwt = true
+
+[functions.user-profile]
+verify_jwt = true
+
 [functions.oauth-callback]
 verify_jwt = false
 
