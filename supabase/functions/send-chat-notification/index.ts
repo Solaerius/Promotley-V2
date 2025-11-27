@@ -34,30 +34,66 @@ serve(async (req) => {
 
     const { message, sessionId, timestamp } = await req.json();
 
-    const notificationMessage = `🔔 **Ny chatt på Promotely!**\n\n**Meddelande:** ${message}\n**Session:** ${sessionId}\n**Tid:** ${new Date(timestamp).toLocaleString("sv-SE")}\n\n[Öppna admin-chatt](https://${Deno.env.get("CUSTOM_DOMAIN")}/admin/chat)`;
-
     const results = {
       discord: false,
       email: false,
       sms: false,
     };
 
-    // Send Discord notification
+    // Send Discord notification (embed)
     if (settings.discord_webhook_url) {
       try {
+        const embedPayload = {
+          username: "Promotely Chat Bot",
+          embeds: [
+            {
+              title: "🔔 Ny chatt på Promotely!",
+              color: 0xee593d, // Promotely färg (orange)
+              fields: [
+                {
+                  name: "📩 Meddelande",
+                  value: message || "–",
+                },
+                {
+                  name: "🆔 Session",
+                  value: sessionId || "–",
+                },
+                {
+                  name: "⏰ Tid",
+                  value: new Date(timestamp).toLocaleString("sv-SE"),
+                },
+              ],
+              footer: {
+                text: "Promotely UF – Livechatt notifikation",
+              },
+              timestamp: new Date().toISOString(),
+            },
+          ],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  type: 2,
+                  label: "Öppna Admin-Chatt",
+                  style: 5,
+                  url: `${Deno.env.get("CUSTOM_DOMAIN")}/admin/chat`,
+                },
+              ],
+            },
+          ],
+        };
+
         const discordResponse = await fetch(settings.discord_webhook_url, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            content: notificationMessage,
-            username: "Promotely Chat Bot",
-          }),
+          body: JSON.stringify(embedPayload),
         });
 
         results.discord = discordResponse.ok;
-        console.log("Discord notification sent:", results.discord);
+        console.log("Discord embed sent:", results.discord);
       } catch (error) {
         console.error("Discord notification failed:", error);
       }
