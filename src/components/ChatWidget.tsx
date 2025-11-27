@@ -23,6 +23,7 @@ const ChatWidget = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [autoReplyHasBeenSent, setAutoReplyHasBeenSent] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -43,14 +44,18 @@ const ChatWidget = () => {
   // Load or create session on mount
   useEffect(() => {
     const savedSessionId = localStorage.getItem("live_chat_session_id");
+    const autoReplySent = localStorage.getItem("live_chat_auto_reply_sent");
+    
     if (savedSessionId) {
       setSessionId(savedSessionId);
       loadMessages(savedSessionId);
+      setAutoReplyHasBeenSent(autoReplySent === "true");
     } else {
       // Create new session
       const newSessionId = crypto.randomUUID();
       localStorage.setItem("live_chat_session_id", newSessionId);
       setSessionId(newSessionId);
+      setAutoReplyHasBeenSent(false);
     }
   }, []);
 
@@ -177,10 +182,31 @@ const ChatWidget = () => {
     }
   };
 
+  const sendAutoReply = async () => {
+    if (!sessionId || autoReplyHasBeenSent) return;
+
+    // Wait 2 seconds before sending auto-reply
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    const autoReplyMessage = "Tack för ditt meddelande! Vi har fått din förfrågan och återkommer så snart vi kan. Notera att det kan ta lite tid beroende på hur många förfrågningar vi har just nu. Vi uppskattar ditt tålamod! 🙏";
+
+    const { error } = await supabase.from("live_chat_messages").insert({
+      session_id: sessionId,
+      sender_type: "admin",
+      message: autoReplyMessage,
+    });
+
+    if (!error) {
+      localStorage.setItem("live_chat_auto_reply_sent", "true");
+      setAutoReplyHasBeenSent(true);
+    }
+  };
+
   const handleSend = async () => {
     if (!inputValue.trim() || !sessionId) return;
 
     setIsLoading(true);
+    const isFirstMessage = messages.length === 0 && !autoReplyHasBeenSent;
 
     const { data, error } = await supabase.from("live_chat_messages").insert({
       session_id: sessionId,
@@ -211,6 +237,11 @@ const ChatWidget = () => {
       } catch (notifError) {
         console.error("Error sending notification:", notifError);
         // Don't show error to user, just log it
+      }
+
+      // Send auto-reply if this is the first message
+      if (isFirstMessage) {
+        sendAutoReply();
       }
     }
 
