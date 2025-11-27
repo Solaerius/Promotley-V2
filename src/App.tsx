@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
 import Calendar from "./pages/Calendar";
 import AIChat from "./pages/AIChat";
+import AIDashboard from "./pages/AIDashboard";
 import Settings from "./pages/Settings";
 import AdminChat from "./pages/AdminChat";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -70,6 +71,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <AIChat />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/ai-dashboard" 
+              element={
+                <ProtectedRoute>
+                  <AIDashboard />
                 </ProtectedRoute>
               } 
             />
