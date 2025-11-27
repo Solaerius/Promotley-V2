@@ -43,11 +43,14 @@ serve(async (req) => {
     // Send Discord notification (embed)
     if (settings.discord_webhook_url) {
       try {
+        const adminUrl = `${Deno.env.get("CUSTOM_DOMAIN")}/admin/chat`;
+        
         const embedPayload = {
           username: "Promotely Chat Bot",
           embeds: [
             {
               title: "🔔 Ny chatt på Promotely!",
+              description: `[👉 Öppna Admin-Chatt](${adminUrl})`,
               color: 0xee593d, // Promotely färg (orange)
               fields: [
                 {
@@ -69,19 +72,6 @@ serve(async (req) => {
               timestamp: new Date().toISOString(),
             },
           ],
-          components: [
-            {
-              type: 1,
-              components: [
-                {
-                  type: 2,
-                  label: "Öppna Admin-Chatt",
-                  style: 5,
-                  url: `${Deno.env.get("CUSTOM_DOMAIN")}/admin/chat`,
-                },
-              ],
-            },
-          ],
         };
 
         const discordResponse = await fetch(settings.discord_webhook_url, {
@@ -93,7 +83,13 @@ serve(async (req) => {
         });
 
         results.discord = discordResponse.ok;
-        console.log("Discord embed sent:", results.discord);
+        
+        if (!discordResponse.ok) {
+          const errorText = await discordResponse.text();
+          console.error("Discord error response:", errorText);
+        } else {
+          console.log("Discord embed sent successfully");
+        }
       } catch (error) {
         console.error("Discord notification failed:", error);
       }
