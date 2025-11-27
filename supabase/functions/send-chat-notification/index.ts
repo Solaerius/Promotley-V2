@@ -50,7 +50,7 @@ serve(async (req) => {
           embeds: [
             {
               title: "🔔 Ny chatt på Promotely!",
-              description: `[👉 Öppna Admin-Chatt](https://promotley.se/admin/chat)`,
+              description: `[Öppna Admin-Chatt](https://promotley.se/admin/chat)`,
               color: 0xee593d, // Promotely färg (orange)
               fields: [
                 {
