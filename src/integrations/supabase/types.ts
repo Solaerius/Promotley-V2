@@ -239,6 +239,36 @@ export type Database = {
         }
         Relationships: []
       }
+      live_chat_messages: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string
+          read: boolean | null
+          sender_id: string | null
+          sender_type: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message: string
+          read?: boolean | null
+          sender_id?: string | null
+          sender_type: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string
+          read?: boolean | null
+          sender_id?: string | null
+          sender_type?: string
+          session_id?: string
+        }
+        Relationships: []
+      }
       metrics: {
         Row: {
           captured_at: string
@@ -286,6 +316,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notification_settings: {
+        Row: {
+          created_at: string | null
+          discord_webhook_url: string | null
+          id: string
+          notification_email: string | null
+          recipient_phone_number: string | null
+          twilio_account_sid: string | null
+          twilio_auth_token: string | null
+          twilio_phone_number: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          discord_webhook_url?: string | null
+          id?: string
+          notification_email?: string | null
+          recipient_phone_number?: string | null
+          twilio_account_sid?: string | null
+          twilio_auth_token?: string | null
+          twilio_phone_number?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          discord_webhook_url?: string | null
+          id?: string
+          notification_email?: string | null
+          recipient_phone_number?: string | null
+          twilio_account_sid?: string | null
+          twilio_auth_token?: string | null
+          twilio_phone_number?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       notifications: {
         Row: {
@@ -489,6 +555,27 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           company_name: string | null
@@ -544,6 +631,13 @@ export type Database = {
         Returns: boolean
       }
       cleanup_expired_oauth_states: { Args: never; Returns: undefined }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       log_security_event: {
         Args: {
           _event_details?: Json
@@ -560,6 +654,7 @@ export type Database = {
       }
     }
     Enums: {
+      app_role: "admin" | "user"
       social_provider: "meta_ig" | "meta_fb" | "tiktok"
       user_plan: "free_trial" | "pro" | "pro_xl" | "pro_unlimited"
     }
@@ -689,6 +784,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "user"],
       social_provider: ["meta_ig", "meta_fb", "tiktok"],
       user_plan: ["free_trial", "pro", "pro_xl", "pro_unlimited"],
     },

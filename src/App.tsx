@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { AdminRoute } from "@/components/AdminRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
@@ -13,6 +14,8 @@ import Analytics from "./pages/Analytics";
 import Calendar from "./pages/Calendar";
 import AIChat from "./pages/AIChat";
 import Settings from "./pages/Settings";
+import AdminChat from "./pages/AdminChat";
+import AdminNotificationSettings from "./pages/AdminNotificationSettings";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
@@ -75,6 +78,22 @@ const App = () => (
                 <ProtectedRoute>
                   <Settings />
                 </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/chat" 
+              element={
+                <AdminRoute>
+                  <AdminChat />
+                </AdminRoute>
+              } 
+            />
+            <Route 
+              path="/admin/settings/notifications" 
+              element={
+                <AdminRoute>
+                  <AdminNotificationSettings />
+                </AdminRoute>
               } 
             />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />

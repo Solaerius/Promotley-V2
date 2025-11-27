@@ -44,3 +44,6 @@ verify_jwt = true
 
 [functions.init-tiktok-oauth]
 verify_jwt = true
+
+[functions.send-chat-notification]
+verify_jwt = false

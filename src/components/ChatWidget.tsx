@@ -10,7 +10,7 @@ import TypingIndicator from "./TypingIndicator";
 interface Message {
   id: string;
   message: string;
-  sender_type: "user" | "support" | "system";
+  sender_type: "user" | "admin";
   created_at: string;
 }
 
@@ -19,7 +19,7 @@ const ChatWidget = () => {
   const [isClosing, setIsClosing] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
-  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -40,41 +40,44 @@ const ChatWidget = () => {
   const MIN_HEIGHT = 350;
   const MAX_HEIGHT = window.innerHeight - 100;
 
-  // Load conversation from localStorage on mount
+  // Load or create session on mount
   useEffect(() => {
-    const savedConversationId = localStorage.getItem("chat_conversation_id");
-    if (savedConversationId) {
-      setConversationId(savedConversationId);
-      loadMessages(savedConversationId);
+    const savedSessionId = localStorage.getItem("live_chat_session_id");
+    if (savedSessionId) {
+      setSessionId(savedSessionId);
+      loadMessages(savedSessionId);
+    } else {
+      // Create new session
+      const newSessionId = crypto.randomUUID();
+      localStorage.setItem("live_chat_session_id", newSessionId);
+      setSessionId(newSessionId);
     }
   }, []);
 
   // Subscribe to new messages
   useEffect(() => {
-    if (!conversationId) return;
+    if (!sessionId) return;
 
     const channel = supabase
-      .channel(`chat:${conversationId}`)
+      .channel(`live_chat:${sessionId}`)
       .on(
         "postgres_changes",
         {
           event: "INSERT",
           schema: "public",
-          table: "chat_messages",
-          filter: `conversation_id=eq.${conversationId}`,
+          table: "live_chat_messages",
+          filter: `session_id=eq.${sessionId}`,
         },
         (payload) => {
           const newMessage = payload.new as Message;
           setMessages((prev) => [...prev, newMessage]);
           
-          // Show typing indicator and increment unread count for support messages
-          if (newMessage.sender_type === "support") {
-            setIsTyping(false);
-            // Only increment unread if chat is closed
-            if (!isOpen) {
-              setUnreadCount((prev) => prev + 1);
-            }
+          // Increment unread count for admin messages when chat is closed
+          if (newMessage.sender_type === "admin" && !isOpen) {
+            setUnreadCount((prev) => prev + 1);
           }
+          
+          setIsTyping(false);
         }
       )
       .subscribe();
@@ -82,7 +85,7 @@ const ChatWidget = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [conversationId, isOpen]);
+  }, [sessionId, isOpen]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -160,11 +163,11 @@ const ChatWidget = () => {
     setResizeDirection(direction);
   };
 
-  const loadMessages = async (convId: string) => {
+  const loadMessages = async (sessId: string) => {
     const { data, error } = await supabase
-      .from("chat_messages")
+      .from("live_chat_messages")
       .select("*")
-      .eq("conversation_id", convId)
+      .eq("session_id", sessId)
       .order("created_at", { ascending: true });
 
     if (error) {
@@ -174,59 +177,16 @@ const ChatWidget = () => {
     }
   };
 
-  const createConversation = async () => {
-    const { data, error } = await supabase
-      .from("conversations")
-      .insert({
-        user_name: "Gäst",
-        status: "active",
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error("Error creating conversation:", error);
-      toast({
-        title: "Fel",
-        description: "Kunde inte starta konversation",
-        variant: "destructive",
-      });
-      return null;
-    }
-
-    localStorage.setItem("chat_conversation_id", data.id);
-    setConversationId(data.id);
-    
-    // Send welcome message
-    await supabase.from("chat_messages").insert({
-      conversation_id: data.id,
-      sender_type: "system",
-      message: "Hej! 👋 Hur kan vi hjälpa dig idag?",
-    });
-
-    return data.id;
-  };
-
   const handleSend = async () => {
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || !sessionId) return;
 
     setIsLoading(true);
-    let currentConvId = conversationId;
 
-    // Create conversation if it doesn't exist
-    if (!currentConvId) {
-      currentConvId = await createConversation();
-      if (!currentConvId) {
-        setIsLoading(false);
-        return;
-      }
-    }
-
-    const { error } = await supabase.from("chat_messages").insert({
-      conversation_id: currentConvId,
+    const { data, error } = await supabase.from("live_chat_messages").insert({
+      session_id: sessionId,
       sender_type: "user",
       message: inputValue,
-    });
+    }).select().single();
 
     if (error) {
       console.error("Error sending message:", error);
@@ -237,8 +197,21 @@ const ChatWidget = () => {
       });
     } else {
       setInputValue("");
-      // Simulate support typing
-      setTimeout(() => setIsTyping(true), 500);
+      setIsTyping(true);
+      
+      // Send notification to admin
+      try {
+        await supabase.functions.invoke("send-chat-notification", {
+          body: {
+            message: data.message,
+            sessionId: data.session_id,
+            timestamp: data.created_at,
+          },
+        });
+      } catch (notifError) {
+        console.error("Error sending notification:", notifError);
+        // Don't show error to user, just log it
+      }
     }
 
     setIsLoading(false);
@@ -247,10 +220,7 @@ const ChatWidget = () => {
   const handleOpen = () => {
     setIsOpen(true);
     setIsClosing(false);
-    setUnreadCount(0); // Reset unread count when opening chat
-    if (!conversationId && messages.length === 0) {
-      createConversation();
-    }
+    setUnreadCount(0);
   };
 
   const handleClose = () => {
@@ -350,8 +320,6 @@ const ChatWidget = () => {
                     className={`max-w-[75%] rounded-2xl px-4 py-2 ${
                       message.sender_type === "user"
                         ? "bg-gradient-primary text-primary-foreground rounded-br-sm"
-                        : message.sender_type === "system"
-                        ? "bg-muted/50 text-muted-foreground text-center w-full"
                         : "bg-muted text-foreground rounded-bl-sm"
                     }`}
                   >
