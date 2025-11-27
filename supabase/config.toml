@@ -47,3 +47,9 @@ verify_jwt = true
 
 [functions.send-chat-notification]
 verify_jwt = false
+
+[functions.generate-ai-analysis]
+verify_jwt = true
+
+[functions.init-meta-oauth]
+verify_jwt = true

@@ -70,6 +70,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     { name: "Statistik", href: "/analytics", icon: BarChart3 },
     { name: "Kalender", href: "/calendar", icon: Calendar },
     { name: "AI-Chat", href: "/ai-chat", icon: MessageSquare },
+    { name: "AI-Analys", href: "/ai-dashboard", icon: BarChart3 },
     { name: "Inställningar", href: "/settings", icon: Settings },
   ];
 

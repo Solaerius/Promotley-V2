@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_analysis_history: {
+        Row: {
+          ai_output: Json | null
+          created_at: string | null
+          id: string
+          input_data: Json | null
+          user_id: string
+        }
+        Insert: {
+          ai_output?: Json | null
+          created_at?: string | null
+          id?: string
+          input_data?: Json | null
+          user_id: string
+        }
+        Update: {
+          ai_output?: Json | null
+          created_at?: string | null
+          id?: string
+          input_data?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_profiles: {
+        Row: {
+          branch: string | null
+          created_at: string | null
+          id: string
+          malgrupp: string | null
+          malsattning: string | null
+          marknadsplan: string | null
+          prisniva: string | null
+          produkt_beskrivning: string | null
+          sprakpreferens: string | null
+          tonalitet: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          branch?: string | null
+          created_at?: string | null
+          id?: string
+          malgrupp?: string | null
+          malsattning?: string | null
+          marknadsplan?: string | null
+          prisniva?: string | null
+          produkt_beskrivning?: string | null
+          sprakpreferens?: string | null
+          tonalitet?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          branch?: string | null
+          created_at?: string | null
+          id?: string
+          malgrupp?: string | null
+          malsattning?: string | null
+          marknadsplan?: string | null
+          prisniva?: string | null
+          produkt_beskrivning?: string | null
+          sprakpreferens?: string | null
+          tonalitet?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       analytics: {
         Row: {
           engagement: number | null
@@ -494,6 +563,51 @@ export type Database = {
           ip_address?: string | null
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      social_stats: {
+        Row: {
+          comments: number | null
+          followers: number | null
+          id: string
+          impressions: number | null
+          likes: number | null
+          platform: string
+          profile_views: number | null
+          reach: number | null
+          shares: number | null
+          top_posts: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          comments?: number | null
+          followers?: number | null
+          id?: string
+          impressions?: number | null
+          likes?: number | null
+          platform: string
+          profile_views?: number | null
+          reach?: number | null
+          shares?: number | null
+          top_posts?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          comments?: number | null
+          followers?: number | null
+          id?: string
+          impressions?: number | null
+          likes?: number | null
+          platform?: string
+          profile_views?: number | null
+          reach?: number | null
+          shares?: number | null
+          top_posts?: Json | null
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
