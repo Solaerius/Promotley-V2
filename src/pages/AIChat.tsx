@@ -107,9 +107,9 @@ const AIChat = () => {
         {/* Chat Container */}
         <Card className="flex-1 flex flex-col overflow-hidden">
           <CardContent className="flex-1 flex flex-col p-0">
-            {/* Messages */}
-            <div className="flex-1 p-6 overflow-hidden" ref={scrollRef}>
-              <div className="space-y-6 h-full"  style={{ overflow: 'hidden' }}>
+            {/* Meddelanden utan scroll – alltid ankrade längst ner */}
+            <div className="flex-1 p-6 overflow-hidden flex flex-col justify-end" ref={scrollRef}>
+              <div className="space-y-6">
                 {messages.map((msg) => (
                   <div
                     key={msg.id}
