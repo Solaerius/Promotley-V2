@@ -131,12 +131,14 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Verify scopes before proceeding
-    const grantedScopes = (tokenData.scopes || '').split(',').map((s: string) => s.trim()).filter(Boolean);
+    // Verify scopes before proceeding - normalize with both comma and space splitting
+    const rawScopes = tokenData.scopes || '';
+    const grantedScopes = rawScopes.split(/[,\s]+/).map((s: string) => s.trim()).filter(Boolean);
     const hasUserInfoStats = grantedScopes.includes('user.info.stats');
     const hasVideoList = grantedScopes.includes('video.list');
     
-    console.log('🔍 Granted scopes from token:', grantedScopes.join(', '));
+    console.log('🔍 Raw scopes string:', rawScopes);
+    console.log('🔍 Parsed scopes:', grantedScopes.join(', '));
     console.log('🔍 Has user.info.stats:', hasUserInfoStats);
     console.log('🔍 Has video.list:', hasVideoList);
 
@@ -262,32 +264,11 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log('🎥 Fetching TikTok video list with video.list scope...');
-    // Fetch video list (last 20 videos) using video.list scope
-    const videoListResponse = await fetch(
-      'https://open.tiktokapis.com/v2/video/list/?fields=id,create_time,cover_image_url,share_url,video_description,duration,title,like_count,comment_count,share_count,view_count',
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          max_count: 20,
-        }),
-      }
-    );
-
-    const videoListText = await videoListResponse.text();
-    console.log('📹 Video list response:', { 
-      status: videoListResponse.status,
-      statusText: videoListResponse.statusText
-    });
-
     let videos: any[] = [];
     let limitedAccess = false;
     let scopeErrorMessage = '';
-    let videoErrorCode = null;
+    let videoErrorCode: string | null = null;
+    let videoFetchAttempted = false;
     
     // Check if video.list scope is granted before attempting API call
     if (!hasVideoList) {
@@ -295,44 +276,81 @@ Deno.serve(async (req) => {
       videoErrorCode = 'SCOPE_MISSING';
       scopeErrorMessage = 'Video-statistik kräver video.list behörighet. Koppla bort och återkoppla TikTok i Inställningar → Integrationer för att aktivera scopet.';
       console.warn('ℹ️ Missing scope: video.list (skipping video fetch)');
-    } else if (videoListResponse.ok) {
-      try {
-        const videoListData = JSON.parse(videoListText);
-        if (videoListData.data && videoListData.data.videos) {
-          videos = videoListData.data.videos.map((video: any) => ({
-            id: video.id,
-            title: video.title || video.video_description || 'Untitled',
-            views: video.view_count || 0,
-            likes: video.like_count || 0,
-            shares: video.share_count || 0,
-            comments: video.comment_count || 0,
-            created_at: video.create_time ? new Date(video.create_time * 1000).toISOString() : null,
-            cover_image_url: video.cover_image_url,
-            share_url: video.share_url,
-            duration: video.duration,
-          }));
-          console.log(`✅ Successfully fetched ${videos.length} videos using video.list scope`);
-        }
-      } catch (e) {
-        console.warn('⚠️ Could not parse video list:', e);
-      }
     } else {
-      // Try to parse error response
-      try {
-        const errorData = JSON.parse(videoListText);
-        console.warn('⚠️ Video list API error:', errorData.error);
-        
-        if (errorData.error?.code === 'access_token_invalid') {
-          videoErrorCode = 'TOKEN_INVALID';
-          scopeErrorMessage = 'Token har gått ut under video-hämtning. Koppla bort och återkoppla TikTok.';
-        } else {
-          videoErrorCode = 'API_ERROR';
-          scopeErrorMessage = `TikTok API-fel (${errorData.error?.code || 'okänt'}): ${errorData.error?.message || 'kunde inte hämta video-data'}`;
+      videoFetchAttempted = true;
+      console.log('🎥 Fetching TikTok video list with video.list scope...');
+      // Fetch video list (last 20 videos) using video.list scope
+      const videoListResponse = await fetch(
+        'https://open.tiktokapis.com/v2/video/list/?fields=id,create_time,cover_image_url,share_url,video_description,duration,title,like_count,comment_count,share_count,view_count',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            max_count: 20,
+          }),
         }
-      } catch {
-        console.warn('⚠️ Could not parse video error (raw):', videoListText);
-        videoErrorCode = 'PARSE_ERROR';
-        scopeErrorMessage = 'Video-data kunde inte tolkas från TikTok API.';
+      );
+
+      const videoListText = await videoListResponse.text();
+      console.log('📹 Video list response:', { 
+        status: videoListResponse.status,
+        statusText: videoListResponse.statusText
+      });
+
+      if (videoListResponse.ok) {
+        try {
+          const videoListData = JSON.parse(videoListText);
+          if (videoListData.data && videoListData.data.videos) {
+            videos = videoListData.data.videos.map((video: any) => ({
+              id: video.id,
+              title: video.title || video.video_description || 'Untitled',
+              views: video.view_count || 0,
+              likes: video.like_count || 0,
+              shares: video.share_count || 0,
+              comments: video.comment_count || 0,
+              created_at: video.create_time ? new Date(video.create_time * 1000).toISOString() : null,
+              cover_image_url: video.cover_image_url,
+              share_url: video.share_url,
+              duration: video.duration,
+            }));
+            console.log(`✅ Successfully fetched ${videos.length} videos using video.list scope`);
+            
+            // If we got 0 videos with valid scope, it means user has no public videos (not a scope error)
+            if (videos.length === 0) {
+              limitedAccess = false;
+              videoErrorCode = null;
+              scopeErrorMessage = '';
+              console.log('ℹ️ User has no public videos (not a scope error)');
+            }
+          }
+        } catch (e) {
+          console.warn('⚠️ Could not parse video list:', e);
+          limitedAccess = true;
+          videoErrorCode = 'PARSE_ERROR';
+          scopeErrorMessage = 'Video-data kunde inte tolkas från TikTok API.';
+        }
+      } else {
+        // API error when video.list scope is granted
+        limitedAccess = true;
+        try {
+          const errorData = JSON.parse(videoListText);
+          console.warn('⚠️ Video list API error:', errorData.error);
+          
+          if (errorData.error?.code === 'access_token_invalid') {
+            videoErrorCode = 'TOKEN_INVALID';
+            scopeErrorMessage = 'Token har gått ut under video-hämtning. Koppla bort och återkoppla TikTok.';
+          } else {
+            videoErrorCode = 'API_ERROR';
+            scopeErrorMessage = `TikTok API-fel (${errorData.error?.code || 'okänt'}): ${errorData.error?.message || 'kunde inte hämta video-data'}`;
+          }
+        } catch {
+          console.warn('⚠️ Could not parse video error (raw):', videoListText);
+          videoErrorCode = 'PARSE_ERROR';
+          scopeErrorMessage = 'Video-data kunde inte tolkas från TikTok API.';
+        }
       }
     }
 
@@ -389,11 +407,16 @@ Deno.serve(async (req) => {
       follower_count: response.user.follower_count,
       likes_count: response.user.likes_count,
       video_count: response.user.video_count,
+      raw_scopes: rawScopes,
+      parsed_scopes: grantedScopes,
+      hasUserInfoStats,
+      hasVideoList,
+      video_fetch_attempted: videoFetchAttempted,
       videos_fetched: videos.length,
       totalViews,
       limited_access: limitedAccess,
       videoErrorCode: videoErrorCode || 'none',
-      scopes_ok: !limitedAccess,
+      scopes_ok: hasUserInfoStats && hasVideoList,
       timestamp: response.timestamp,
     });
 
