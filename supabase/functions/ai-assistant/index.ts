@@ -14,17 +14,24 @@ serve(async (req) => {
   console.log('🚀 AI Assistant request received:', req.method, req.url);
 
   try {
+    const authHeader = req.headers.get('Authorization');
+
+    if (!authHeader) {
+      console.error('❌ Missing Authorization header');
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized: missing token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
-        },
-      }
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
 
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
     
     if (userError || !user) {
       console.error('❌ Auth error:', userError);
