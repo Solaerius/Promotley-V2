@@ -11,6 +11,8 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  console.log('🚀 AI Assistant request received:', req.method, req.url);
+
   try {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -25,25 +27,32 @@ serve(async (req) => {
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
     
     if (userError || !user) {
+      console.error('❌ Auth error:', userError);
       return new Response(
         JSON.stringify({ error: 'Unauthorized' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    console.log('✅ User authenticated:', user.id);
+
     const url = new URL(req.url);
     const pathParts = url.pathname.split('/').filter(Boolean);
     const action = pathParts[pathParts.length - 1];
 
+    console.log('📍 Action:', action, 'Path:', url.pathname);
+
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
     
     if (!openaiApiKey) {
-      console.error('OPENAI_API_KEY not found');
+      console.error('❌ OPENAI_API_KEY not found');
       return new Response(
         JSON.stringify({ error: 'AI not connected', placeholder: true }),
         { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    console.log('✅ OpenAI API key found');
 
     // POST /ai-assistant/chat - Chat with AI
     if (action === 'chat' && req.method === 'POST') {
@@ -103,12 +112,12 @@ serve(async (req) => {
 
       if (!aiResponse.ok) {
         const errorText = await aiResponse.text();
-        console.error('OpenAI API error:', aiResponse.status, errorText);
-        throw new Error(`AI API error: ${aiResponse.status}`);
+        console.error('❌ OpenAI API error:', aiResponse.status, errorText);
+        throw new Error(`AI API error: ${aiResponse.status} - ${errorText}`);
       }
 
       const aiData = await aiResponse.json();
-      console.log('AI response received');
+      console.log('✅ AI response received');
       
       const assistantMessage = aiData.choices[0].message.content;
 
@@ -173,12 +182,13 @@ serve(async (req) => {
       );
     }
 
+    console.log('❌ Invalid action or method:', action, req.method);
     return new Response(
       JSON.stringify({ error: 'Invalid action or method' }),
       { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('Error in AI assistant function:', error);
+    console.error('❌ Error in AI assistant function:', error);
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
