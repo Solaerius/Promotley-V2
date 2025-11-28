@@ -18,6 +18,7 @@ import Settings from "./pages/Settings";
 import AdminChat from "./pages/AdminChat";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminNotificationSettings from "./pages/AdminNotificationSettings";
+import AdminUserManagement from "./pages/AdminUserManagement";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
@@ -111,6 +112,14 @@ const App = () => (
               element={
                 <AdminRoute>
                   <AdminNotificationSettings />
+                </AdminRoute>
+              } 
+            />
+            <Route 
+              path="/admin/users" 
+              element={
+                <AdminRoute>
+                  <AdminUserManagement />
                 </AdminRoute>
               } 
             />

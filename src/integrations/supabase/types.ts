@@ -759,6 +759,7 @@ export type Database = {
           max_credits: number | null
           plan: Database["public"]["Enums"]["user_plan"]
           renewal_date: string | null
+          sponsored_until: string | null
           trial_used: boolean
           updated_at: string
         }
@@ -776,6 +777,7 @@ export type Database = {
           max_credits?: number | null
           plan?: Database["public"]["Enums"]["user_plan"]
           renewal_date?: string | null
+          sponsored_until?: string | null
           trial_used?: boolean
           updated_at?: string
         }
@@ -793,6 +795,7 @@ export type Database = {
           max_credits?: number | null
           plan?: Database["public"]["Enums"]["user_plan"]
           renewal_date?: string | null
+          sponsored_until?: string | null
           trial_used?: boolean
           updated_at?: string
         }

@@ -2,6 +2,7 @@ import { ReactNode, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdminStatus } from "@/hooks/useAdminStatus";
 import { supabase } from "@/integrations/supabase/client";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { useNotifications } from "@/hooks/useNotifications";
@@ -26,6 +27,8 @@ import {
   Menu,
   X,
   LogOut,
+  Users,
+  Shield,
 } from "lucide-react";
 import logo from "@/assets/logo.png";
 
@@ -35,6 +38,7 @@ interface DashboardLayoutProps {
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { signOut, user } = useAuth();
+  const { isAdmin } = useAdminStatus();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -106,6 +110,48 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 </Link>
               );
             })}
+
+            {/* Admin Section */}
+            {isAdmin && (
+              <>
+                <div className="pt-4 pb-2 px-4">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Admin</p>
+                </div>
+                <Link
+                  to="/admin/chat"
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                    isActive("/admin/chat")
+                      ? "bg-gradient-primary text-white shadow-soft"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  <MessageSquare className="w-5 h-5" />
+                  <span className="font-medium">Chatt</span>
+                </Link>
+                <Link
+                  to="/admin/users"
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                    isActive("/admin/users")
+                      ? "bg-gradient-primary text-white shadow-soft"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  <Users className="w-5 h-5" />
+                  <span className="font-medium">Användare</span>
+                </Link>
+                <Link
+                  to="/admin/settings/notifications"
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                    isActive("/admin/settings/notifications")
+                      ? "bg-gradient-primary text-white shadow-soft"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  <Shield className="w-5 h-5" />
+                  <span className="font-medium">Notifikationer</span>
+                </Link>
+              </>
+            )}
           </nav>
 
           {/* User section */}
@@ -171,6 +217,51 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 </Link>
               );
             })}
+
+            {/* Admin Section */}
+            {isAdmin && (
+              <>
+                <div className="pt-4 pb-2 px-4">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Admin</p>
+                </div>
+                <Link
+                  to="/admin/chat"
+                  onClick={() => setSidebarOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                    isActive("/admin/chat")
+                      ? "bg-gradient-primary text-white shadow-soft"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  <MessageSquare className="w-5 h-5" />
+                  <span className="font-medium">Chatt</span>
+                </Link>
+                <Link
+                  to="/admin/users"
+                  onClick={() => setSidebarOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                    isActive("/admin/users")
+                      ? "bg-gradient-primary text-white shadow-soft"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  <Users className="w-5 h-5" />
+                  <span className="font-medium">Användare</span>
+                </Link>
+                <Link
+                  to="/admin/settings/notifications"
+                  onClick={() => setSidebarOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                    isActive("/admin/settings/notifications")
+                      ? "bg-gradient-primary text-white shadow-soft"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  <Shield className="w-5 h-5" />
+                  <span className="font-medium">Notifikationer</span>
+                </Link>
+              </>
+            )}
           </nav>
 
           {/* User section */}
