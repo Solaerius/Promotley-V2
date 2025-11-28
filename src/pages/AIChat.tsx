@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Send,
   Sparkles,
@@ -109,8 +108,8 @@ const AIChat = () => {
         <Card className="flex-1 flex flex-col overflow-hidden">
           <CardContent className="flex-1 flex flex-col p-0">
             {/* Messages */}
-            <ScrollArea className="flex-1 p-6" ref={scrollRef}>
-              <div className="space-y-6">
+            <div className="flex-1 p-6 overflow-hidden" ref={scrollRef}>
+              <div className="space-y-6 h-full"  style={{ overflow: 'hidden' }}>
                 {messages.map((msg) => (
                   <div
                     key={msg.id}
@@ -162,7 +161,7 @@ const AIChat = () => {
                   </div>
                 )}
               </div>
-            </ScrollArea>
+            </div>
 
             {/* Input Area */}
             <div className="border-t border-border p-4">

@@ -24,6 +24,7 @@ const ChatWidget = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [autoReplyHasBeenSent, setAutoReplyHasBeenSent] = useState(false);
+  const [isChatClosed, setIsChatClosed] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -59,7 +60,7 @@ const ChatWidget = () => {
     }
   }, []);
 
-  // Subscribe to new messages
+  // Subscribe to new messages and session status changes
   useEffect(() => {
     if (!sessionId) return;
 
@@ -85,12 +86,46 @@ const ChatWidget = () => {
           setIsTyping(false);
         }
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "live_chat_sessions",
+          filter: `session_id=eq.${sessionId}`,
+        },
+        (payload) => {
+          // Check if chat was closed
+          if (payload.new && (payload.new as any).status === "closed") {
+            handleChatClosedByAdmin();
+          }
+        }
+      )
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
   }, [sessionId, isOpen]);
+
+  // Check session status on mount
+  useEffect(() => {
+    if (!sessionId) return;
+
+    const checkSessionStatus = async () => {
+      const { data } = await supabase
+        .from("live_chat_sessions")
+        .select("status")
+        .eq("session_id", sessionId)
+        .maybeSingle();
+
+      if (data?.status === "closed") {
+        setIsChatClosed(true);
+      }
+    };
+
+    checkSessionStatus();
+  }, [sessionId]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -263,6 +298,42 @@ const ChatWidget = () => {
     }, 250);
   };
 
+  const handleChatClosedByAdmin = () => {
+    // Clear all messages and state
+    setMessages([]);
+    setIsChatClosed(true);
+    setInputValue("");
+    setIsTyping(false);
+    
+    toast({
+      title: "Chatten avslutades",
+      description: "Support har avslutat chatten",
+    });
+  };
+
+  const handleStartNewChat = () => {
+    // Clear localStorage
+    localStorage.removeItem("live_chat_session_id");
+    localStorage.removeItem("live_chat_auto_reply_sent");
+    
+    // Create new session
+    const newSessionId = crypto.randomUUID();
+    localStorage.setItem("live_chat_session_id", newSessionId);
+    
+    // Reset all state
+    setSessionId(newSessionId);
+    setMessages([]);
+    setIsChatClosed(false);
+    setAutoReplyHasBeenSent(false);
+    setInputValue("");
+    setUnreadCount(0);
+    
+    toast({
+      title: "Ny chatt skapad",
+      description: "Du kan nu börja en ny konversation",
+    });
+  };
+
   return (
     <>
       {/* Chat Button */}
@@ -339,62 +410,82 @@ const ChatWidget = () => {
 
           {/* Messages */}
           <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-            <div className="space-y-4">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${
-                    message.sender_type === "user" ? "justify-end" : "justify-start"
-                  }`}
+            {isChatClosed ? (
+              <div className="h-full flex flex-col items-center justify-center text-center p-6">
+                <div className="mb-4 p-4 rounded-full bg-muted">
+                  <X className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Chatten är avslutad</h3>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Chatten avslutades av support.
+                </p>
+                <Button
+                  onClick={handleStartNewChat}
+                  className="bg-gradient-primary hover:shadow-glow"
                 >
+                  Starta ny chatt
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {messages.map((message) => (
                   <div
-                    className={`max-w-[75%] rounded-2xl px-4 py-2 ${
-                      message.sender_type === "user"
-                        ? "bg-gradient-primary text-primary-foreground rounded-br-sm"
-                        : "bg-muted text-foreground rounded-bl-sm"
+                    key={message.id}
+                    className={`flex ${
+                      message.sender_type === "user" ? "justify-end" : "justify-start"
                     }`}
                   >
-                    <p className="text-sm">{message.message}</p>
-                    <p
-                      className={`text-xs mt-1 ${
+                    <div
+                      className={`max-w-[75%] rounded-2xl px-4 py-2 ${
                         message.sender_type === "user"
-                          ? "text-hero-foreground/70"
-                          : "text-muted-foreground"
+                          ? "bg-gradient-primary text-primary-foreground rounded-br-sm"
+                          : "bg-muted text-foreground rounded-bl-sm"
                       }`}
                     >
-                      {new Date(message.created_at).toLocaleTimeString("sv-SE", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
+                      <p className="text-sm">{message.message}</p>
+                      <p
+                        className={`text-xs mt-1 ${
+                          message.sender_type === "user"
+                            ? "text-hero-foreground/70"
+                            : "text-muted-foreground"
+                        }`}
+                      >
+                        {new Date(message.created_at).toLocaleTimeString("sv-SE", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
-              {isTyping && <TypingIndicator />}
-            </div>
+                ))}
+                {isTyping && <TypingIndicator />}
+              </div>
+            )}
           </ScrollArea>
 
           {/* Input */}
-          <div className="p-4 border-t border-border/50">
-            <div className="flex gap-2">
-              <Input
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && !isLoading && handleSend()}
-                placeholder="Skriv ditt meddelande..."
-                className="flex-1 bg-background"
-                disabled={isLoading}
-              />
-              <Button
-                onClick={handleSend}
-                size="icon"
-                disabled={isLoading || !inputValue.trim()}
-                className="bg-gradient-primary hover:shadow-glow"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
+          {!isChatClosed && (
+            <div className="p-4 border-t border-border/50">
+              <div className="flex gap-2">
+                <Input
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && !isLoading && handleSend()}
+                  placeholder="Skriv ditt meddelande..."
+                  className="flex-1 bg-background"
+                  disabled={isLoading}
+                />
+                <Button
+                  onClick={handleSend}
+                  size="icon"
+                  disabled={isLoading || !inputValue.trim()}
+                  className="bg-gradient-primary hover:shadow-glow"
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
     </>
