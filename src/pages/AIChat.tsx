@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Send,
   Sparkles,
@@ -107,8 +108,8 @@ const AIChat = () => {
         {/* Chat Container */}
         <Card className="flex-1 flex flex-col overflow-hidden">
           <CardContent className="flex-1 flex flex-col p-0">
-            {/* Meddelanden utan scroll – alltid ankrade längst ner */}
-            <div className="flex-1 p-6 overflow-hidden flex flex-col justify-end" ref={scrollRef}>
+            {/* Meddelanden med scroll */}
+            <ScrollArea className="flex-1 p-6" ref={scrollRef}>
               <div className="space-y-6">
                 {messages.map((msg) => (
                   <div
@@ -161,7 +162,7 @@ const AIChat = () => {
                   </div>
                 )}
               </div>
-            </div>
+            </ScrollArea>
 
             {/* Input Area */}
             <div className="border-t border-border p-4">
