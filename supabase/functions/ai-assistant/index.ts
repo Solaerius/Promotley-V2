@@ -35,9 +35,10 @@ serve(async (req) => {
     const pathParts = url.pathname.split('/').filter(Boolean);
     const action = pathParts[pathParts.length - 1];
 
-    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
+    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
     
-    if (!openaiApiKey) {
+    if (!lovableApiKey) {
+      console.error('LOVABLE_API_KEY not found');
       return new Response(
         JSON.stringify({ error: 'AI not connected', placeholder: true }),
         { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -56,6 +57,8 @@ serve(async (req) => {
         );
       }
 
+      console.log('Processing chat message:', message);
+
       // Save user message to chat history
       await supabaseClient
         .from('chat_history')
@@ -65,8 +68,49 @@ serve(async (req) => {
           message,
         });
 
-      // Placeholder response until OpenAI is connected
-      const aiResponse = "Tack för din fråga! AI-funktionaliteten kommer snart att integreras med OpenAI. Just nu kan jag ta emot dina meddelanden och vi arbetar på att göra mig ännu smartare. 🚀";
+      // Prepare messages for AI
+      const messages = [
+        {
+          role: 'system',
+          content: 'Du är Promotely AI-assistent. Du hjälper UF-företag och unga entreprenörer med marknadsföring, sociala medier och strategier. Svara alltid på svenska och var hjälpsam och engagerande.'
+        },
+        ...(history || []).map((msg: any) => ({
+          role: msg.role,
+          content: msg.message
+        })),
+        {
+          role: 'user',
+          content: message
+        }
+      ];
+
+      console.log('Calling Lovable AI...');
+
+      // Call Lovable AI Gateway
+      const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${lovableApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: messages,
+          temperature: 0.7,
+          max_tokens: 1000,
+        }),
+      });
+
+      if (!aiResponse.ok) {
+        const errorText = await aiResponse.text();
+        console.error('Lovable AI error:', aiResponse.status, errorText);
+        throw new Error(`AI API error: ${aiResponse.status}`);
+      }
+
+      const aiData = await aiResponse.json();
+      console.log('AI response received');
+      
+      const assistantMessage = aiData.choices[0].message.content;
 
       // Save AI response to chat history
       await supabaseClient
@@ -74,11 +118,11 @@ serve(async (req) => {
         .insert({
           user_id: user.id,
           role: 'assistant',
-          message: aiResponse,
+          message: assistantMessage,
         });
 
       return new Response(
-        JSON.stringify({ response: aiResponse, placeholder: true }),
+        JSON.stringify({ response: assistantMessage }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

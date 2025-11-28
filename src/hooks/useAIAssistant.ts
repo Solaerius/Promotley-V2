@@ -60,14 +60,6 @@ export const useAIAssistant = () => {
 
       if (error) throw error;
 
-      // Handle AI not connected
-      if (result.placeholder) {
-        toast({
-          title: "AI inte helt kopplad",
-          description: "AI-funktionalitet kommer snart!",
-        });
-      }
-
       // Add AI response to UI
       const aiMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
