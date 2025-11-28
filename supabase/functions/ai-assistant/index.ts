@@ -6,6 +6,10 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Simple in-memory cache with 60s TTL
+const statsCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL = 60000; // 60 seconds
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -61,6 +65,44 @@ serve(async (req) => {
 
     console.log('✅ OpenAI API key found');
 
+    // Helper function to get user stats with caching
+    const getUserStats = async (userId: string, platform?: string) => {
+      const cacheKey = `${userId}-${platform || 'all'}`;
+      const cached = statsCache.get(cacheKey);
+      
+      if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
+        console.log('📦 Cache hit for', cacheKey);
+        return cached.data;
+      }
+
+      console.log('🔍 Fetching fresh stats for', cacheKey);
+      
+      let query = supabaseClient
+        .from('social_stats')
+        .select('*')
+        .eq('user_id', userId);
+      
+      if (platform) {
+        query = query.eq('platform', platform);
+      }
+      
+      const { data, error } = await query;
+      
+      if (error) {
+        console.error('Error fetching stats:', error);
+        return null;
+      }
+      
+      const result = {
+        stats: data,
+        timestamp: new Date().toISOString(),
+        updated: data?.[0]?.updated_at || null
+      };
+      
+      statsCache.set(cacheKey, { data: result, timestamp: Date.now() });
+      return result;
+    };
+
     // POST /ai-assistant/chat - Chat with AI
     if (action === 'chat' && req.method === 'POST') {
       const body = await req.json();
@@ -84,11 +126,43 @@ serve(async (req) => {
           message,
         });
 
+      // Check if user is asking about their social media stats
+      const statsKeywords = ['följare', 'followers', 'views', 'likes', 'engagement', 'statistik', 'tiktok', 'instagram', 'facebook'];
+      const isStatsQuery = statsKeywords.some(keyword => message.toLowerCase().includes(keyword));
+      
+      let tools: any[] = [];
+      if (isStatsQuery) {
+        tools = [
+          {
+            type: 'function',
+            name: 'get_social_stats',
+            description: 'Hämtar användarens sociala medier-statistik från kopplade konton (TikTok, Instagram, Facebook)',
+            parameters: {
+              type: 'object',
+              properties: {
+                platform: {
+                  type: 'string',
+                  enum: ['tiktok', 'meta_ig', 'meta_fb', 'all'],
+                  description: 'Vilken plattform att hämta statistik för'
+                }
+              },
+              required: []
+            }
+          }
+        ];
+      }
+
       // Prepare messages for AI
       const messages = [
         {
           role: 'system',
-          content: 'Du är Promotely AI-assistent. Du hjälper UF-företag och unga entreprenörer med marknadsföring, sociala medier och strategier. Svara alltid på svenska och var hjälpsam och engagerande.'
+          content: `Du är Promotely AI-assistent. Du hjälper UF-företag och unga entreprenörer med marknadsföring, sociala medier och strategier. 
+
+VIKTIGT: När användaren frågar om sina sociala medier-statistik (följare, views, likes, etc), använd get_social_stats-funktionen för att hämta faktisk data från deras kopplade konton. Svara alltid med konkreta siffror när data finns tillgänglig.
+
+Om data inte finns eller kontot inte är kopplat, ge konkret vägledning: "Jag kan inte hämta din [plattform]-data just nu. Återkoppla [plattform] i Inställningar → Integrationer så visar jag siffran direkt."
+
+Svara alltid på svenska och var hjälpsam och engagerande. Inkludera alltid när datan senast uppdaterades när du presenterar statistik.`
         },
         ...(history || []).map((msg: any) => ({
           role: msg.role,
@@ -102,19 +176,26 @@ serve(async (req) => {
 
       console.log('Calling OpenAI...');
 
-      // Call OpenAI API
+      // Call OpenAI API with tool calling support
+      const requestBody: any = {
+        model: 'gpt-4o-mini',
+        messages: messages,
+        temperature: 0.7,
+        max_tokens: 1000,
+      };
+
+      if (tools.length > 0) {
+        requestBody.tools = tools;
+        requestBody.tool_choice = 'auto';
+      }
+
       const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${openaiApiKey}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: messages,
-          temperature: 0.7,
-          max_tokens: 1000,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!aiResponse.ok) {
@@ -126,7 +207,64 @@ serve(async (req) => {
       const aiData = await aiResponse.json();
       console.log('✅ AI response received');
       
-      const assistantMessage = aiData.choices[0].message.content;
+      const choice = aiData.choices[0];
+      let assistantMessage = choice.message.content;
+
+      // Handle tool calls
+      if (choice.message.tool_calls && choice.message.tool_calls.length > 0) {
+        const toolCall = choice.message.tool_calls[0];
+        
+        if (toolCall.function.name === 'get_social_stats') {
+          const args = JSON.parse(toolCall.function.arguments);
+          const platform = args.platform === 'all' ? undefined : args.platform;
+          
+          console.log('🔧 Tool call: get_social_stats for platform:', platform || 'all');
+          
+          // Log telemetry
+          const startTime = Date.now();
+          const stats = await getUserStats(user.id, platform);
+          const responseTime = Date.now() - startTime;
+          
+          console.log('📊 Stats fetched in', responseTime, 'ms');
+          
+          // Call AI again with the stats data
+          const followUpMessages = [
+            ...messages,
+            choice.message,
+            {
+              role: 'tool',
+              tool_call_id: toolCall.id,
+              content: JSON.stringify(stats)
+            }
+          ];
+
+          const followUpResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${openaiApiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'gpt-4o-mini',
+              messages: followUpMessages,
+              temperature: 0.7,
+              max_tokens: 1000,
+            }),
+          });
+
+          const followUpData = await followUpResponse.json();
+          assistantMessage = followUpData.choices[0].message.content;
+          
+          // Log telemetry for successful stats query
+          console.log('📈 Telemetry:', {
+            intent: 'social_stats_query',
+            platform: platform || 'all',
+            responseTime,
+            cacheHit: !!statsCache.get(`${user.id}-${platform || 'all'}`),
+            hasData: !!stats?.stats?.length
+          });
+        }
+      }
 
       // Save AI response to chat history
       await supabaseClient
