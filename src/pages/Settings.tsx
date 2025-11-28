@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/useAuth";
 import { useConnections } from "@/hooks/useConnections";
+import { useAIProfile } from "@/hooks/useAIProfile";
 import logo from "@/assets/logo.png";
 import {
   AlertDialog,
@@ -20,18 +21,30 @@ import {
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 const Settings = () => {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
   const { signOut, user } = useAuth();
   const { connections, loadConnections, isConnected, getConnection } = useConnections();
+  const { profile: aiProfile, updateProfile: updateAIProfile, loading: aiProfileLoading } = useAIProfile();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [companyName, setCompanyName] = useState("");
   const [originalCompanyName, setOriginalCompanyName] = useState("");
   const [isSavingCompanyName, setIsSavingCompanyName] = useState(false);
   const [connectingProvider, setConnectingProvider] = useState<string | null>(null);
+  const [aiFormData, setAiFormData] = useState({
+    branch: "",
+    malgrupp: "",
+    produkt_beskrivning: "",
+    prisniva: "",
+    marknadsplan: "",
+    malsattning: "",
+  });
+  const [isSavingAIProfile, setIsSavingAIProfile] = useState(false);
 
   // Fetch user's company name
   useEffect(() => {
@@ -52,6 +65,20 @@ const Settings = () => {
     
     fetchUserData();
   }, [user]);
+
+  // Populate AI profile form when data loads
+  useEffect(() => {
+    if (aiProfile) {
+      setAiFormData({
+        branch: aiProfile.branch || "",
+        malgrupp: aiProfile.malgrupp || "",
+        produkt_beskrivning: aiProfile.produkt_beskrivning || "",
+        prisniva: aiProfile.prisniva || "",
+        marknadsplan: aiProfile.marknadsplan || "",
+        malsattning: aiProfile.malsattning || "",
+      });
+    }
+  }, [aiProfile]);
 
   const handleDownloadData = () => {
     toast({
@@ -301,6 +328,17 @@ const Settings = () => {
     }
   };
 
+  const handleSaveAIProfile = async () => {
+    setIsSavingAIProfile(true);
+    try {
+      await updateAIProfile(aiFormData);
+    } catch (error) {
+      console.error("Error saving AI profile:", error);
+    } finally {
+      setIsSavingAIProfile(false);
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="max-w-4xl mx-auto animate-fade-in">
@@ -371,6 +409,92 @@ const Settings = () => {
                 <p className="text-sm text-muted-foreground mb-1">Plan</p>
                 <p className="font-medium">Gratis (1 kredit kvar)</p>
               </div>
+            </div>
+          </Card>
+
+          {/* AI Profile */}
+          <Card className="p-6">
+            <h2 className="text-2xl font-bold mb-4">AI-profil</h2>
+            <p className="text-muted-foreground mb-6">
+              Fyll i information om ditt företag för skräddarsydda AI-rekommendationer
+            </p>
+
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="branch">Bransch</Label>
+                <Input
+                  id="branch"
+                  value={aiFormData.branch}
+                  onChange={(e) => setAiFormData({ ...aiFormData, branch: e.target.value })}
+                  placeholder="T.ex. Mode, Mat, Teknik..."
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="malgrupp">Målgrupp</Label>
+                <Input
+                  id="malgrupp"
+                  value={aiFormData.malgrupp}
+                  onChange={(e) => setAiFormData({ ...aiFormData, malgrupp: e.target.value })}
+                  placeholder="T.ex. Unga vuxna 18-25 år"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="produkt_beskrivning">Produkt/Tjänst</Label>
+                <Textarea
+                  id="produkt_beskrivning"
+                  value={aiFormData.produkt_beskrivning}
+                  onChange={(e) => setAiFormData({ ...aiFormData, produkt_beskrivning: e.target.value })}
+                  placeholder="Beskriv din produkt eller tjänst..."
+                  rows={3}
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="prisniva">Prisnivå</Label>
+                <Input
+                  id="prisniva"
+                  value={aiFormData.prisniva}
+                  onChange={(e) => setAiFormData({ ...aiFormData, prisniva: e.target.value })}
+                  placeholder="T.ex. Budget, Mellan, Premium"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="marknadsplan">Nuvarande Marknadsplan</Label>
+                <Textarea
+                  id="marknadsplan"
+                  value={aiFormData.marknadsplan}
+                  onChange={(e) => setAiFormData({ ...aiFormData, marknadsplan: e.target.value })}
+                  placeholder="Beskriv din nuvarande marknadsstrategi..."
+                  rows={3}
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="malsattning">Målsättning</Label>
+                <Textarea
+                  id="malsattning"
+                  value={aiFormData.malsattning}
+                  onChange={(e) => setAiFormData({ ...aiFormData, malsattning: e.target.value })}
+                  placeholder="Vad vill du uppnå? T.ex. Öka försäljning, Bygga varumärke..."
+                  rows={3}
+                  className="mt-1"
+                />
+              </div>
+
+              <Button 
+                onClick={handleSaveAIProfile} 
+                disabled={isSavingAIProfile || aiProfileLoading}
+              >
+                {isSavingAIProfile ? "Sparar..." : "Spara AI-profil"}
+              </Button>
             </div>
           </Card>
 
