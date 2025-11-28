@@ -103,6 +103,65 @@ serve(async (req) => {
       return result;
     };
 
+    // Helper function to get user connections and profile
+    const getUserContext = async (userId: string) => {
+      const cacheKey = `context-${userId}`;
+      const cached = statsCache.get(cacheKey);
+      
+      if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
+        console.log('📦 Cache hit for user context');
+        return cached.data;
+      }
+
+      console.log('🔍 Fetching user context');
+
+      // Get connections
+      const { data: connections } = await supabaseClient
+        .from('connections')
+        .select('provider, username, connected_at')
+        .eq('user_id', userId);
+
+      // Get AI profile
+      const { data: profile } = await supabaseClient
+        .from('ai_profiles')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      // Get user info
+      const { data: user } = await supabaseClient
+        .from('users')
+        .select('company_name, industry, plan, credits_left')
+        .eq('id', userId)
+        .maybeSingle();
+
+      // Get knowledge base files list
+      const { data: knowledgeFiles } = await supabaseClient
+        .storage
+        .from('promotley_knowledgebase')
+        .list();
+
+      // Get UF rules from ai_knowledge table
+      const { data: ufRules } = await supabaseClient
+        .from('ai_knowledge')
+        .select('title, content, category')
+        .eq('category', 'uf_rules');
+
+      const result = {
+        connections: connections || [],
+        profile: profile || null,
+        user: user || null,
+        knowledgeBase: {
+          files: knowledgeFiles?.map(f => f.name) || [],
+          ufRules: ufRules || []
+        },
+        timestamp: new Date().toISOString()
+      };
+
+      statsCache.set(cacheKey, { data: result, timestamp: Date.now() });
+      return result;
+    };
+
     // POST /ai-assistant/chat - Chat with AI
     if (action === 'chat' && req.method === 'POST') {
       const body = await req.json();
@@ -116,6 +175,15 @@ serve(async (req) => {
       }
 
       console.log('Processing chat message:', message);
+
+      // Get user context (connections, profile, knowledge base)
+      const userContext = await getUserContext(user.id);
+      console.log('📋 User context:', {
+        connections: userContext.connections.length,
+        hasProfile: !!userContext.profile,
+        knowledgeFiles: userContext.knowledgeBase.files.length,
+        ufRules: userContext.knowledgeBase.ufRules.length
+      });
 
       // Save user message to chat history
       await supabaseClient
@@ -153,14 +221,56 @@ serve(async (req) => {
       }
 
       // Prepare messages for AI
+      const connectedPlatforms = userContext.connections.map((c: any) => {
+        if (c.provider === 'tiktok') return 'TikTok';
+        if (c.provider === 'meta_ig') return 'Instagram';
+        if (c.provider === 'meta_fb') return 'Facebook';
+        return c.provider;
+      }).join(', ');
+
+      const profileInfo = userContext.profile ? `
+Användarens företagsprofil:
+- Bransch: ${userContext.profile.branch || 'Ej angiven'}
+- Målgrupp: ${userContext.profile.malgrupp || 'Ej angiven'}
+- Produkt/Tjänst: ${userContext.profile.produkt_beskrivning || 'Ej angiven'}
+- Prisnivå: ${userContext.profile.prisniva || 'Ej angiven'}
+- Marknadsplan: ${userContext.profile.marknadsplan || 'Ej angiven'}
+- Målsättning: ${userContext.profile.malsattning || 'Ej angiven'}
+- Tonalitet: ${userContext.profile.tonalitet || 'Ej angiven'}
+- Språk: ${userContext.profile.sprakpreferens || 'svenska'}
+` : '';
+
+      const ufKnowledge = userContext.knowledgeBase.ufRules.length > 0 ? `
+UF-Regler och Riktlinjer:
+${userContext.knowledgeBase.ufRules.map((rule: any) => `- ${rule.title}: ${rule.content.substring(0, 200)}...`).join('\n')}
+` : '';
+
       const messages = [
         {
           role: 'system',
-          content: `Du är Promotely AI-assistent. Du hjälper UF-företag och unga entreprenörer med marknadsföring, sociala medier och strategier. 
+          content: `Du är Promotely AI-assistent. Du hjälper UF-företag och unga entreprenörer med marknadsföring, sociala medier och strategier.
 
-VIKTIGT: När användaren frågar om sina sociala medier-statistik (följare, views, likes, etc), använd get_social_stats-funktionen för att hämta faktisk data från deras kopplade konton. Svara alltid med konkreta siffror när data finns tillgänglig.
+ANVÄNDARENS KONTEXT:
+- Kopplade konton: ${connectedPlatforms || 'Inga konton kopplade än'}
+- Företag: ${userContext.user?.company_name || 'Ej angivet'}
+- Bransch: ${userContext.user?.industry || 'Ej angiven'}
+- Plan: ${userContext.user?.plan || 'free_trial'}
+- Credits kvar: ${userContext.user?.credits_left || 0}
 
-Om data inte finns eller kontot inte är kopplat, ge konkret vägledning: "Jag kan inte hämta din [plattform]-data just nu. Återkoppla [plattform] i Inställningar → Integrationer så visar jag siffran direkt."
+${profileInfo}
+
+${ufKnowledge}
+
+VIKTIGA INSTRUKTIONER:
+1. När användaren frågar om sina sociala medier-statistik (följare, views, likes, etc), använd get_social_stats-funktionen för att hämta faktisk data från deras kopplade konton. Svara alltid med konkreta siffror när data finns tillgänglig.
+
+2. Om användaren frågar om ett konto som inte är kopplat, ge konkret vägledning: "Jag kan inte hämta din [plattform]-data just nu. Koppla [plattform] i Inställningar → Integrationer så visar jag siffran direkt."
+
+3. Använd användarens företagsprofil och branschinformation för att ge personliga råd och rekommendationer.
+
+4. Om användaren inte har fyllt i sin företagsprofil men frågar om strategier eller innehåll, föreslå att de först fyller i sin profil under Inställningar för bättre personliga rekommendationer.
+
+5. Följ alltid UF-reglerna och riktlinjerna när du ger råd om marknadsföring och företagande.
 
 Svara alltid på svenska och var hjälpsam och engagerande. Inkludera alltid när datan senast uppdaterades när du presenterar statistik.`
         },
