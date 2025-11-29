@@ -23,6 +23,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
 
   useEffect(() => {
+    let hasShownToast = false;
+    
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -31,12 +33,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(session?.user ?? null);
         setLoading(false);
         
-        // Handle successful OAuth sign-in
-        if (event === 'SIGNED_IN' && session) {
-          toast({
-            title: "Inloggning lyckades!",
-            description: "Du omdirigeras till dashboard...",
-          });
+        // Only handle OAuth sign-in redirect
+        if (event === 'SIGNED_IN' && session && window.location.pathname === '/auth' && !hasShownToast) {
+          hasShownToast = true;
+          navigate("/dashboard");
         }
       }
     );
@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
