@@ -7,8 +7,11 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   id: string;
+  session_id: string;
   message: string;
   sender_type: string;
+  sender_id: string | null;
+  read: boolean;
   created_at: string;
 }
 
@@ -22,7 +25,10 @@ const ChatWidget = () => {
   const [sendError, setSendError] = useState<string | null>(null);
   const [autoReplyHasBeenSent, setAutoReplyHasBeenSent] = useState(false);
   const [isChatClosed, setIsChatClosed] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'connecting' | 'disconnected'>('connecting');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const lastMessageTimestampRef = useRef<string | null>(null);
 
   // Draggable and resizable state - smaller initial size
   const [position, setPosition] = useState({ x: 24, y: window.innerHeight - 474 }); // bottom-6 right-6
@@ -68,6 +74,41 @@ const ChatWidget = () => {
     }
   };
 
+  // Polling fallback for when realtime fails
+  const startPolling = () => {
+    if (pollingIntervalRef.current) return;
+    
+    console.log("Starting polling fallback");
+    pollingIntervalRef.current = setInterval(async () => {
+      if (!sessionId) return;
+      
+      const { data } = await supabase
+        .from("live_chat_messages")
+        .select("*")
+        .eq("session_id", sessionId)
+        .gt("created_at", lastMessageTimestampRef.current || new Date(0).toISOString())
+        .order("created_at", { ascending: true });
+      
+      if (data && data.length > 0) {
+        console.log("Polling: New messages found", data);
+        setMessages((prev) => {
+          const existing = new Set(prev.map(m => m.id));
+          const newMessages = data.filter(m => !existing.has(m.id));
+          return [...prev, ...newMessages];
+        });
+        lastMessageTimestampRef.current = data[data.length - 1].created_at;
+      }
+    }, 5000);
+  };
+
+  const stopPolling = () => {
+    if (pollingIntervalRef.current) {
+      console.log("Stopping polling");
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+  };
+
   // Load messages when session is ready
   useEffect(() => {
     if (!sessionId) return;
@@ -83,57 +124,97 @@ const ChatWidget = () => {
         console.error("Error loading messages:", error);
       } else {
         setMessages(data || []);
+        if (data && data.length > 0) {
+          lastMessageTimestampRef.current = data[data.length - 1].created_at;
+        }
       }
     };
 
     loadMessages();
 
-    // Subscribe to realtime updates
-    const channel = supabase
-      .channel(`live_chat_${sessionId}`, {
-        config: {
-          broadcast: { self: true },
-        },
-      })
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "live_chat_messages",
-          filter: `session_id=eq.${sessionId}`,
-        },
-        (payload) => {
-          console.log("New message received:", payload);
-          const newMessage = payload.new as Message;
-          setMessages((prev) => {
-            // Avoid duplicates
-            if (prev.some(m => m.id === newMessage.id)) return prev;
-            return [...prev, newMessage];
-          });
-        }
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "live_chat_sessions",
-          filter: `session_id=eq.${sessionId}`,
-        },
-        (payload: any) => {
-          console.log("Session update received:", payload);
-          if (payload.new?.status === "closed") {
-            setIsChatClosed(true);
+    // Subscribe to realtime updates with retry logic
+    let retryCount = 0;
+    const maxRetries = 3;
+    
+    const setupRealtimeSubscription = () => {
+      const channel = supabase
+        .channel(`live_chat_${sessionId}`, {
+          config: {
+            broadcast: { self: true },
+            presence: { key: sessionId },
+          },
+        })
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "live_chat_messages",
+            filter: `session_id=eq.${sessionId}`,
+          },
+          (payload) => {
+            console.log("✅ Realtime: New message received", payload.new);
+            const newMessage = payload.new as Message;
+            setMessages((prev) => {
+              // Remove any optimistic messages and avoid duplicates
+              const filtered = prev.filter(m => m.id !== newMessage.id && !m.id.startsWith('temp-'));
+              return [...filtered, newMessage];
+            });
+            lastMessageTimestampRef.current = newMessage.created_at;
+            setConnectionStatus('connected');
+            stopPolling(); // Stop polling if realtime works
           }
-        }
-      )
-      .subscribe((status) => {
-        console.log("Realtime subscription status:", status);
-      });
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "live_chat_sessions",
+            filter: `session_id=eq.${sessionId}`,
+          },
+          (payload: any) => {
+            console.log("✅ Realtime: Session update received", payload.new);
+            if (payload.new?.status === "closed") {
+              setIsChatClosed(true);
+            }
+          }
+        )
+        .subscribe((status) => {
+          console.log("📡 Realtime subscription status:", status);
+          
+          if (status === 'SUBSCRIBED') {
+            setConnectionStatus('connected');
+            stopPolling();
+            retryCount = 0;
+          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+            setConnectionStatus('disconnected');
+            console.warn("⚠️ Realtime failed, starting polling fallback");
+            startPolling();
+            
+            // Retry connection
+            if (retryCount < maxRetries) {
+              retryCount++;
+              console.log(`🔄 Retrying realtime connection (${retryCount}/${maxRetries})`);
+              setTimeout(() => {
+                supabase.removeChannel(channel);
+                setupRealtimeSubscription();
+              }, 2000 * retryCount);
+            }
+          } else if (status === 'CLOSED') {
+            setConnectionStatus('disconnected');
+            startPolling();
+          }
+        });
+      
+      return channel;
+    };
+
+    const channel = setupRealtimeSubscription();
 
     return () => {
-      console.log("Unsubscribing from channel");
+      console.log("🧹 Cleaning up: Unsubscribing and stopping polling");
+      stopPolling();
       supabase.removeChannel(channel);
     };
   }, [sessionId]);
@@ -250,20 +331,41 @@ const ChatWidget = () => {
     setIsLoading(true);
     setSendError(null);
 
+    // Optimistic UI: Add message immediately with temp ID
+    const tempId = `temp-${Date.now()}`;
+    const optimisticMessage: Message = {
+      id: tempId,
+      session_id: sessionId,
+      message: inputValue,
+      sender_type: "user",
+      created_at: new Date().toISOString(),
+      read: false,
+      sender_id: null,
+    };
+
+    setMessages((prev) => [...prev, optimisticMessage]);
+    const messageText = inputValue;
+    setInputValue(""); // Clear input immediately for better UX
+
     const { data, error } = await supabase.from("live_chat_messages").insert({
       session_id: sessionId,
       sender_type: "user",
-      message: inputValue,
+      message: messageText,
     }).select().single();
 
     if (error) {
       console.error("Error sending message:", error);
       setSendError("Kunde inte skicka meddelande");
-    } else {
-      // Don't add to state here - let realtime handle it to avoid duplicates
       
-      // Clear input after successful send
-      setInputValue("");
+      // Remove optimistic message on error
+      setMessages((prev) => prev.filter(m => m.id !== tempId));
+      setInputValue(messageText); // Restore input
+    } else {
+      console.log("✅ Message sent successfully", data);
+      
+      // Replace optimistic message with real one
+      setMessages((prev) => prev.map(m => m.id === tempId ? data : m));
+      lastMessageTimestampRef.current = data.created_at;
       
       // Send auto-reply if this is the first message
       if (messages.length === 0) {
