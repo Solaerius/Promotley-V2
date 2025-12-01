@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAIAssistant } from "@/hooks/useAIAssistant";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import MarketingPlanCard from "@/components/MarketingPlanCard";
+import CreditsDisplay from "@/components/CreditsDisplay";
 
 interface Message {
   id: string;
@@ -128,11 +129,14 @@ const AIChat = () => {
     <DashboardLayout>
       <div className="h-[calc(100vh-8rem)] min-h-[680px] md:min-h-[780px] flex flex-col animate-fade-in max-w-screen-xl mx-auto">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-4xl font-bold text-foreground mb-2">AI-Assistent</h1>
-          <p className="text-muted-foreground">
-            Chatta med Promotleys AI för personliga råd och insikter
-          </p>
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-4xl font-bold text-foreground mb-2">AI-Assistent</h1>
+            <p className="text-muted-foreground">
+              Chatta med Promotleys AI för personliga råd och insikter
+            </p>
+          </div>
+          <CreditsDisplay variant="compact" />
         </div>
 
         {/* Quick Commands */}

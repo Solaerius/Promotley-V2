@@ -23,6 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import CreditsDisplay from "@/components/CreditsDisplay";
 
 const Settings = () => {
   const { toast } = useToast();
@@ -406,8 +407,8 @@ const Settings = () => {
               </div>
               
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Plan</p>
-                <p className="font-medium">Gratis (1 kredit kvar)</p>
+                <p className="text-sm text-muted-foreground mb-2">Plan och krediter</p>
+                <CreditsDisplay variant="full" showUpgrade={true} />
               </div>
             </div>
           </Card>
