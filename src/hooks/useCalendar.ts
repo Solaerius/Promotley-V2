@@ -35,12 +35,10 @@ async function invokeCalendar(payload: MethodAction): Promise<any> {
     console.debug('[calendar] invoking with payload:', body);
 
     const { data, error } = await supabase.functions.invoke('calendar', {
-      method: 'POST',
       headers: { 
-        'Content-Type': 'application/json', 
         'Authorization': `Bearer ${token}` 
       },
-      body // OBS: skicka objekt, INTE JSON.stringify
+      body
     });
 
     if (error) {
