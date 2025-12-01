@@ -160,24 +160,6 @@ serve(async (req) => {
       });
     }
 
-    // Reserve credits (idempotency check)
-    const { data: existingReservation } = await supabase
-      .from('credit_reservations')
-      .select('*')
-      .eq('request_id', requestId)
-      .maybeSingle();
-
-    if (existingReservation) {
-      console.log('Request already processed:', requestId);
-      return new Response(JSON.stringify({ 
-        error: 'DUPLICATE_REQUEST',
-        message: 'This request has already been processed'
-      }), {
-        status: 409,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-    }
-
     // Deduct credits (reservation)
     const creditsBefore = userData.credits_left;
     if (tier !== 'unlimited') {
@@ -413,22 +395,15 @@ Håll dig alltid till UF-reglerna och deadlines.`;
       console.error('Error saving analysis history:', saveError);
     }
 
-    // Log usage for billing
-    const usageLogResult = await supabase.from('ai_usage_logs').insert({
+    // Log usage (just console for now)
+    console.log('AI usage:', {
       user_id: user.id,
       request_id: requestId,
-      endpoint: 'generate-ai-analysis',
       model: aiModel,
       tier,
-      credits_reserved: estimatedCost,
       credits_actual: actualCost,
-      tokens_used: actualTokens,
-      timestamp: new Date().toISOString()
+      tokens_used: actualTokens
     });
-    
-    if (usageLogResult.error) {
-      console.error('Failed to log usage:', usageLogResult.error);
-    }
 
     return new Response(
       JSON.stringify({ 
