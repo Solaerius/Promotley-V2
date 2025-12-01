@@ -69,7 +69,12 @@ const Checkout = () => {
         const successUrl = `${window.location.origin}/billing/success?session_id={CHECKOUT_SESSION_ID}`;
         const cancelUrl = `${window.location.origin}/pricing?cancelled=true`;
 
+        // Get fresh access token for auth header
+        const { data: sessionData } = await supabase.auth.getSession();
+        const accessToken = sessionData?.session?.access_token;
+
         const { data, error: invokeError } = await supabase.functions.invoke('billing/create-checkout-session', {
+          headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
           body: {
             plan,
             planLookupKey: selectedPlan.lookupKey,
