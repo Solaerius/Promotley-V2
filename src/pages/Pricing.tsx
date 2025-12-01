@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Check } from "lucide-react";
+import { Check, CheckCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import PricingFAQ from "@/components/PricingFAQ";
 import Navbar from "@/components/Navbar";
+import { useUserCredits } from "@/hooks/useUserCredits";
 
 const plans = [
   {
@@ -12,6 +13,8 @@ const plans = [
     credits: "50",
     model: "gpt-4o-mini",
     tier: "starter",
+    dbPlan: "pro",
+    tierLevel: 1,
     description: "Perfekt för nya UF-företag som precis börjat",
     features: [
       "AI-modell: GPT-4o Mini",
@@ -28,6 +31,8 @@ const plans = [
     credits: "100",
     model: "gpt-4.1-mini",
     tier: "growth",
+    dbPlan: "pro_xl",
+    tierLevel: 2,
     description: "Idealisk för snabbväxande UF-team",
     features: [
       "AI-modell: GPT-4.1 Mini",
@@ -44,6 +49,8 @@ const plans = [
     credits: "300",
     model: "gpt-5.1",
     tier: "pro",
+    dbPlan: "pro_unlimited",
+    tierLevel: 3,
     description: "För etablerade företag med stora ambitioner",
     features: [
       "AI-modell: GPT-5.1 (senaste)",
@@ -59,9 +66,20 @@ const plans = [
 
 const Pricing = () => {
   const navigate = useNavigate();
+  const { credits, getTierLevel } = useUserCredits();
+
+  const currentTierLevel = credits?.plan ? getTierLevel(credits.plan) : 0;
 
   const handleSelectPlan = (tier: string) => {
     navigate(`/checkout?plan=${tier}`);
+  };
+
+  const isCurrentPlan = (plan: typeof plans[0]) => {
+    return credits?.plan === plan.dbPlan;
+  };
+
+  const isLowerOrSameTier = (plan: typeof plans[0]) => {
+    return plan.tierLevel <= currentTierLevel;
   };
 
   return (
@@ -88,13 +106,23 @@ const Pricing = () => {
             {plans.map((plan, index) => (
               <Card
                 key={index}
-                className={`p-6 md:p-8 relative bg-card/50 backdrop-blur-md transition-all duration-300 hover:-translate-y-2 ${
-                  plan.popular
-                    ? "border-2 border-primary shadow-glow sm:scale-105"
-                    : "border-2 border-border/50 hover:border-primary/30"
+                className={`p-6 md:p-8 relative bg-card/50 backdrop-blur-md transition-all duration-300 ${
+                  isCurrentPlan(plan)
+                    ? "border-2 border-primary/50 bg-primary/5"
+                    : plan.popular
+                    ? "border-2 border-primary shadow-glow sm:scale-105 hover:-translate-y-2"
+                    : "border-2 border-border/50 hover:border-primary/30 hover:-translate-y-2"
                 }`}
               >
-                {plan.popular && (
+                {isCurrentPlan(plan) && (
+                  <div className="absolute -top-3 md:-top-4 left-1/2 -translate-x-1/2">
+                    <span className="bg-primary text-primary-foreground px-3 md:px-4 py-1 rounded-full text-xs md:text-sm font-semibold shadow-lg flex items-center gap-1">
+                      <CheckCircle className="w-3 h-3" />
+                      Din plan
+                    </span>
+                  </div>
+                )}
+                {!isCurrentPlan(plan) && plan.popular && (
                   <div className="absolute -top-3 md:-top-4 left-1/2 -translate-x-1/2">
                     <span className="bg-primary text-primary-foreground px-3 md:px-4 py-1 rounded-full text-xs md:text-sm font-semibold shadow-lg">
                       Mest populär ⭐
@@ -135,12 +163,17 @@ const Pricing = () => {
 
                   {/* CTA */}
                   <Button
-                    variant="gradient"
+                    variant={isCurrentPlan(plan) ? "outline" : "gradient"}
                     className="w-full"
                     size="lg"
                     onClick={() => handleSelectPlan(plan.tier)}
+                    disabled={isLowerOrSameTier(plan) && currentTierLevel > 0}
                   >
-                    Välj {plan.name}
+                    {isCurrentPlan(plan) 
+                      ? "Nuvarande plan" 
+                      : isLowerOrSameTier(plan) && currentTierLevel > 0
+                      ? "Ej tillgänglig"
+                      : `Välj ${plan.name}`}
                   </Button>
                 </div>
               </Card>

@@ -318,6 +318,79 @@ serve(async (req) => {
       });
     }
 
+    // Route: cancel-subscription
+    if (route === 'cancel-subscription') {
+      if (!STRIPE_SECRET_KEY) {
+        return jsonResponse({ error: 'stripe_misconfigured' }, 500);
+      }
+
+      const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: '2023-10-16' });
+
+      try {
+        // Find customer by email
+        const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+        
+        if (customers.data.length === 0) {
+          // No Stripe customer - just reset in database
+          const { error: updateError } = await supabaseAdmin
+            .from('users')
+            .update({
+              plan: 'free_trial',
+              credits_left: 1,
+              max_credits: 50,
+              renewal_date: null,
+            })
+            .eq('id', user.id);
+
+          if (updateError) {
+            console.error('[billing] DB error:', updateError);
+            return jsonResponse({ error: 'db_error', detail: updateError.message }, 500);
+          }
+
+          return jsonResponse({ status: 'cancelled', message: 'Subscription cancelled' });
+        }
+
+        const customerId = customers.data[0].id;
+
+        // Find active subscription
+        const subscriptions = await stripe.subscriptions.list({
+          customer: customerId,
+          status: 'active',
+          limit: 1,
+        });
+
+        if (subscriptions.data.length > 0) {
+          // Cancel at period end (user keeps access until renewal date)
+          await stripe.subscriptions.update(subscriptions.data[0].id, {
+            cancel_at_period_end: true,
+          });
+
+          console.log('[billing] Subscription set to cancel at period end:', subscriptions.data[0].id);
+        }
+
+        // Update database to reflect cancellation
+        const { error: updateError } = await supabaseAdmin
+          .from('users')
+          .update({
+            plan: 'free_trial',
+            credits_left: 1,
+            max_credits: 50,
+          })
+          .eq('id', user.id);
+
+        if (updateError) {
+          console.error('[billing] DB error:', updateError);
+          return jsonResponse({ error: 'db_error', detail: updateError.message }, 500);
+        }
+
+        return jsonResponse({ status: 'cancelled', message: 'Subscription cancelled successfully' });
+
+      } catch (stripeError) {
+        console.error('[billing] Stripe error:', stripeError);
+        return jsonResponse({ error: 'stripe_error', detail: stripeError instanceof Error ? stripeError.message : 'Unknown' }, 500);
+      }
+    }
+
     // Unknown route
     return jsonResponse({ error: 'not_found', detail: `Unknown route: ${route}` }, 404);
 

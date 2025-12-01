@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, ArrowLeft, AlertCircle, CreditCard, Shield, Lock } from "lucide-react";
+import { Loader2, ArrowLeft, AlertCircle, CreditCard, Shield, Lock, CheckCircle } from "lucide-react";
 import { loadStripe, Stripe } from "@stripe/stripe-js";
 import {
   EmbeddedCheckoutProvider,
@@ -13,10 +13,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 
-const planDetails: Record<string, { name: string; price: string; credits: string; lookupKey: string }> = {
-  starter: { name: "UF Starter", price: "29", credits: "50", lookupKey: "starter_monthly_sek" },
-  growth: { name: "UF Growth", price: "49", credits: "100", lookupKey: "growth_monthly_sek" },
-  pro: { name: "UF Pro", price: "99", credits: "300", lookupKey: "pro_monthly_sek" },
+const planDetails: Record<string, { name: string; price: string; credits: string; lookupKey: string; dbPlan: string; tierLevel: number }> = {
+  starter: { name: "UF Starter", price: "29", credits: "50", lookupKey: "starter_monthly_sek", dbPlan: "pro", tierLevel: 1 },
+  growth: { name: "UF Growth", price: "49", credits: "100", lookupKey: "growth_monthly_sek", dbPlan: "pro_xl", tierLevel: 2 },
+  pro: { name: "UF Pro", price: "99", credits: "300", lookupKey: "pro_monthly_sek", dbPlan: "pro_unlimited", tierLevel: 3 },
+};
+
+// Get tier level from db plan
+const getTierLevelFromDbPlan = (dbPlan: string): number => {
+  switch (dbPlan) {
+    case 'free_trial': return 0;
+    case 'pro': return 1;
+    case 'pro_xl': return 2;
+    case 'pro_unlimited': return 3;
+    default: return 0;
+  }
 };
 
 const Checkout = () => {
@@ -28,6 +39,8 @@ const Checkout = () => {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [alreadyHasPlan, setAlreadyHasPlan] = useState(false);
+  const [currentPlanName, setCurrentPlanName] = useState<string | null>(null);
   
   const plan = searchParams.get("plan") || "starter";
   const selectedPlan = planDetails[plan] || planDetails.starter;
@@ -49,6 +62,32 @@ const Checkout = () => {
 
         const accessToken = session.access_token;
         setUserId(session.user.id);
+
+        // Check user's current plan
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('plan')
+          .eq('id', session.user.id)
+          .single();
+
+        if (!userError && userData?.plan) {
+          const currentTierLevel = getTierLevelFromDbPlan(userData.plan);
+          const selectedTierLevel = selectedPlan.tierLevel;
+
+          // Block if user already has same or higher tier
+          if (currentTierLevel >= selectedTierLevel) {
+            const planLabels: Record<string, string> = {
+              'free_trial': 'Gratis',
+              'pro': 'Starter',
+              'pro_xl': 'Growth',
+              'pro_unlimited': 'Pro'
+            };
+            setCurrentPlanName(planLabels[userData.plan] || userData.plan);
+            setAlreadyHasPlan(true);
+            setLoading(false);
+            return;
+          }
+        }
 
         // Fetch Stripe publishable key from server (public endpoint)
         const { data: configData, error: configError } = await supabase.functions.invoke('billing', {
@@ -126,6 +165,35 @@ const Checkout = () => {
           <div className="max-w-2xl mx-auto flex flex-col items-center justify-center min-h-[400px]">
             <Loader2 className="w-8 h-8 animate-spin text-primary mb-4" />
             <p className="text-muted-foreground">Förbereder betalning...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (alreadyHasPlan) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container mx-auto px-4 py-16">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-8 h-8 text-primary" />
+            </div>
+            <h1 className="text-2xl font-bold mb-4">Du har redan detta paket</h1>
+            <p className="text-muted-foreground mb-6">
+              Du har redan {currentPlanName}-paketet eller ett högre paket. 
+              {selectedPlan.tierLevel > 1 && " Du kan inte nedgradera till ett lägre paket."}
+            </p>
+            <div className="flex gap-4 justify-center">
+              <Button variant="outline" onClick={() => navigate("/pricing")}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Tillbaka till priser
+              </Button>
+              <Button onClick={() => navigate("/dashboard")}>
+                Gå till dashboard
+              </Button>
+            </div>
           </div>
         </div>
       </div>

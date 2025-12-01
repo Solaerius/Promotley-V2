@@ -29,21 +29,16 @@ const CreditsDisplay = ({ variant = 'compact', showUpgrade = true }: CreditsDisp
     : 0;
 
   const isLow = credits.credits_left <= 5;
-  const isUnlimited = credits.plan === 'pro_unlimited';
 
   if (variant === 'compact') {
     return (
       <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-        isLow && !isUnlimited
+        isLow
           ? 'bg-destructive/10 text-destructive' 
           : 'bg-primary/10 text-primary'
       }`}>
         <Sparkles className="w-4 h-4" />
-        {isUnlimited ? (
-          <span>Obegränsade krediter</span>
-        ) : (
-          <span>{credits.credits_left} krediter</span>
-        )}
+        <span>{credits.credits_left} krediter</span>
       </div>
     );
   }
@@ -53,9 +48,9 @@ const CreditsDisplay = ({ variant = 'compact', showUpgrade = true }: CreditsDisp
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-            isLow && !isUnlimited ? 'bg-destructive/10' : 'bg-primary/10'
+            isLow ? 'bg-destructive/10' : 'bg-primary/10'
           }`}>
-            <Coins className={`w-4 h-4 ${isLow && !isUnlimited ? 'text-destructive' : 'text-primary'}`} />
+            <Coins className={`w-4 h-4 ${isLow ? 'text-destructive' : 'text-primary'}`} />
           </div>
           <div>
             <p className="font-medium">AI-krediter</p>
@@ -63,27 +58,19 @@ const CreditsDisplay = ({ variant = 'compact', showUpgrade = true }: CreditsDisp
           </div>
         </div>
         <div className="text-right">
-          {isUnlimited ? (
-            <p className="text-lg font-bold text-primary">∞</p>
-          ) : (
-            <>
-              <p className={`text-lg font-bold ${isLow ? 'text-destructive' : ''}`}>
-                {credits.credits_left}
-              </p>
-              <p className="text-xs text-muted-foreground">av {credits.max_credits}</p>
-            </>
-          )}
+          <p className={`text-lg font-bold ${isLow ? 'text-destructive' : ''}`}>
+            {credits.credits_left}
+          </p>
+          <p className="text-xs text-muted-foreground">av {credits.max_credits}</p>
         </div>
       </div>
 
-      {!isUnlimited && (
-        <Progress 
-          value={percentage} 
-          className={`h-2 ${isLow ? '[&>div]:bg-destructive' : ''}`}
-        />
-      )}
+      <Progress 
+        value={percentage} 
+        className={`h-2 ${isLow ? '[&>div]:bg-destructive' : ''}`}
+      />
 
-      {isLow && !isUnlimited && showUpgrade && (
+      {isLow && showUpgrade && (
         <Button 
           variant="outline" 
           size="sm" 
@@ -94,7 +81,7 @@ const CreditsDisplay = ({ variant = 'compact', showUpgrade = true }: CreditsDisp
         </Button>
       )}
 
-      {credits.renewal_date && !isUnlimited && (
+      {credits.renewal_date && (
         <p className="text-xs text-muted-foreground text-center">
           Förnyas {new Date(credits.renewal_date).toLocaleDateString('sv-SE')}
         </p>
