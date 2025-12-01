@@ -89,9 +89,29 @@ export const useAIAnalysis = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Check for 402 status (insufficient credits)
+        if (error.message?.includes('402') || error.message?.includes('INSUFFICIENT_CREDITS')) {
+          toast({
+            title: 'Otillräckliga krediter',
+            description: 'Du har inte tillräckligt med krediter för att generera en AI-analys.',
+            variant: 'destructive',
+          });
+          throw new Error('INSUFFICIENT_CREDITS');
+        }
+        throw error;
+      }
 
       if (!data.success) {
+        // Check if it's a credit error
+        if (data.error === 'INSUFFICIENT_CREDITS' || data.message?.includes('kredit')) {
+          toast({
+            title: 'Otillräckliga krediter',
+            description: data.message || 'Du har inte tillräckligt med krediter.',
+            variant: 'destructive',
+          });
+          throw new Error('INSUFFICIENT_CREDITS');
+        }
         throw new Error(data.error || 'Failed to generate analysis');
       }
 
@@ -105,13 +125,16 @@ export const useAIAnalysis = () => {
 
       await fetchAnalyses();
       return data.analysis;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating AI analysis:', error);
-      toast({
-        title: 'Fel',
-        description: 'Kunde inte generera analys. Försök igen.',
-        variant: 'destructive',
-      });
+      // Only show generic error if it's not a credit error (already handled)
+      if (!error?.message?.includes('INSUFFICIENT_CREDITS')) {
+        toast({
+          title: 'Fel',
+          description: 'Kunde inte generera analys. Försök igen.',
+          variant: 'destructive',
+        });
+      }
       throw error;
     } finally {
       setGenerating(false);

@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Send,
   Sparkles,
@@ -12,13 +13,16 @@ import {
   TrendingUp,
   Paperclip,
   Loader2,
+  AlertCircle,
 } from "lucide-react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useToast } from "@/hooks/use-toast";
 import { useAIAssistant } from "@/hooks/useAIAssistant";
+import { useUserCredits } from "@/hooks/useUserCredits";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import MarketingPlanCard from "@/components/MarketingPlanCard";
 import CreditsDisplay from "@/components/CreditsDisplay";
+import { useNavigate } from "react-router-dom";
 
 interface Message {
   id: string;
@@ -30,12 +34,16 @@ interface Message {
 
 const AIChat = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const { messages, loading, sendMessage, generatePlan, analyzeStats, createMarketingPlan, implementPlan } = useAIAssistant();
+  const { credits } = useUserCredits();
   const [inputMessage, setInputMessage] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isNearBottom, setIsNearBottom] = useState(true);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [activePlan, setActivePlan] = useState<any>(null);
+  
+  const hasInsufficientCredits = credits && credits.credits_left <= 0 && credits.plan !== 'pro_unlimited';
 
   const quickCommands = [
     { icon: BarChart3, text: "Analysera min statistik", color: "from-blue-500 to-cyan-500" },
@@ -81,17 +89,42 @@ const AIChat = () => {
   const handleSendMessage = async (text?: string) => {
     const messageText = text || inputMessage.trim();
     if (!messageText || loading) return;
+    
+    if (hasInsufficientCredits) {
+      toast({
+        title: "Otillräckliga krediter",
+        description: "Du har slut på krediter. Uppgradera din plan för att fortsätta använda AI-chatten.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
       await sendMessage(messageText);
       setInputMessage("");
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending message:', error);
+      if (error?.message?.includes('INSUFFICIENT_CREDITS')) {
+        toast({
+          title: "Otillräckliga krediter",
+          description: "Du har inte tillräckligt med krediter för denna förfrågan.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
   const handleQuickCommand = async (command: string) => {
     if (loading) return;
+    
+    if (hasInsufficientCredits) {
+      toast({
+        title: "Otillräckliga krediter",
+        description: "Du har slut på krediter. Uppgradera din plan för att fortsätta.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     switch (command) {
       case "Analysera min statistik":
@@ -103,8 +136,15 @@ const AIChat = () => {
           if (result?.plan) {
             setActivePlan(result.plan);
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error creating plan:', error);
+          if (error?.message?.includes('INSUFFICIENT_CREDITS')) {
+            toast({
+              title: "Otillräckliga krediter",
+              description: "Marknadsföringsplaner kräver fler krediter än du har kvar.",
+              variant: "destructive",
+            });
+          }
         }
         break;
       default:
@@ -266,6 +306,26 @@ const AIChat = () => {
               </button>
             )}
 
+            {/* Insufficient Credits Alert */}
+            {hasInsufficientCredits && (
+              <div className="border-t border-border p-3 md:p-4">
+                <Alert variant="destructive" className="mb-0">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription className="flex items-center justify-between">
+                    <span>Du har slut på krediter för denna månad.</span>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => navigate('/pricing')}
+                      className="ml-4"
+                    >
+                      Uppgradera
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              </div>
+            )}
+
             {/* Input Area */}
             <div className="border-t border-border p-3 md:p-4 rounded-b-2xl">
               <div className="flex gap-2">
@@ -273,27 +333,31 @@ const AIChat = () => {
                   variant="outline"
                   size="icon"
                   onClick={() => toast({ title: "Filuppladdning", description: "Kommer snart!" })}
+                  disabled={hasInsufficientCredits}
                 >
                   <Paperclip className="w-4 h-4" />
                 </Button>
                 <Input
-                  placeholder="Skriv ditt meddelande..."
+                  placeholder={hasInsufficientCredits ? "Inga krediter kvar..." : "Skriv ditt meddelande..."}
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                  onKeyPress={(e) => e.key === "Enter" && !hasInsufficientCredits && handleSendMessage()}
                   className="flex-1"
+                  disabled={hasInsufficientCredits}
                 />
                 <Button
                   variant="gradient"
                   size="icon"
                   onClick={() => handleSendMessage()}
-                  disabled={!inputMessage.trim() || loading}
+                  disabled={!inputMessage.trim() || loading || hasInsufficientCredits}
                 >
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground mt-2 text-center">
-                AI kan göra misstag. Kontrollera viktig information.
+                {hasInsufficientCredits 
+                  ? "Uppgradera din plan för att fortsätta chatta med AI"
+                  : "AI kan göra misstag. Kontrollera viktig information."}
               </p>
             </div>
           </CardContent>
