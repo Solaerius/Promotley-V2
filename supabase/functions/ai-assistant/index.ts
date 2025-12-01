@@ -10,6 +10,48 @@ const corsHeaders = {
 const statsCache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_TTL = 60000; // 60 seconds
 
+// Credit cost estimation based on request type and complexity
+const estimateCreditCost = (action: string, message?: string): number => {
+  // Marketing plans are expensive (uses gpt-4o, multiple posts)
+  if (action === 'create-marketing-plan') {
+    return 5;
+  }
+  
+  // Analysis requests
+  if (action === 'analyze') {
+    return 3;
+  }
+  
+  // Chat messages - estimate based on complexity
+  if (action === 'chat' && message) {
+    const lowerMsg = message.toLowerCase();
+    
+    // Complex requests (strategies, plans, detailed analysis)
+    if (lowerMsg.includes('strategi') || 
+        lowerMsg.includes('plan') || 
+        lowerMsg.includes('30 dag') ||
+        lowerMsg.includes('marknadsföring') ||
+        lowerMsg.includes('kampanj') ||
+        lowerMsg.includes('innehållskalender')) {
+      return 3;
+    }
+    
+    // Medium complexity (analysis, recommendations)
+    if (lowerMsg.includes('analys') || 
+        lowerMsg.includes('tips') || 
+        lowerMsg.includes('rekommend') ||
+        lowerMsg.includes('förslag') ||
+        lowerMsg.includes('förbättra')) {
+      return 2;
+    }
+    
+    // Simple questions
+    return 1;
+  }
+  
+  return 1;
+};
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -175,6 +217,35 @@ serve(async (req) => {
       }
 
       console.log('Processing chat message:', message);
+      
+      // Estimate credit cost for this request
+      const estimatedCost = estimateCreditCost('chat', message);
+      console.log('💰 Estimated credit cost:', estimatedCost);
+      
+      // Check user credits
+      const { data: userData, error: userError } = await supabaseClient
+        .from('users')
+        .select('credits_left, plan')
+        .eq('id', user.id)
+        .single();
+      
+      if (userError) {
+        console.error('Error fetching user credits:', userError);
+      }
+      
+      // Check if user has enough credits (skip for unlimited plan)
+      if (userData?.plan !== 'pro_unlimited' && (userData?.credits_left || 0) < estimatedCost) {
+        console.log('❌ Insufficient credits:', userData?.credits_left, 'needed:', estimatedCost);
+        return new Response(
+          JSON.stringify({ 
+            error: 'INSUFFICIENT_CREDITS',
+            message: 'Du har inte tillräckligt med krediter för denna förfrågan.',
+            credits_left: userData?.credits_left || 0,
+            cost: estimatedCost
+          }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
 
       // Get user context (connections, profile, knowledge base)
       const userContext = await getUserContext(user.id);
@@ -595,9 +666,19 @@ Kom ihåg: Du är här för att hjälpa UF-företagare att växa sina företag s
           role: 'assistant',
           message: assistantMessage,
         });
+      
+      // Deduct credits after successful response (skip for unlimited plan)
+      if (userData?.plan !== 'pro_unlimited') {
+        const newCredits = Math.max(0, (userData?.credits_left || 0) - estimatedCost);
+        await supabaseClient
+          .from('users')
+          .update({ credits_left: newCredits })
+          .eq('id', user.id);
+        console.log('💸 Credits deducted:', estimatedCost, 'remaining:', newCredits);
+      }
 
       return new Response(
-        JSON.stringify({ response: assistantMessage }),
+        JSON.stringify({ response: assistantMessage, credits_used: estimatedCost }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -620,6 +701,35 @@ Kom ihåg: Du är här för att hjälpa UF-företagare att växa sina företag s
       
       const body = await req.json();
       const { targets = ['reach', 'engagement'], timeframe = 'month', calendarContextDigest = [] } = body;
+      
+      // Marketing plans cost 5 credits
+      const planCost = estimateCreditCost('create-marketing-plan');
+      console.log('💰 Marketing plan cost:', planCost);
+      
+      // Check user credits
+      const { data: userData, error: userError } = await supabaseClient
+        .from('users')
+        .select('credits_left, plan')
+        .eq('id', user.id)
+        .single();
+      
+      if (userError) {
+        console.error('Error fetching user credits:', userError);
+      }
+      
+      // Check if user has enough credits (skip for unlimited plan)
+      if (userData?.plan !== 'pro_unlimited' && (userData?.credits_left || 0) < planCost) {
+        console.log('❌ Insufficient credits for marketing plan:', userData?.credits_left, 'needed:', planCost);
+        return new Response(
+          JSON.stringify({ 
+            error: 'INSUFFICIENT_CREDITS',
+            message: 'Du har inte tillräckligt med krediter för en marknadsföringsplan. En plan kostar 5 krediter.',
+            credits_left: userData?.credits_left || 0,
+            cost: planCost
+          }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
 
       const userContext = await getUserContext(user.id);
 
@@ -727,9 +837,19 @@ Vill du implementera denna plan i din kalender? Klicka på "Implementera planen"
             role: 'assistant',
             message: explanation,
           });
+        
+        // Deduct credits after successful plan creation (skip for unlimited plan)
+        if (userData?.plan !== 'pro_unlimited') {
+          const newCredits = Math.max(0, (userData?.credits_left || 0) - planCost);
+          await supabaseClient
+            .from('users')
+            .update({ credits_left: newCredits })
+            .eq('id', user.id);
+          console.log('💸 Plan credits deducted:', planCost, 'remaining:', newCredits);
+        }
 
         return new Response(
-          JSON.stringify({ plan, explanation }),
+          JSON.stringify({ plan, explanation, credits_used: planCost }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       } catch (parseError) {
