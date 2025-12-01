@@ -79,22 +79,21 @@ serve(async (req) => {
     }
 
     // All other routes require JWT authentication
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      console.error('[billing] Missing Authorization header');
+    const authHeader = req.headers.get('Authorization') || req.headers.get('authorization') || '';
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.error('[billing] Missing or invalid Authorization header');
       return jsonResponse({ error: 'missing_authorization' }, 401);
     }
 
-    // Create Supabase client with user's JWT
-    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: { headers: { Authorization: authHeader } },
-    });
+    const token = authHeader.replace('Bearer ', '');
 
-    // Verify the JWT and get user
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    // Use service role to verify the JWT token
+    const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
     
     if (authError || !user) {
-      console.error('[billing] Auth error:', authError?.message || 'No user');
+      console.error('[billing] Auth error:', authError?.message || 'No user found');
       return jsonResponse({ error: 'invalid_token', detail: authError?.message }, 401);
     }
 
@@ -220,6 +219,10 @@ serve(async (req) => {
 
     // Route: subscription-status
     if (route === 'subscription-status') {
+      const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        global: { headers: { Authorization: authHeader } },
+      });
+
       const { data: userData, error: dbError } = await supabaseClient
         .from('users')
         .select('plan, credits_left, max_credits, renewal_date')
