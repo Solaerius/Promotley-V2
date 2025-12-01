@@ -22,16 +22,16 @@ export interface MarketingPlan {
   posts: MarketingPost[];
 }
 
+async function getFreshToken() {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.access_token ?? null;
+}
+
 // Helper function for invoking Edge Functions with automatic retry on 401
 async function invokeWithRetry(
   functionName: string,
   options: { method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'; body?: any } = {}
 ): Promise<any> {
-  const getFreshToken = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    return session?.access_token ?? null;
-  };
-
   const attempt = async () => {
     const token = await getFreshToken();
     if (!token) {
@@ -70,6 +70,41 @@ async function invokeWithRetry(
   }
 }
 
+// Helper for calendar action-based API
+async function invokeCalendar(payload: { action: string; data?: any }): Promise<any> {
+  const attempt = async () => {
+    const token = await getFreshToken();
+    if (!token) throw Object.assign(new Error('not_authenticated'), { status: 401 });
+
+    const { data, error } = await supabase.functions.invoke('calendar', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json', 
+        'Authorization': `Bearer ${token}` 
+      },
+      body: payload
+    });
+
+    if (error) {
+      if (error.message?.includes('Unauthorized') || error.message?.includes('JW') || error.message?.includes('invalid_jwt')) {
+        throw Object.assign(error, { status: 401 });
+      }
+      throw error;
+    }
+    return data;
+  };
+
+  try {
+    return await attempt();
+  } catch (err: any) {
+    if (err?.status === 401 || String(err?.message).toLowerCase().includes('unauthorized') || err.message === 'not_authenticated') {
+      await supabase.auth.getSession(); // silent refresh
+      return await attempt();
+    }
+    throw err;
+  }
+}
+
 export const useMarketingPlan = () => {
   const [activePlan, setActivePlan] = useState<MarketingPlan | null>(null);
   const [isImplementing, setIsImplementing] = useState(false);
@@ -77,12 +112,13 @@ export const useMarketingPlan = () => {
 
   const createPlan = async (targets: string[], timeframe: string) => {
     try {
-      // Fetch calendar context
-      const contextData = await invokeWithRetry('calendar/context', { method: 'GET' });
+      // Fetch calendar context using new action-based API
+      const contextData = await invokeCalendar({ action: 'context' });
 
-      const result = await invokeWithRetry('ai-assistant/create-marketing-plan', {
+      const result = await invokeWithRetry('ai-assistant', {
         method: 'POST',
         body: {
+          action: 'create-marketing-plan',
           targets,
           timeframe,
           calendarContextDigest: contextData?.digest || []
@@ -111,12 +147,20 @@ export const useMarketingPlan = () => {
     try {
       setIsImplementing(true);
 
-      const result = await invokeWithRetry('calendar/bulk_create', {
-        method: 'POST',
-        body: {
-          posts: plan.posts,
-          requestId
-        }
+      // Normalize posts for bulk_create
+      const normalizedPosts = plan.posts.map(p => {
+        const d = new Date(p.date);
+        return {
+          title: p.title,
+          content: p.content ?? '',
+          channel: p.channel,
+          date: isNaN(d.valueOf()) ? '' : d.toISOString().slice(0, 10)
+        };
+      });
+
+      const result = await invokeCalendar({ 
+        action: 'bulk_create', 
+        data: { posts: normalizedPosts, requestId } 
       });
 
       toast({

@@ -11,66 +11,48 @@ interface CalendarPost {
   created_at: string;
 }
 
-// Helper function for invoking Edge Functions with automatic retry on 401
-async function invokeWithRetry(
-  functionName: string,
-  options: { method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'; body?: any } = {}
-): Promise<any> {
-  const getFreshToken = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    return session?.access_token ?? null;
-  };
+type MethodAction =
+  | { action: 'list' }
+  | { action: 'create'; data: { title: string; description?: string; platform: 'instagram' | 'tiktok' | 'facebook'; date: string } }
+  | { action: 'bulk_create'; data: { posts: Array<{ title: string; content?: string; channel: 'instagram' | 'tiktok' | 'facebook'; date: string }>; requestId: string } }
+  | { action: 'update'; data: { id: string; patch: Partial<{ title: string; description: string; platform: 'instagram' | 'tiktok' | 'facebook'; date: string }> } }
+  | { action: 'delete'; data: { id: string } }
+  | { action: 'context' };
 
+async function getFreshToken() {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.access_token ?? null;
+}
+
+async function invokeCalendar(payload: MethodAction): Promise<any> {
   const attempt = async () => {
     const token = await getFreshToken();
-    if (!token) {
-      throw new Error('not_authenticated');
-    }
+    if (!token) throw Object.assign(new Error('not_authenticated'), { status: 401 });
 
-    // Build invoke options - only include body for non-GET requests
-    const invokeOptions: any = {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    };
-    
-    // supabase.functions.invoke uses POST by default, for GET we need to handle differently
-    if (options.method === 'GET') {
-      invokeOptions.method = 'GET';
-    } else if (options.method === 'DELETE') {
-      invokeOptions.method = 'DELETE';
-    } else if (options.method === 'PUT') {
-      invokeOptions.method = 'PUT';
-      if (options.body) {
-        invokeOptions.body = options.body;
-      }
-    } else {
-      // POST is default
-      if (options.body) {
-        invokeOptions.body = options.body;
-      }
-    }
-
-    const { data, error } = await supabase.functions.invoke(functionName, invokeOptions);
+    const { data, error } = await supabase.functions.invoke('calendar', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json', 
+        'Authorization': `Bearer ${token}` 
+      },
+      body: payload
+    });
 
     if (error) {
       // Check if it's a 401 error
       if (error.message?.includes('Unauthorized') || error.message?.includes('JW') || error.message?.includes('invalid_jwt')) {
-        throw { ...error, status: 401 };
+        throw Object.assign(error, { status: 401 });
       }
       throw error;
     }
-
     return data;
   };
 
   try {
     return await attempt();
   } catch (err: any) {
-    // Retry once on 401 after refreshing session
-    if (err.status === 401 || err.message === 'not_authenticated') {
-      await supabase.auth.getSession(); // Silent refresh
+    if (err?.status === 401 || String(err?.message).toLowerCase().includes('unauthorized') || err.message === 'not_authenticated') {
+      await supabase.auth.getSession(); // silent refresh
       return await attempt();
     }
     throw err;
@@ -86,8 +68,8 @@ export const useCalendar = () => {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const result = await invokeWithRetry('calendar', { method: 'GET' });
-      setPosts(result || []);
+      const result = await invokeCalendar({ action: 'list' });
+      setPosts(Array.isArray(result) ? result : []);
     } catch (err: any) {
       if (err.message === 'not_authenticated') {
         setPosts([]);
@@ -108,9 +90,27 @@ export const useCalendar = () => {
     date: string;
   }) => {
     try {
-      const result = await invokeWithRetry('calendar', {
-        method: 'POST',
-        body: postData
+      // Normalize platform
+      const platform = (postData.platform || '').toLowerCase();
+      if (!['instagram', 'tiktok', 'facebook'].includes(platform)) {
+        throw new Error('Ogiltig kanal');
+      }
+      
+      // Normalize date to YYYY-MM-DD
+      const date = new Date(postData.date);
+      if (isNaN(date.valueOf())) {
+        throw new Error('Ogiltigt datum');
+      }
+      const isoDate = date.toISOString().slice(0, 10);
+
+      const result = await invokeCalendar({ 
+        action: 'create', 
+        data: { 
+          title: postData.title, 
+          description: postData.description, 
+          platform: platform as 'instagram' | 'tiktok' | 'facebook', 
+          date: isoDate 
+        } 
       });
 
       toast({
@@ -132,6 +132,31 @@ export const useCalendar = () => {
     }
   };
 
+  const bulkCreate = async (
+    postsIn: Array<{ title: string; content?: string; channel: string; date: string }>,
+    requestId: string
+  ) => {
+    // Normalize all posts
+    const normalizedPosts = postsIn.map(p => {
+      const platform = (p.channel || '').toLowerCase();
+      const d = new Date(p.date);
+      return {
+        title: p.title,
+        content: p.content ?? '',
+        channel: platform as 'instagram' | 'tiktok' | 'facebook',
+        date: isNaN(d.valueOf()) ? '' : d.toISOString().slice(0, 10)
+      };
+    });
+
+    const result = await invokeCalendar({ 
+      action: 'bulk_create', 
+      data: { posts: normalizedPosts, requestId } 
+    });
+    
+    await fetchPosts();
+    return result;
+  };
+
   const updatePost = async (id: string, postData: {
     title?: string;
     description?: string;
@@ -139,9 +164,30 @@ export const useCalendar = () => {
     date?: string;
   }) => {
     try {
-      const result = await invokeWithRetry(`calendar/update/${id}`, {
-        method: 'PUT',
-        body: postData
+      const patch: Partial<{ title: string; description: string; platform: 'instagram' | 'tiktok' | 'facebook'; date: string }> = {};
+      
+      if (postData.title) patch.title = postData.title;
+      if (postData.description !== undefined) patch.description = postData.description;
+      
+      if (postData.platform) {
+        const platform = postData.platform.toLowerCase();
+        if (!['instagram', 'tiktok', 'facebook'].includes(platform)) {
+          throw new Error('Ogiltig kanal');
+        }
+        patch.platform = platform as 'instagram' | 'tiktok' | 'facebook';
+      }
+      
+      if (postData.date) {
+        const d = new Date(postData.date);
+        if (isNaN(d.valueOf())) {
+          throw new Error('Ogiltigt datum');
+        }
+        patch.date = d.toISOString().slice(0, 10);
+      }
+
+      const result = await invokeCalendar({ 
+        action: 'update', 
+        data: { id, patch } 
       });
 
       toast({
@@ -165,9 +211,7 @@ export const useCalendar = () => {
 
   const deletePost = async (id: string) => {
     try {
-      await invokeWithRetry(`calendar/${id}`, {
-        method: 'DELETE'
-      });
+      await invokeCalendar({ action: 'delete', data: { id } });
 
       toast({
         title: "Inlägg raderat",
@@ -200,6 +244,7 @@ export const useCalendar = () => {
     hasPosts,
     fetchPosts,
     createPost,
+    bulkCreate,
     updatePost,
     deletePost,
   };
