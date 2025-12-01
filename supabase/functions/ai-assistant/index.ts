@@ -706,7 +706,20 @@ Planen fokuserar på ${targets.join(' och ')} och innehåller konkreta inlägg m
 
 Vill du implementera denna plan i din kalender? Klicka på "Implementera planen"-knappen nedan så läggs alla inlägg automatiskt in.`;
 
-        // Save plan suggestion (optional logging)
+        // Save plan to analysis history for later reuse
+        await supabaseClient
+          .from('ai_analysis_history')
+          .insert({
+            user_id: user.id,
+            input_data: {
+              type: 'marketing_plan',
+              targets,
+              timeframe,
+            },
+            ai_output: plan,
+          });
+
+        // Save explanation message to chat history
         await supabaseClient
           .from('chat_history')
           .insert({

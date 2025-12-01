@@ -16,25 +16,49 @@ export const useNotifications = () => {
   const [error, setError] = useState<Error | null>(null);
   const { toast } = useToast();
 
+  // Helper to invoke Edge Functions with retry on 401
+  const invokeWithRetry = async (
+    functionName: string,
+    options: { method?: 'GET' | 'POST'; body?: any } = {}
+  ) => {
+    const attempt = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error('not_authenticated');
+      }
+
+      const { data, error } = await supabase.functions.invoke(functionName, {
+        ...options,
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (error) {
+        if (error.message?.includes('Unauthorized') || (error as any).status === 401) {
+          throw { ...error, status: 401 };
+        }
+        throw error;
+      }
+
+      return data;
+    };
+
+    try {
+      return await attempt();
+    } catch (err: any) {
+      if (err.status === 401 || err.message === 'not_authenticated') {
+        await supabase.auth.getSession();
+        return await attempt();
+      }
+      throw err;
+    }
+  };
+
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        setNotifications([]);
-        setLoading(false);
-        return;
-      }
-
-      const { data: result, error } = await supabase.functions.invoke('notifications', {
-        method: 'GET'
-      });
-
-      if (error) throw error;
-
+      const result = await invokeWithRetry('notifications', { method: 'GET' });
       setNotifications(result || []);
-    } catch (err) {
+    } catch (err: any) {
       setError(err as Error);
       console.error('Error fetching notifications:', err);
       setNotifications([]);
@@ -45,14 +69,9 @@ export const useNotifications = () => {
 
   const markAsRead = async (id: string) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('Not authenticated');
-
-      const { error } = await supabase.functions.invoke(`notifications/read/${id}`, {
-        method: 'POST'
+      await invokeWithRetry(`notifications/read/${id}`, {
+        method: 'POST',
       });
-
-      if (error) throw error;
 
       // Update local state
       setNotifications(prev => 
@@ -60,11 +79,12 @@ export const useNotifications = () => {
           notif.id === id ? { ...notif, read: true } : notif
         )
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error marking notification as read:', err);
+      const errorMsg = err.message || 'Kunde inte markera notis som läst.';
       toast({
         title: "Fel",
-        description: "Kunde inte markera notis som läst.",
+        description: errorMsg,
         variant: "destructive",
       });
       throw err;
