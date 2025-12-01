@@ -27,22 +27,29 @@ async function invokeWithRetry(
   functionName: string,
   options: { method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'; body?: any } = {}
 ): Promise<any> {
-  const attempt = async () => {
+  const getFreshToken = async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.access_token) {
+    return session?.access_token ?? null;
+  };
+
+  const attempt = async () => {
+    const token = await getFreshToken();
+    if (!token) {
       throw new Error('not_authenticated');
     }
 
     const { data, error } = await supabase.functions.invoke(functionName, {
-      ...options,
+      method: options.method || 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
+      body: options.body
     });
 
     if (error) {
       // Check if it's a 401 error
-      if (error.message?.includes('Unauthorized') || error.message?.includes('JW')) {
+      if (error.message?.includes('Unauthorized') || error.message?.includes('JW') || error.message?.includes('invalid_jwt')) {
         throw { ...error, status: 401 };
       }
       throw error;

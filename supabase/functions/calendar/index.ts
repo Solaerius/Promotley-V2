@@ -17,24 +17,43 @@ serve(async (req) => {
   }
 
   try {
+    // Extract and validate JWT
+    const authHeader = req.headers.get('Authorization') ?? '';
+    const jwt = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+    
+    if (!jwt) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized: missing_jwt' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // 1) Validate JWT with service role client
+    const adminClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      { auth: { persistSession: false } }
+    );
+
+    const { data: { user }, error: userError } = await adminClient.auth.getUser(jwt);
+    
+    if (userError || !user) {
+      console.error('JWT validation failed:', userError);
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized: invalid_jwt' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // 2) DB client with anon key + forwarded JWT for RLS
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
-        global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
-        },
+        global: { headers: { Authorization: `Bearer ${jwt}` } },
+        auth: { persistSession: false }
       }
     );
-
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-    
-    if (userError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
 
     const url = new URL(req.url);
     const pathParts = url.pathname.split('/').filter(Boolean);

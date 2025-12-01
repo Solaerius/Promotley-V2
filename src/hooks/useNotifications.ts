@@ -21,19 +21,28 @@ export const useNotifications = () => {
     functionName: string,
     options: { method?: 'GET' | 'POST'; body?: any } = {}
   ) => {
-    const attempt = async () => {
+    const getFreshToken = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) {
+      return session?.access_token ?? null;
+    };
+
+    const attempt = async () => {
+      const token = await getFreshToken();
+      if (!token) {
         throw new Error('not_authenticated');
       }
 
       const { data, error } = await supabase.functions.invoke(functionName, {
-        ...options,
-        headers: { 'Content-Type': 'application/json' },
+        method: options.method || 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: options.body,
       });
 
       if (error) {
-        if (error.message?.includes('Unauthorized') || (error as any).status === 401) {
+        if (error.message?.includes('Unauthorized') || error.message?.includes('invalid_jwt') || (error as any).status === 401) {
           throw { ...error, status: 401 };
         }
         throw error;
