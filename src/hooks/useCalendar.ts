@@ -11,6 +11,47 @@ interface CalendarPost {
   created_at: string;
 }
 
+// Helper function for invoking Edge Functions with automatic retry on 401
+async function invokeWithRetry(
+  functionName: string,
+  options: { method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'; body?: any } = {}
+): Promise<any> {
+  const attempt = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) {
+      throw new Error('not_authenticated');
+    }
+
+    const { data, error } = await supabase.functions.invoke(functionName, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (error) {
+      // Check if it's a 401 error
+      if (error.message?.includes('Unauthorized') || error.message?.includes('JW')) {
+        throw { ...error, status: 401 };
+      }
+      throw error;
+    }
+
+    return data;
+  };
+
+  try {
+    return await attempt();
+  } catch (err: any) {
+    // Retry once on 401 after refreshing session
+    if (err.status === 401 || err.message === 'not_authenticated') {
+      await supabase.auth.getSession(); // Silent refresh
+      return await attempt();
+    }
+    throw err;
+  }
+}
+
 export const useCalendar = () => {
   const [posts, setPosts] = useState<CalendarPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,26 +61,16 @@ export const useCalendar = () => {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        setPosts([]);
-        setLoading(false);
-        return;
-      }
-
-      const { data: result, error } = await supabase.functions.invoke('calendar', {
-        method: 'GET'
-      });
-
-      if (error) throw error;
-
-      // Always set data, even if empty array
+      const result = await invokeWithRetry('calendar', { method: 'GET' });
       setPosts(result || []);
-    } catch (err) {
-      setError(err as Error);
-      console.error('Error fetching calendar posts:', err);
-      setPosts([]);
+    } catch (err: any) {
+      if (err.message === 'not_authenticated') {
+        setPosts([]);
+      } else {
+        setError(err as Error);
+        console.error('Error fetching calendar posts:', err);
+        setPosts([]);
+      }
     } finally {
       setLoading(false);
     }
@@ -52,15 +83,10 @@ export const useCalendar = () => {
     date: string;
   }) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('Not authenticated');
-
-      const { data: result, error } = await supabase.functions.invoke('calendar', {
+      const result = await invokeWithRetry('calendar', {
         method: 'POST',
         body: postData
       });
-
-      if (error) throw error;
 
       toast({
         title: "Inlägg skapat",
@@ -69,11 +95,12 @@ export const useCalendar = () => {
 
       await fetchPosts();
       return result;
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error creating post:', err);
+      const errorMsg = err.message || "Kunde inte skapa inlägg.";
       toast({
         title: "Fel",
-        description: "Kunde inte skapa inlägg.",
+        description: errorMsg,
         variant: "destructive",
       });
       throw err;
@@ -87,15 +114,10 @@ export const useCalendar = () => {
     date?: string;
   }) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('Not authenticated');
-
-      const { data: result, error } = await supabase.functions.invoke(`calendar/update/${id}`, {
+      const result = await invokeWithRetry(`calendar/update/${id}`, {
         method: 'PUT',
         body: postData
       });
-
-      if (error) throw error;
 
       toast({
         title: "Inlägg uppdaterat",
@@ -104,11 +126,12 @@ export const useCalendar = () => {
 
       await fetchPosts();
       return result;
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error updating post:', err);
+      const errorMsg = err.message || "Kunde inte uppdatera inlägg.";
       toast({
         title: "Fel",
-        description: "Kunde inte uppdatera inlägg.",
+        description: errorMsg,
         variant: "destructive",
       });
       throw err;
@@ -117,14 +140,9 @@ export const useCalendar = () => {
 
   const deletePost = async (id: string) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('Not authenticated');
-
-      const { error } = await supabase.functions.invoke(`calendar/${id}`, {
+      await invokeWithRetry(`calendar/${id}`, {
         method: 'DELETE'
       });
-
-      if (error) throw error;
 
       toast({
         title: "Inlägg raderat",
@@ -132,11 +150,12 @@ export const useCalendar = () => {
       });
 
       await fetchPosts();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error deleting post:', err);
+      const errorMsg = err.message || "Kunde inte radera inlägg.";
       toast({
         title: "Fel",
-        description: "Kunde inte radera inlägg.",
+        description: errorMsg,
         variant: "destructive",
       });
       throw err;
