@@ -218,14 +218,6 @@ serve(async (req) => {
         );
       }
 
-      // Validate future date
-      if (new Date(date) < new Date()) {
-        return new Response(
-          JSON.stringify({ error: 'Date must be in the future' }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-
       const { data, error } = await supabaseClient
         .from('calendar_posts')
         .insert({

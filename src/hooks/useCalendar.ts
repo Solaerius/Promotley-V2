@@ -27,14 +27,32 @@ async function invokeWithRetry(
       throw new Error('not_authenticated');
     }
 
-    const { data, error } = await supabase.functions.invoke(functionName, {
-      method: options.method || 'POST',
+    // Build invoke options - only include body for non-GET requests
+    const invokeOptions: any = {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
-      },
-      body: options.body
-    });
+      }
+    };
+    
+    // supabase.functions.invoke uses POST by default, for GET we need to handle differently
+    if (options.method === 'GET') {
+      invokeOptions.method = 'GET';
+    } else if (options.method === 'DELETE') {
+      invokeOptions.method = 'DELETE';
+    } else if (options.method === 'PUT') {
+      invokeOptions.method = 'PUT';
+      if (options.body) {
+        invokeOptions.body = options.body;
+      }
+    } else {
+      // POST is default
+      if (options.body) {
+        invokeOptions.body = options.body;
+      }
+    }
+
+    const { data, error } = await supabase.functions.invoke(functionName, invokeOptions);
 
     if (error) {
       // Check if it's a 401 error
