@@ -1,12 +1,13 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, Trash2, Link as LinkIcon, Instagram, Music2, Facebook, Sun, Moon, Monitor } from "lucide-react";
+import { Download, Trash2, Link as LinkIcon, Instagram, Music2, Facebook, Sun, Moon, Monitor, XCircle } from "lucide-react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/useAuth";
 import { useConnections } from "@/hooks/useConnections";
 import { useAIProfile } from "@/hooks/useAIProfile";
+import { useUserCredits } from "@/hooks/useUserCredits";
 import logo from "@/assets/logo.png";
 import {
   AlertDialog,
@@ -31,8 +32,11 @@ const Settings = () => {
   const { signOut, user } = useAuth();
   const { connections, loadConnections, isConnected, getConnection } = useConnections();
   const { profile: aiProfile, updateProfile: updateAIProfile, loading: aiProfileLoading } = useAIProfile();
+  const { credits, getPlanLabel, refetch: refetchCredits } = useUserCredits();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
   const [companyName, setCompanyName] = useState("");
   const [originalCompanyName, setOriginalCompanyName] = useState("");
   const [isSavingCompanyName, setIsSavingCompanyName] = useState(false);
@@ -46,6 +50,8 @@ const Settings = () => {
     malsattning: "",
   });
   const [isSavingAIProfile, setIsSavingAIProfile] = useState(false);
+
+  const hasPaidPlan = credits?.plan && credits.plan !== 'free_trial';
 
   // Fetch user's company name
   useEffect(() => {
@@ -340,6 +346,42 @@ const Settings = () => {
     }
   };
 
+  const handleCancelSubscription = async () => {
+    if (!user?.id) return;
+    
+    setIsCancelling(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error('Ingen session');
+      }
+
+      const { data, error } = await supabase.functions.invoke('billing', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        body: { route: 'cancel-subscription' }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Prenumeration avslutad",
+        description: "Din prenumeration har avslutats. Du har fortfarande tillgång till slutet av din nuvarande period.",
+      });
+
+      setShowCancelDialog(false);
+      refetchCredits();
+    } catch (error) {
+      console.error('Error cancelling subscription:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte avsluta prenumerationen. Försök igen.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="max-w-4xl mx-auto animate-fade-in">
@@ -410,6 +452,30 @@ const Settings = () => {
                 <p className="text-sm text-muted-foreground mb-2">Plan och krediter</p>
                 <CreditsDisplay variant="full" showUpgrade={true} />
               </div>
+
+              {/* Subscription management */}
+              {hasPaidPlan && (
+                <div className="pt-4 border-t">
+                  <p className="text-sm text-muted-foreground mb-2">Hantera prenumeration</p>
+                  <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
+                    <div>
+                      <p className="font-medium">{getPlanLabel(credits?.plan || '')}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {credits?.renewal_date && `Förnyas ${new Date(credits.renewal_date).toLocaleDateString('sv-SE')}`}
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowCancelDialog(true)}
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <XCircle className="w-4 h-4 mr-2" />
+                      Avsluta
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </Card>
 
@@ -622,6 +688,30 @@ const Settings = () => {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {isDeleting ? "Raderar..." : "Radera mitt konto"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Cancel Subscription Dialog */}
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Avsluta prenumeration?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Din prenumeration kommer att avslutas vid slutet av din nuvarande betalningsperiod.
+              Du behåller tillgång till alla funktioner fram tills dess.
+              Du kan när som helst starta en ny prenumeration.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isCancelling}>Avbryt</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCancelSubscription}
+              disabled={isCancelling}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isCancelling ? "Avslutar..." : "Avsluta prenumeration"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
