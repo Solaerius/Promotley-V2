@@ -449,9 +449,9 @@ const Settings = () => {
                 {user?.id && (
                   <ProfileImageUpload
                     userId={user.id}
-                    currentUrl={null}
+                    currentUrl={avatarUrl}
                     type="avatar"
-                    onUploadComplete={() => {}}
+                    onUploadComplete={(url) => setAvatarUrl(url || null)}
                     size="lg"
                   />
                 )}
@@ -463,9 +463,9 @@ const Settings = () => {
                 {user?.id && (
                   <ProfileImageUpload
                     userId={user.id}
-                    currentUrl={null}
+                    currentUrl={companyLogoUrl}
                     type="company_logo"
-                    onUploadComplete={() => {}}
+                    onUploadComplete={(url) => setCompanyLogoUrl(url || null)}
                     size="lg"
                   />
                 )}
