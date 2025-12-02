@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, Trash2, Link as LinkIcon, Instagram, Music2, Facebook, Sun, Moon, Monitor, XCircle, Zap } from "lucide-react";
+import { Download, Trash2, Link as LinkIcon, Instagram, Music2, Facebook, Sun, Moon, Monitor, XCircle, Zap, User, Building } from "lucide-react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "next-themes";
@@ -10,6 +10,7 @@ import { useAIProfile } from "@/hooks/useAIProfile";
 import { useUserCredits } from "@/hooks/useUserCredits";
 import { useNavigate } from "react-router-dom";
 import logo from "@/assets/logo.png";
+import { ProfileImageUpload } from "@/components/ProfileImageUpload";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -426,6 +427,44 @@ const Settings = () => {
                   <p className="text-sm font-medium">{label}</p>
                 </button>
               ))}
+            </div>
+          </Card>
+
+          {/* Profile Images */}
+          <Card className="p-6">
+            <h2 className="text-2xl font-bold mb-4">Profilbilder</h2>
+            <p className="text-muted-foreground mb-6">
+              Ladda upp din profilbild och företagslogga
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="flex flex-col items-center p-6 border rounded-lg">
+                <User className="h-6 w-6 mb-3 text-muted-foreground" />
+                <p className="font-medium mb-4">Profilbild</p>
+                {user?.id && (
+                  <ProfileImageUpload
+                    userId={user.id}
+                    currentUrl={null}
+                    type="avatar"
+                    onUploadComplete={() => {}}
+                    size="lg"
+                  />
+                )}
+              </div>
+              
+              <div className="flex flex-col items-center p-6 border rounded-lg">
+                <Building className="h-6 w-6 mb-3 text-muted-foreground" />
+                <p className="font-medium mb-4">Företagslogga</p>
+                {user?.id && (
+                  <ProfileImageUpload
+                    userId={user.id}
+                    currentUrl={null}
+                    type="company_logo"
+                    onUploadComplete={() => {}}
+                    size="lg"
+                  />
+                )}
+              </div>
             </div>
           </Card>
 

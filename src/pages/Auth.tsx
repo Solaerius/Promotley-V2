@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { authSchema } from "@/lib/validations";
 import logo from "@/assets/logo.png";
-import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, Ban } from "lucide-react";
 import PasswordRequirements from "@/components/PasswordRequirements";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info } from "lucide-react";
@@ -40,9 +40,36 @@ const Auth = () => {
   const [resetEmail, setResetEmail] = useState("");
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [isBanned, setIsBanned] = useState(false);
+  const [banReason, setBanReason] = useState("");
   const { toast } = useToast();
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
+
+  // Check if email is banned
+  const checkBanStatus = async (emailToCheck: string): Promise<{ banned: boolean; reason?: string }> => {
+    try {
+      const { data, error } = await supabase
+        .from("banned_users")
+        .select("reason, is_permanent, expires_at")
+        .eq("email", emailToCheck.toLowerCase())
+        .maybeSingle();
+
+      if (error || !data) return { banned: false };
+
+      // Check if ban has expired
+      if (!data.is_permanent && data.expires_at) {
+        const expiresAt = new Date(data.expires_at);
+        if (expiresAt < new Date()) {
+          return { banned: false };
+        }
+      }
+
+      return { banned: true, reason: data.reason };
+    } catch {
+      return { banned: false };
+    }
+  };
 
   // Handle OAuth callback and redirect if logged in
   useEffect(() => {
@@ -113,9 +140,20 @@ const Auth = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
+    setIsBanned(false);
+    setBanReason("");
     setIsSubmitting(true);
 
     try {
+      // Check if user is banned
+      const banStatus = await checkBanStatus(email);
+      if (banStatus.banned) {
+        setIsBanned(true);
+        setBanReason(banStatus.reason || "Brott mot användarvillkor");
+        setIsSubmitting(false);
+        return;
+      }
+
       // Check password confirmation for signup
       if (!isLogin && password !== confirmPassword) {
         setErrors({ confirmPassword: "Lösenorden matchar inte" });
@@ -299,6 +337,22 @@ const Auth = () => {
             <Info className="h-4 w-4" />
             <AlertDescription>
               <strong>Skapa ett konto</strong> för att testa demon och få din personliga AI-strategi
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Banned user notice */}
+        {isBanned && (
+          <Alert className="mb-6 border-destructive bg-destructive/10">
+            <Ban className="h-4 w-4 text-destructive" />
+            <AlertDescription className="text-destructive">
+              <strong>Ditt konto har blivit spärrat.</strong>
+              <br />
+              <span className="text-sm">Anledning: {banReason}</span>
+              <br />
+              <span className="text-sm mt-2 block">
+                Kontakta <a href="mailto:support@promotley.se" className="underline">support@promotley.se</a> om du anser att detta är fel.
+              </span>
             </AlertDescription>
           </Alert>
         )}

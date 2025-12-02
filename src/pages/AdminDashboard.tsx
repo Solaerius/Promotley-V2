@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { MessageCircle, AlertCircle, Bell, Users, CheckCircle, XCircle, BookOpen, Loader2 } from "lucide-react";
+import { MessageCircle, AlertCircle, Bell, Users, CheckCircle, XCircle, BookOpen, Loader2, Shield } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -322,17 +322,29 @@ const AdminDashboard = () => {
           <CardHeader>
             <CardTitle>Snabbåtkomst</CardTitle>
           </CardHeader>
-          <CardContent className="flex gap-3">
-            <Link to="/admin/chat" className="flex-1">
+          <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <Link to="/admin/chat">
               <Button className="w-full">
                 <MessageCircle className="w-4 h-4 mr-2" />
-                Öppna Chattar
+                Chattar
               </Button>
             </Link>
-            <Link to="/admin/settings/notifications" className="flex-1">
+            <Link to="/admin/users">
+              <Button variant="outline" className="w-full">
+                <Users className="w-4 h-4 mr-2" />
+                Användare
+              </Button>
+            </Link>
+            <Link to="/admin/bans">
+              <Button variant="outline" className="w-full">
+                <Shield className="w-4 h-4 mr-2" />
+                Bannlysning
+              </Button>
+            </Link>
+            <Link to="/admin/settings/notifications">
               <Button variant="outline" className="w-full">
                 <Bell className="w-4 h-4 mr-2" />
-                Inställningar
+                Notiser
               </Button>
             </Link>
           </CardContent>

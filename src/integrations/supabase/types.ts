@@ -170,6 +170,42 @@ export type Database = {
         }
         Relationships: []
       }
+      banned_users: {
+        Row: {
+          banned_at: string
+          banned_by: string
+          email: string
+          expires_at: string | null
+          id: string
+          ip_address: string | null
+          is_permanent: boolean
+          reason: string
+          user_id: string | null
+        }
+        Insert: {
+          banned_at?: string
+          banned_by: string
+          email: string
+          expires_at?: string | null
+          id?: string
+          ip_address?: string | null
+          is_permanent?: boolean
+          reason: string
+          user_id?: string | null
+        }
+        Update: {
+          banned_at?: string
+          banned_by?: string
+          email?: string
+          expires_at?: string | null
+          id?: string
+          ip_address?: string | null
+          is_permanent?: boolean
+          reason?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       calendar_posts: {
         Row: {
           created_at: string | null
@@ -773,6 +809,8 @@ export type Database = {
       }
       users: {
         Row: {
+          avatar_url: string | null
+          company_logo_url: string | null
           company_name: string | null
           created_at: string
           credits_left: number
@@ -791,6 +829,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          avatar_url?: string | null
+          company_logo_url?: string | null
           company_name?: string | null
           created_at?: string
           credits_left?: number
@@ -809,6 +849,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          avatar_url?: string | null
+          company_logo_url?: string | null
           company_name?: string | null
           created_at?: string
           credits_left?: number
