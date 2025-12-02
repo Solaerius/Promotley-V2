@@ -119,6 +119,17 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Admin</p>
                 </div>
                 <Link
+                  to="/admin"
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                    isActive("/admin")
+                      ? "bg-gradient-primary text-white shadow-soft"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  <Shield className="w-5 h-5" />
+                  <span className="font-medium">Översikt</span>
+                </Link>
+                <Link
                   to="/admin/chat"
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                     isActive("/admin/chat")
@@ -148,7 +159,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   }`}
                 >
-                  <Shield className="w-5 h-5" />
+                  <Bell className="w-5 h-5" />
                   <span className="font-medium">Notifikationer</span>
                 </Link>
               </>
@@ -226,6 +237,18 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Admin</p>
                 </div>
                 <Link
+                  to="/admin"
+                  onClick={() => setSidebarOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                    isActive("/admin")
+                      ? "bg-gradient-primary text-white shadow-soft"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  <Shield className="w-5 h-5" />
+                  <span className="font-medium">Översikt</span>
+                </Link>
+                <Link
                   to="/admin/chat"
                   onClick={() => setSidebarOpen(false)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
@@ -258,7 +281,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   }`}
                 >
-                  <Shield className="w-5 h-5" />
+                  <Bell className="w-5 h-5" />
                   <span className="font-medium">Notifikationer</span>
                 </Link>
               </>
