@@ -50,25 +50,49 @@ serve(async (req) => {
       });
     }
 
-    // List files in the knowledge bucket
+    // List files recursively in the knowledge bucket
     const bucketName = 'promotley_knowledgebase';
-    const { data: files, error: listError } = await supabase.storage
-      .from(bucketName)
-      .list('', { limit: 100 });
-
-    if (listError) {
-      console.error('Error listing files:', listError);
-      return new Response(JSON.stringify({ error: 'Failed to list files', details: listError.message }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+    
+    // Recursive function to list all files in all folders
+    async function listAllFiles(path: string = ''): Promise<{ name: string; fullPath: string }[]> {
+      const allFiles: { name: string; fullPath: string }[] = [];
+      
+      const { data: items, error } = await supabase.storage
+        .from(bucketName)
+        .list(path, { limit: 200 });
+      
+      if (error) {
+        console.error(`Error listing path ${path}:`, error);
+        return allFiles;
+      }
+      
+      for (const item of items || []) {
+        if (!item.name) continue;
+        
+        const fullPath = path ? `${path}/${item.name}` : item.name;
+        
+        // Check if it's a folder (no metadata means it's a folder)
+        if (item.metadata === null && !item.name.includes('.')) {
+          // It's a folder, recurse into it
+          console.log(`📁 Found folder: ${fullPath}`);
+          const subFiles = await listAllFiles(fullPath);
+          allFiles.push(...subFiles);
+        } else {
+          // It's a file
+          allFiles.push({ name: item.name, fullPath });
+        }
+      }
+      
+      return allFiles;
     }
+    
+    console.log('🔍 Starting recursive file scan...');
+    const allFiles = await listAllFiles();
+    console.log(`📄 Found ${allFiles.length} files total`);
 
     const results: { file: string; status: string; category?: string }[] = [];
 
-    for (const file of files || []) {
-      if (!file.name) continue;
-      
+    for (const file of allFiles) {
       const fileName = file.name.toLowerCase();
       
       // Skip non-text files we can't easily parse
@@ -76,18 +100,20 @@ serve(async (req) => {
       const isPdf = fileName.endsWith('.pdf');
       
       if (!isTextFile && !isPdf) {
-        results.push({ file: file.name, status: 'skipped - unsupported format' });
+        results.push({ file: file.fullPath, status: 'skipped - unsupported format' });
         continue;
       }
 
       try {
-        // Download the file
+        console.log(`📥 Downloading: ${file.fullPath}`);
+        
+        // Download the file using full path
         const { data: fileData, error: downloadError } = await supabase.storage
           .from(bucketName)
-          .download(file.name);
+          .download(file.fullPath);
 
         if (downloadError || !fileData) {
-          results.push({ file: file.name, status: `error - ${downloadError?.message || 'download failed'}` });
+          results.push({ file: file.fullPath, status: `error - ${downloadError?.message || 'download failed'}` });
           continue;
         }
 
@@ -98,25 +124,24 @@ serve(async (req) => {
           content = await fileData.text();
         } else if (isPdf) {
           // For PDFs, we extract basic text content
-          // Note: This is a simplified extraction - for complex PDFs you'd need a full parser
           const arrayBuffer = await fileData.arrayBuffer();
           const bytes = new Uint8Array(arrayBuffer);
           content = extractTextFromPdf(bytes);
           
           if (!content || content.length < 50) {
-            results.push({ file: file.name, status: 'warning - PDF may be image-based or encrypted, minimal text extracted' });
-            // Still continue to save what we got
+            results.push({ file: file.fullPath, status: 'warning - PDF may be image-based or encrypted, minimal text extracted' });
           }
         }
 
         if (!content || content.trim().length === 0) {
-          results.push({ file: file.name, status: 'skipped - no content extracted' });
+          results.push({ file: file.fullPath, status: 'skipped - no content extracted' });
           continue;
         }
 
-        // Determine category from filename or path
-        const category = determineCategory(file.name);
-        const title = file.name.replace(/\.(pdf|txt|md)$/i, '').replace(/_/g, ' ');
+        // Determine category from full path (includes folder names)
+        const category = determineCategory(file.fullPath);
+        // Use full path for title to make it unique
+        const title = file.fullPath.replace(/\.(pdf|txt|md)$/i, '').replace(/_/g, ' ').replace(/\//g, ' - ');
 
         // Check if entry already exists
         const { data: existing } = await supabase
@@ -130,16 +155,16 @@ serve(async (req) => {
           const { error: updateError } = await supabase
             .from('ai_knowledge')
             .update({ 
-              content: content.substring(0, 50000), // Limit content size
+              content: content.substring(0, 50000),
               category,
               updated_at: new Date().toISOString()
             })
             .eq('id', existing.id);
 
           if (updateError) {
-            results.push({ file: file.name, status: `error - ${updateError.message}` });
+            results.push({ file: file.fullPath, status: `error - ${updateError.message}` });
           } else {
-            results.push({ file: file.name, status: 'updated', category });
+            results.push({ file: file.fullPath, status: 'updated', category });
           }
         } else {
           // Insert new entry
@@ -152,15 +177,15 @@ serve(async (req) => {
             });
 
           if (insertError) {
-            results.push({ file: file.name, status: `error - ${insertError.message}` });
+            results.push({ file: file.fullPath, status: `error - ${insertError.message}` });
           } else {
-            results.push({ file: file.name, status: 'imported', category });
+            results.push({ file: file.fullPath, status: 'imported', category });
           }
         }
       } catch (fileError: unknown) {
-        console.error(`Error processing ${file.name}:`, fileError);
+        console.error(`Error processing ${file.fullPath}:`, fileError);
         const errMsg = fileError instanceof Error ? fileError.message : 'Unknown error';
-        results.push({ file: file.name, status: `error - ${errMsg}` });
+        results.push({ file: file.fullPath, status: `error - ${errMsg}` });
       }
     }
 
@@ -171,7 +196,7 @@ serve(async (req) => {
     return new Response(JSON.stringify({
       success: true,
       summary: {
-        total: files?.length || 0,
+        total: allFiles.length,
         imported,
         updated,
         errors,
