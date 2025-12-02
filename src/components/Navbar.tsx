@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 const Navbar = () => {
   const { user } = useAuth();
-  const [isBubble, setIsBubble] = useState(true);
+  const [isBubble, setIsBubble] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
