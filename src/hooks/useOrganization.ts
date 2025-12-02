@@ -334,7 +334,10 @@ export const useOrganization = () => {
 
   // Create email invite
   const createEmailInvite = async (email: string): Promise<boolean> => {
-    if (!activeOrganization?.id || !user?.id || !session) return false;
+    if (!activeOrganization?.id || !user?.id || !session) {
+      toast.error("Du måste vara inloggad för att skicka inbjudningar");
+      return false;
+    }
 
     try {
       const { error } = await supabase
