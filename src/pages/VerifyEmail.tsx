@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,12 @@ import { Mail, RefreshCw, ArrowLeft, CheckCircle2, Clock } from "lucide-react";
 export default function VerifyEmail() {
   const { user, session } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+  
+  // Email can come from logged-in user or from navigation state (after signup)
+  const emailFromState = (location.state as { email?: string })?.email;
+  const email = user?.email || emailFromState;
   
   const [isResending, setIsResending] = useState(false);
   const [countdown, setCountdown] = useState(0);
@@ -21,11 +26,18 @@ export default function VerifyEmail() {
   const [isChangingEmail, setIsChangingEmail] = useState(false);
 
   // Get masked email
-  const maskedEmail = user?.email
-    ? user.email.replace(/(.{2})(.*)(@.*)/, "$1***$3")
+  const maskedEmail = email
+    ? email.replace(/(.{2})(.*)(@.*)/, "$1***$3")
     : "";
 
-  // Check if already verified
+  // Redirect if no email to verify
+  useEffect(() => {
+    if (!email) {
+      navigate("/auth", { replace: true });
+    }
+  }, [email, navigate]);
+
+  // Check if already verified (only for logged in users)
   useEffect(() => {
     if (user?.email_confirmed_at) {
       navigate("/dashboard", { replace: true });
@@ -56,9 +68,8 @@ export default function VerifyEmail() {
       }
     }
   }, []);
-
   const handleResend = useCallback(async () => {
-    if (countdown > 0 || isResending || !user?.email) return;
+    if (countdown > 0 || isResending || !email) return;
 
     setIsResending(true);
     try {
@@ -68,7 +79,7 @@ export default function VerifyEmail() {
         headers: currentSession?.access_token 
           ? { Authorization: `Bearer ${currentSession.access_token}` }
           : {},
-        body: { email: user.email },
+        body: { email },
       });
 
       if (response.error) {
@@ -115,7 +126,7 @@ export default function VerifyEmail() {
     } finally {
       setIsResending(false);
     }
-  }, [countdown, isResending, user?.email, toast]);
+  }, [countdown, isResending, email, toast]);
 
   const handleChangeEmail = async () => {
     if (!newEmail || !newEmail.includes("@") || isChangingEmail) return;
@@ -222,8 +233,8 @@ export default function VerifyEmail() {
             </p>
           </div>
 
-          {/* Change Email Section */}
-          {!showChangeEmail ? (
+          {/* Change Email Section - only show if user is logged in */}
+          {user && !showChangeEmail && (
             <Button
               variant="ghost"
               className="w-full text-muted-foreground"
@@ -231,7 +242,8 @@ export default function VerifyEmail() {
             >
               Byt e-postadress
             </Button>
-          ) : (
+          )}
+          {user && showChangeEmail && (
             <div className="space-y-3 p-4 bg-muted/30 rounded-lg">
               <Label htmlFor="new-email">Ny e-postadress</Label>
               <Input
@@ -264,14 +276,14 @@ export default function VerifyEmail() {
             </div>
           )}
 
-          {/* Sign Out */}
+          {/* Back to Login / Sign Out */}
           <Button
             variant="ghost"
             className="w-full text-muted-foreground"
-            onClick={handleSignOut}
+            onClick={user ? handleSignOut : () => navigate("/auth")}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Logga ut och gå tillbaka
+            {user ? "Logga ut och gå tillbaka" : "Tillbaka till inloggning"}
           </Button>
         </CardContent>
       </Card>

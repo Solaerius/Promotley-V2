@@ -165,6 +165,9 @@ const Auth = () => {
           variant: "destructive",
         });
       } else if (!isLogin) {
+        // Sign out the user immediately - they must verify email first
+        await supabase.auth.signOut();
+        
         // Send verification email with mode: signup to trigger email_confirm: false
         try {
           await supabase.functions.invoke("send-verification", {
@@ -173,7 +176,14 @@ const Auth = () => {
         } catch (emailError) {
           console.warn("Failed to send verification email:", emailError);
         }
-        navigate("/verify-email");
+        
+        toast({
+          title: "Konto skapat!",
+          description: "Kolla din inkorg och klicka på länken för att verifiera din e-post.",
+        });
+        
+        // Redirect to verify-email with email in state
+        navigate("/verify-email", { state: { email } });
       }
     } catch (error) {
       toast({
