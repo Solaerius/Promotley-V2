@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   LayoutDashboard,
   BarChart3,
@@ -48,6 +48,23 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { notifications, unreadCount, markAsRead } = useNotifications();
+  const [userAvatarUrl, setUserAvatarUrl] = useState<string | null>(null);
+
+  // Fetch user's avatar
+  useEffect(() => {
+    const fetchUserAvatar = async () => {
+      if (!user?.id) return;
+      const { data } = await supabase
+        .from('users')
+        .select('avatar_url')
+        .eq('id', user.id)
+        .single();
+      if (data?.avatar_url) {
+        setUserAvatarUrl(data.avatar_url);
+      }
+    };
+    fetchUserAvatar();
+  }, [user?.id]);
 
   // Redirect to onboarding if no organization
   useEffect(() => {
@@ -373,6 +390,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full">
                     <Avatar>
+                      <AvatarImage src={userAvatarUrl || undefined} />
                       <AvatarFallback className="bg-primary text-primary-foreground">
                         {activeOrganization?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>

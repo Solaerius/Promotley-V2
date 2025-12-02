@@ -6,12 +6,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar as CalendarIcon, Plus, Sparkles, Instagram, Music2, Facebook, Trash2, Edit, Loader2 } from "lucide-react";
+import { Calendar as CalendarIcon, Plus, Sparkles, Instagram, Music2, Facebook, Trash2, Edit, Loader2, AlertCircle } from "lucide-react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useToast } from "@/hooks/use-toast";
 import { useCalendar } from "@/hooks/useCalendar";
+import { useAIProfile } from "@/hooks/useAIProfile";
 import CalendarSkeleton from "@/components/CalendarSkeleton";
 import CalendarErrorState from "@/components/CalendarErrorState";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Link } from "react-router-dom";
 
 interface CalendarPost {
   id: string;
@@ -24,6 +27,17 @@ interface CalendarPost {
 const Calendar = () => {
   const { toast } = useToast();
   const { posts, loading, error, hasPosts, createPost, updatePost, deletePost, fetchPosts } = useCalendar();
+  const { profile: aiProfile, loading: aiProfileLoading } = useAIProfile();
+
+  // Check if AI profile is complete (at least 3 of 4 key fields)
+  const aiProfileFields = [
+    aiProfile?.branch,
+    aiProfile?.malgrupp,
+    aiProfile?.produkt_beskrivning,
+    aiProfile?.malsattning,
+  ];
+  const filledAIFields = aiProfileFields.filter(f => f && String(f).trim() !== "").length;
+  const isAIProfileComplete = filledAIFields >= 3;
   const [view, setView] = useState<"month" | "week">("month");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -165,12 +179,29 @@ const Calendar = () => {
               Planera dina inlägg och håll koll på din content-strategi
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="gradient" onClick={handleGenerateContentPlan}>
-              <Sparkles className="w-4 h-4 mr-2" />
-              Skapa plan med AI
-            </Button>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <div className="flex flex-col gap-2">
+            {!isAIProfileComplete && (
+              <Alert variant="default" className="border-amber-500/50 bg-amber-50 dark:bg-amber-950/20">
+                <AlertCircle className="h-4 w-4 text-amber-600" />
+                <AlertDescription className="text-amber-700 dark:text-amber-400 text-sm">
+                  Fyll i din{" "}
+                  <Link to="/settings" className="underline font-medium">
+                    AI-profil
+                  </Link>{" "}
+                  för att använda AI.
+                </AlertDescription>
+              </Alert>
+            )}
+            <div className="flex gap-2">
+              <Button 
+                variant="gradient" 
+                onClick={handleGenerateContentPlan}
+                disabled={!isAIProfileComplete}
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                {isAIProfileComplete ? "Skapa plan med AI" : "Fyll i AI-profil"}
+              </Button>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button onClick={() => { setEditingPost(null); setFormData({ date: "", platform: "", title: "", description: "" }); }}>
                   <Plus className="w-4 h-4 mr-2" />
@@ -235,6 +266,7 @@ const Calendar = () => {
                 </div>
               </DialogContent>
             </Dialog>
+            </div>
           </div>
         </div>
 

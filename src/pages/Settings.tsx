@@ -11,6 +11,7 @@ import { useUserCredits } from "@/hooks/useUserCredits";
 import { useNavigate } from "react-router-dom";
 import logo from "@/assets/logo.png";
 import { ProfileImageUpload } from "@/components/ProfileImageUpload";
+import { AIProfileProgress } from "@/components/AIProfileProgress";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -564,9 +565,14 @@ const Settings = () => {
           {/* AI Profile */}
           <Card className="p-6">
             <h2 className="text-2xl font-bold mb-4">AI-profil</h2>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground mb-4">
               Fyll i information om ditt företag för skräddarsydda AI-rekommendationer
             </p>
+
+            {/* AI Profile Progress Indicator */}
+            <div className="mb-6">
+              <AIProfileProgress />
+            </div>
 
             <div className="space-y-4">
               <div>

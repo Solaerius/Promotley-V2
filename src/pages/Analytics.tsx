@@ -25,13 +25,16 @@ import {
   Music2,
   Facebook,
   Sparkles,
+  AlertCircle,
 } from "lucide-react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useMetaData } from "@/hooks/useMetaData";
 import { useTikTokData } from "@/hooks/useTikTokData";
 import { useConnections } from "@/hooks/useConnections";
 import { useAnalytics } from "@/hooks/useAnalytics";
+import { useAIProfile } from "@/hooks/useAIProfile";
 import { Link } from "react-router-dom";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Analytics = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("7d");
@@ -39,6 +42,17 @@ const Analytics = () => {
   const metaData = useMetaData();
   const tiktokData = useTikTokData();
   const { data: analyticsData, loading: analyticsLoading } = useAnalytics();
+  const { profile: aiProfile, loading: aiProfileLoading } = useAIProfile();
+
+  // Check if AI profile is complete (at least 3 of 4 key fields)
+  const aiProfileFields = [
+    aiProfile?.branch,
+    aiProfile?.malgrupp,
+    aiProfile?.produkt_beskrivning,
+    aiProfile?.malsattning,
+  ];
+  const filledAIFields = aiProfileFields.filter(f => f && String(f).trim() !== "").length;
+  const isAIProfileComplete = filledAIFields >= 3;
 
   // Check if any accounts are connected
   const hasConnections = connections.length > 0;
@@ -180,8 +194,29 @@ const Analytics = () => {
             <p className="text-muted-foreground">
               Få personliga insikter och rekommendationer baserat på din data med AI-assistenten.
             </p>
-            <Button variant="gradient" size="lg">
-              Generera analys med AI
+            {!isAIProfileComplete && (
+              <Alert variant="default" className="border-amber-500/50 bg-amber-50 dark:bg-amber-950/20">
+                <AlertCircle className="h-4 w-4 text-amber-600" />
+                <AlertDescription className="text-amber-700 dark:text-amber-400">
+                  Fyll i minst 3 av 4 fält i din{" "}
+                  <Link to="/settings" className="underline font-medium">
+                    AI-profil
+                  </Link>{" "}
+                  för att använda AI-analys.
+                </AlertDescription>
+              </Alert>
+            )}
+            <Button 
+              variant="gradient" 
+              size="lg" 
+              disabled={!isAIProfileComplete}
+              asChild={isAIProfileComplete}
+            >
+              {isAIProfileComplete ? (
+                <Link to="/ai-dashboard">Generera analys med AI</Link>
+              ) : (
+                <span>Fyll i AI-profil först</span>
+              )}
             </Button>
           </CardContent>
         </Card>
