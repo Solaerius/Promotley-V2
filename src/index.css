@@ -44,6 +44,7 @@ All colors MUST be HSL.
     --gradient-accent: linear-gradient(135deg, hsl(331 56% 37%), hsl(344 45% 14%));
     --gradient-hero: linear-gradient(135deg, hsl(9 84% 59% / 0.1), hsl(331 56% 37% / 0.1));
     --gradient-warm: linear-gradient(135deg, hsl(9 84% 59%), hsl(331 56% 37%), hsl(344 45% 20%));
+    --gradient-problem: linear-gradient(180deg, hsl(9 84% 59% / 0.08), hsl(331 56% 37% / 0.12), hsl(9 84% 59% / 0.06));
     --gradient-diagonal: linear-gradient(145deg, hsl(344 45% 14%) 0%, hsl(331 56% 37%) 100%);
     
     --hero-foreground: 0 0% 100%;
@@ -91,6 +92,7 @@ All colors MUST be HSL.
     --gradient-accent: linear-gradient(135deg, hsl(331 56% 37%), hsl(344 45% 14%));
     --gradient-hero: linear-gradient(135deg, hsl(9 84% 59% / 0.2), hsl(331 56% 37% / 0.2));
     --gradient-warm: linear-gradient(135deg, hsl(9 84% 59%), hsl(331 56% 37%), hsl(344 45% 20%));
+    --gradient-problem: linear-gradient(180deg, hsl(9 84% 59% / 0.15), hsl(331 56% 37% / 0.25), hsl(344 45% 14% / 0.2));
     --gradient-diagonal: linear-gradient(145deg, hsl(344 45% 14%) 0%, hsl(331 56% 37%) 100%);
     
     --hero-foreground: 0 0% 100%;

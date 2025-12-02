@@ -14,37 +14,109 @@ import BackToTop from "@/components/BackToTop";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
 
+// Fluid transition divider between sections
+const SectionTransition = ({ 
+  fromColor = "transparent", 
+  toColor = "hsl(var(--background))",
+  height = "h-16 md:h-24"
+}: { 
+  fromColor?: string; 
+  toColor?: string;
+  height?: string;
+}) => (
+  <div 
+    className={`${height} w-full pointer-events-none`}
+    style={{
+      background: `linear-gradient(to bottom, ${fromColor}, ${toColor})`
+    }}
+  />
+);
+
 const Index = () => {
   return (
     <div className="min-h-screen">
       <Navbar />
       <Hero />
       
+      {/* Hero to Problem transition */}
+      <SectionTransition 
+        fromColor="transparent" 
+        toColor="hsl(9 84% 59% / 0.08)" 
+      />
+      
       <AnimatedSection animation="slide-up">
         <ProblemSection />
       </AnimatedSection>
+      
+      {/* Problem to HowItWorks transition */}
+      <SectionTransition 
+        fromColor="hsl(331 56% 37% / 0.06)" 
+        toColor="hsl(var(--background))" 
+      />
       
       <AnimatedSection animation="fade-in-scale" delay={100}>
         <HowItWorks />
       </AnimatedSection>
       
+      {/* HowItWorks to Results transition */}
+      <SectionTransition 
+        fromColor="hsl(var(--background))" 
+        toColor="hsl(var(--muted) / 0.5)" 
+        height="h-12 md:h-20"
+      />
+      
       <ResultsSection />
+      
+      {/* Results to AIDemo transition */}
+      <SectionTransition 
+        fromColor="hsl(var(--muted) / 0.5)" 
+        toColor="hsl(var(--background))" 
+        height="h-12 md:h-20"
+      />
       
       <AnimatedSection animation="slide-up" delay={100}>
         <AIDemoSection />
       </AnimatedSection>
       
+      {/* AIDemo to Pricing transition */}
+      <SectionTransition 
+        fromColor="hsl(var(--background))" 
+        toColor="hsl(9 84% 59% / 0.05)" 
+        height="h-12 md:h-20"
+      />
+      
       <AnimatedSection animation="fade-in" delay={100}>
         <Pricing />
       </AnimatedSection>
+      
+      {/* Pricing to Testimonials transition */}
+      <SectionTransition 
+        fromColor="hsl(9 84% 59% / 0.05)" 
+        toColor="hsl(var(--background))" 
+        height="h-12 md:h-20"
+      />
       
       <AnimatedSection animation="slide-up">
         <Testimonials />
       </AnimatedSection>
       
+      {/* Testimonials to Trust transition */}
+      <SectionTransition 
+        fromColor="hsl(var(--background))" 
+        toColor="hsl(var(--muted) / 0.3)" 
+        height="h-12 md:h-20"
+      />
+      
       <AnimatedSection animation="fade-in-scale" delay={100}>
         <TrustSection />
       </AnimatedSection>
+      
+      {/* Trust to FinalCTA transition */}
+      <SectionTransition 
+        fromColor="hsl(var(--muted) / 0.3)" 
+        toColor="hsl(9 84% 59% / 0.1)" 
+        height="h-12 md:h-20"
+      />
       
       <FinalCTA />
       

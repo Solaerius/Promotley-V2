@@ -42,7 +42,7 @@ const Hero = () => {
           </p>
 
           {/* Email Capture */}
-          <div className="max-w-md mx-auto pt-4 md:pt-6 animate-slide-up px-4" style={{ animationDelay: "0.2s" }}>
+          <div className="max-w-xl mx-auto pt-4 md:pt-6 animate-slide-up px-4" style={{ animationDelay: "0.2s" }}>
             <form className="flex flex-col sm:flex-row gap-3" onSubmit={(e) => { e.preventDefault(); window.location.href = '/auth'; }}>
               <input
                 type="email"
@@ -59,9 +59,17 @@ const Hero = () => {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </form>
-            <p className="text-xs md:text-sm text-hero-muted/70 mt-3 text-center px-2">
-              Ingen kortinformation krävs. Börja på 30 sekunder.
-            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mt-3">
+              <p className="text-xs md:text-sm text-hero-muted/70 text-center">
+                Ingen kortinformation krävs.
+              </p>
+              <Link 
+                to="/join-organization" 
+                className="text-xs md:text-sm text-hero-muted/90 hover:text-hero-foreground transition-colors underline underline-offset-2"
+              >
+                Anslut till befintligt företag
+              </Link>
+            </div>
           </div>
 
           {/* Secondary CTA */}
