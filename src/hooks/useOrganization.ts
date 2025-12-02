@@ -340,17 +340,42 @@ export const useOrganization = () => {
     }
 
     try {
-      const { error } = await supabase
+      // Create invite record in database
+      const { data: invite, error } = await supabase
         .from("organization_invites")
         .insert({
           organization_id: activeOrganization.id,
           email: email.toLowerCase(),
           created_by: user.id
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
 
-      toast.success(`Inbjudan skickad till ${email}`);
+      // Send email via edge function
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      if (!currentSession?.access_token) {
+        throw new Error("No valid session for sending email");
+      }
+
+      const { error: emailError } = await supabase.functions.invoke('send-org-invite', {
+        body: {
+          email: email.toLowerCase(),
+          organizationName: activeOrganization.name,
+          inviteCode: invite.invite_code,
+          inviterEmail: user.email
+        }
+      });
+
+      if (emailError) {
+        console.error("Error sending invite email:", emailError);
+        // Don't fail the whole operation - invite is created, just email failed
+        toast.success(`Inbjudan skapad för ${email} (mejl kunde ej skickas)`);
+      } else {
+        toast.success(`Inbjudan skickad till ${email}`);
+      }
+
       await loadInvites();
       return true;
     } catch (error) {

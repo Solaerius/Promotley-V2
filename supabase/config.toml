@@ -62,3 +62,6 @@ verify_jwt = false
 
 [functions.parse-knowledge-docs]
 verify_jwt = false
+
+[functions.send-org-invite]
+verify_jwt = true
