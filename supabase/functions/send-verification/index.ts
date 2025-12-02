@@ -223,6 +223,7 @@ serve(async (req) => {
     }
 
     // Generate magic link using Supabase Admin
+    // Magic link will both verify email and log user in
     const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
       type: "magiclink",
       email,

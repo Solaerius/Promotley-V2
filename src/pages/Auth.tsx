@@ -143,19 +143,19 @@ const Auth = () => {
       }
 
       // Perform authentication
-      const { error } = isLogin
+      const result = isLogin
         ? await signIn(email, password)
         : await signUp(email, password, companyName);
 
-      if (error) {
+      if (result.error) {
         // Handle specific error messages
         let errorMessage = "Ett fel uppstod. Försök igen.";
         
-        if (error.message.includes("Invalid login credentials")) {
+        if (result.error.message.includes("Invalid login credentials")) {
           errorMessage = "Felaktig e-post eller lösenord.";
-        } else if (error.message.includes("User already registered")) {
+        } else if (result.error.message.includes("User already registered")) {
           errorMessage = "Ett konto med denna e-post finns redan.";
-        } else if (error.message.includes("Email not confirmed")) {
+        } else if (result.error.message.includes("Email not confirmed")) {
           errorMessage = "Bekräfta din e-post innan du loggar in.";
         }
 

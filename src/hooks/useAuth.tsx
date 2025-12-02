@@ -9,7 +9,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, companyName?: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, companyName?: string) => Promise<{ error: any; needsVerification?: boolean }>;
   signOut: () => Promise<void>;
 }
 
@@ -23,20 +23,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    let hasShownToast = false;
+    let hasHandledRedirect = false;
     
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('Auth event:', event, 'Session:', !!session);
+        console.log('Auth event:', event, 'Session:', !!session, 'Email confirmed:', session?.user?.email_confirmed_at);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
         
-        // Only handle OAuth sign-in redirect
-        if (event === 'SIGNED_IN' && session && window.location.pathname === '/auth' && !hasShownToast) {
-          hasShownToast = true;
-          navigate("/dashboard");
+        // Only handle OAuth sign-in redirect (for Google login, etc.)
+        // Don't redirect for regular signups - those are handled by Auth.tsx
+        if (event === 'SIGNED_IN' && session && window.location.pathname === '/auth' && !hasHandledRedirect) {
+          // Check if this is an OAuth login (not email/password signup)
+          const isOAuth = session.user?.app_metadata?.provider !== 'email';
+          
+          if (isOAuth) {
+            hasHandledRedirect = true;
+            // OAuth users - check if email is verified
+            if (session.user?.email_confirmed_at) {
+              navigate("/dashboard");
+            } else {
+              navigate("/verify-email");
+            }
+          }
+          // For email/password signups, Auth.tsx handles the redirect
         }
       }
     );
@@ -52,12 +64,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [navigate]);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (!error) {
+    if (!error && data.user) {
+      // Check if email is verified
+      if (!data.user.email_confirmed_at) {
+        toast({
+          title: "E-post ej verifierad",
+          description: "Kontrollera din inkorg för att verifiera din e-post.",
+        });
+        navigate("/verify-email");
+        return { error: null };
+      }
+      
       toast({
         title: "Inloggning lyckades!",
         description: "Du omdirigeras till dashboard...",
@@ -69,7 +91,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signUp = async (email: string, password: string, companyName?: string) => {
-    const redirectUrl = `${window.location.origin}/dashboard`;
+    const redirectUrl = `${window.location.origin}/auth/callback`;
     
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -91,13 +113,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .eq('id', data.user.id);
       }
 
-      toast({
-        title: "Konto skapat!",
-        description: "Du kan nu logga in.",
-      });
+      // Check if email confirmation is required
+      const needsVerification = !data.user.email_confirmed_at;
+      
+      if (needsVerification) {
+        toast({
+          title: "Konto skapat!",
+          description: "Kontrollera din e-post för att verifiera ditt konto.",
+        });
+      } else {
+        toast({
+          title: "Konto skapat!",
+          description: "Du kan nu logga in.",
+        });
+      }
+
+      return { error: null, needsVerification };
     }
 
-    return { error };
+    return { error, needsVerification: false };
   };
 
   const signOut = async () => {
