@@ -26,8 +26,10 @@ import {
 const Auth = () => {
   const [searchParams] = useSearchParams();
   const fromDemo = searchParams.get('from') === 'demo';
+  const joinMode = searchParams.get('mode') === 'join';
   
   const [isLogin, setIsLogin] = useState(true);
+  const [isCreatingCompany, setIsCreatingCompany] = useState(!joinMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -165,7 +167,7 @@ const Auth = () => {
       const validation = authSchema.safeParse({
         email,
         password,
-        companyName: isLogin ? undefined : companyName,
+        companyName: isLogin ? undefined : (isCreatingCompany ? companyName : undefined),
       });
 
       if (!validation.success) {
@@ -183,7 +185,7 @@ const Auth = () => {
       // Perform authentication
       const result = isLogin
         ? await signIn(email, password)
-        : await signUp(email, password, companyName);
+        : await signUp(email, password, isCreatingCompany ? companyName : undefined);
 
       if (result.error) {
         // Handle specific error messages
@@ -357,9 +359,42 @@ const Auth = () => {
           </Alert>
         )}
 
+        {/* Account type selector for signup */}
+        {!isLogin && (
+          <div className="mb-6">
+            <Label className="text-sm font-medium mb-3 block">Vad vill du göra?</Label>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setIsCreatingCompany(true)}
+                className={`p-4 rounded-lg border-2 text-left transition-all ${
+                  isCreatingCompany 
+                    ? 'border-primary bg-primary/10' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+              >
+                <div className="font-medium text-sm">Skapa företag</div>
+                <div className="text-xs text-muted-foreground mt-1">Registrera ditt UF-företag</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsCreatingCompany(false)}
+                className={`p-4 rounded-lg border-2 text-left transition-all ${
+                  !isCreatingCompany 
+                    ? 'border-primary bg-primary/10' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+              >
+                <div className="font-medium text-sm">Gå med i företag</div>
+                <div className="text-xs text-muted-foreground mt-1">Anslut med inbjudningskod</div>
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {!isLogin && (
+          {!isLogin && isCreatingCompany && (
             <div className="space-y-2">
               <Label htmlFor="companyName">Företagsnamn</Label>
               <Input
@@ -368,8 +403,11 @@ const Auth = () => {
                 placeholder="Mitt UF-företag"
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
-                required={!isLogin}
+                required={isCreatingCompany}
               />
+              <p className="text-xs text-muted-foreground">
+                Du kan ändra detta senare i inställningarna.
+              </p>
             </div>
           )}
 

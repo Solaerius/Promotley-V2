@@ -2,8 +2,11 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import gamlastan from "@/assets/gamlastan.png";
+import { useAuth } from "@/hooks/useAuth";
 
 const Hero = () => {
+  const { user } = useAuth();
+  
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden font-poppins">
       {/* Background image with blur */}
@@ -64,7 +67,7 @@ const Hero = () => {
                 Ingen kortinformation krävs.
               </p>
               <Link 
-                to="/join-organization" 
+                to={user ? "/join-organization" : "/auth?mode=join"} 
                 className="text-xs md:text-sm text-hero-muted/90 hover:text-hero-foreground transition-colors underline underline-offset-2"
               >
                 Anslut till befintligt företag
