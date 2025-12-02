@@ -8,20 +8,8 @@ import { useAuth } from "@/hooks/useAuth";
 
 const Navbar = () => {
   const { user } = useAuth();
-  const [isBubble, setIsBubble] = useState(false);
+  const [isBubble, setIsBubble] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      // Trigger bubble after scrolling just 100px
-      setIsBubble(window.scrollY > 100);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Check initial position
-
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   return (
     <nav 
