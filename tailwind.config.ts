@@ -62,6 +62,7 @@ export default {
         'gradient-hero': 'var(--gradient-hero)',
         'gradient-warm': 'var(--gradient-warm)',
         'gradient-diagonal': 'var(--gradient-diagonal)',
+        'gradient-problem': 'var(--gradient-problem)',
       },
       boxShadow: {
         'elegant': 'var(--shadow-elegant)',

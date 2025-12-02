@@ -2,9 +2,7 @@ import { AlertCircle, CheckCircle } from "lucide-react";
 
 const ProblemSection = () => {
   return (
-    <section className="py-16 md:py-24 px-4 bg-background font-poppins">
-      {/* Sentinel for header bubble trigger */}
-      <div id="header-bubble-sentinel" aria-hidden="true" className="absolute" />
+    <section className="relative py-16 md:py-24 px-4 font-poppins" style={{ background: 'var(--gradient-problem)' }}>
       <div className="container mx-auto">
         <div className="max-w-6xl mx-auto">
           {/* Section title */}
