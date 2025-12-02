@@ -165,10 +165,10 @@ const Auth = () => {
           variant: "destructive",
         });
       } else if (!isLogin) {
-        // Send verification email and redirect to verify-email page
+        // Send verification email with mode: signup to trigger email_confirm: false
         try {
           await supabase.functions.invoke("send-verification", {
-            body: { email },
+            body: { email, mode: "signup" },
           });
         } catch (emailError) {
           console.warn("Failed to send verification email:", emailError);

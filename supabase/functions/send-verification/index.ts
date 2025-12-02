@@ -222,6 +222,20 @@ serve(async (req) => {
       );
     }
 
+    // For signup mode: Get user and set email_confirmed_at to null
+    // This ensures user must verify even though auto_confirm is enabled
+    if (mode === "signup") {
+      const { data: userData } = await supabaseAdmin.auth.admin.listUsers();
+      const targetUser = userData?.users?.find(u => u.email === email);
+      
+      if (targetUser) {
+        console.log(`Setting email_confirm: false for user ${targetUser.id}`);
+        await supabaseAdmin.auth.admin.updateUserById(targetUser.id, {
+          email_confirm: false
+        });
+      }
+    }
+
     // Generate magic link using Supabase Admin
     // Magic link will both verify email and log user in
     const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
