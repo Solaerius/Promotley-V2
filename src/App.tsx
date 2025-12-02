@@ -26,6 +26,7 @@ import AdminChat from "./pages/AdminChat";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminNotificationSettings from "./pages/AdminNotificationSettings";
 import AdminUserManagement from "./pages/AdminUserManagement";
+import AdminBanManagement from "./pages/AdminBanManagement";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
@@ -136,6 +137,14 @@ const App = () => (
               element={
                 <AdminRoute>
                   <AdminUserManagement />
+                </AdminRoute>
+              } 
+            />
+            <Route 
+              path="/admin/bans" 
+              element={
+                <AdminRoute>
+                  <AdminBanManagement />
                 </AdminRoute>
               } 
             />
