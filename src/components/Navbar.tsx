@@ -26,16 +26,14 @@ const Navbar = () => {
   return (
     <nav 
       id="site-header"
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-[750ms] ease-[cubic-bezier(0.22,0.61,0.36,1)] ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-[750ms] ease-[cubic-bezier(0.22,0.61,0.36,1)] backdrop-blur-xl ${
         isBubble 
-          ? 'mt-2 mx-4 md:mx-6 lg:mx-12 rounded-[18px] md:rounded-[22px] lg:rounded-[24px] backdrop-blur-xl shadow-elegant translate-y-[6px] opacity-100' 
-          : 'mt-0 mx-0 rounded-none bg-background/80 backdrop-blur-md border-b translate-y-0'
+          ? 'mt-2 mx-4 md:mx-6 lg:mx-12 rounded-[18px] md:rounded-[22px] lg:rounded-[24px] shadow-elegant translate-y-[6px]' 
+          : 'mt-0 mx-0 rounded-none border-b border-border/30 translate-y-0'
       }`}
       style={{
         transitionProperty: 'margin, border-radius, background-color, backdrop-filter, box-shadow, opacity, transform',
-        ...(isBubble ? {
-          background: 'linear-gradient(135deg, hsl(var(--primary) / 0.15) 0%, hsl(var(--secondary) / 0.15) 50%, hsl(var(--accent) / 0.2) 100%)',
-        } : {})
+        background: 'linear-gradient(135deg, hsl(var(--primary) / 0.12) 0%, hsl(var(--secondary) / 0.12) 50%, hsl(var(--accent) / 0.15) 100%)',
       }}
     >
       <div className="container mx-auto px-4">
