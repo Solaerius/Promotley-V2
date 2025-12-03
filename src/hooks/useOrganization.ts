@@ -30,6 +30,7 @@ export interface OrganizationMember {
   credits_used: number;
   joined_at: string;
   user_email?: string;
+  user_avatar?: string;
 }
 
 export interface OrganizationInvite {
@@ -145,17 +146,21 @@ export const useOrganization = () => {
 
       if (error) throw error;
 
-      // Get user emails
+      // Get user emails and avatars
       const memberIds = data?.map(m => m.user_id) || [];
       const { data: users } = await supabase
         .from("users")
-        .select("id, email")
+        .select("id, email, avatar_url")
         .in("id", memberIds);
 
-      const membersWithEmail = data?.map(m => ({
-        ...m,
-        user_email: users?.find(u => u.id === m.user_id)?.email
-      })) || [];
+      const membersWithEmail = data?.map(m => {
+        const userInfo = users?.find(u => u.id === m.user_id);
+        return {
+          ...m,
+          user_email: userInfo?.email,
+          user_avatar: userInfo?.avatar_url
+        };
+      }) || [];
 
       setMembers(membersWithEmail as OrganizationMember[]);
     } catch (error) {
