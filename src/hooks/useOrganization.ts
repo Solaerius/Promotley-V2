@@ -133,34 +133,46 @@ export const useOrganization = () => {
     }
   }, [user?.id, activeOrganization?.id, session]);
 
-  // Load all members of active organization
+  // Load all members of active organization with user info via single join query
   const loadMembers = useCallback(async () => {
     if (!activeOrganization?.id || !session) return;
 
     try {
       const { data, error } = await supabase
         .from("organization_members")
-        .select("*")
+        .select(`
+          id,
+          organization_id,
+          user_id,
+          role,
+          permissions,
+          credit_limit,
+          credits_used,
+          joined_at,
+          users (
+            id,
+            email,
+            avatar_url
+          )
+        `)
         .eq("organization_id", activeOrganization.id)
         .order("joined_at", { ascending: true });
 
       if (error) throw error;
 
-      // Get user emails and avatars
-      const memberIds = data?.map(m => m.user_id) || [];
-      const { data: users } = await supabase
-        .from("users")
-        .select("id, email, avatar_url")
-        .in("id", memberIds);
-
-      const membersWithEmail = data?.map(m => {
-        const userInfo = users?.find(u => u.id === m.user_id);
-        return {
-          ...m,
-          user_email: userInfo?.email,
-          user_avatar: userInfo?.avatar_url
-        };
-      }) || [];
+      // Map joined data to our interface
+      const membersWithEmail = (data || []).map((m: any) => ({
+        id: m.id,
+        organization_id: m.organization_id,
+        user_id: m.user_id,
+        role: m.role,
+        permissions: m.permissions,
+        credit_limit: m.credit_limit,
+        credits_used: m.credits_used,
+        joined_at: m.joined_at,
+        user_email: m.users?.email ?? "Okänd användare",
+        user_avatar: m.users?.avatar_url ?? null
+      }));
 
       setMembers(membersWithEmail as OrganizationMember[]);
     } catch (error) {
