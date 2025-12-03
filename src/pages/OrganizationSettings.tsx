@@ -314,13 +314,14 @@ export default function OrganizationSettings() {
                   >
                     <div className="flex items-center gap-3">
                       <Avatar>
+                        <AvatarImage src={member.user_avatar || undefined} />
                         <AvatarFallback>
                           {member.user_email?.substring(0, 2).toUpperCase() || "??"}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <div className="flex items-center gap-2">
-                          <p className="font-medium">{member.user_email}</p>
+                          <p className="font-medium">{member.user_email || "Okänd användare"}</p>
                           {member.role === "founder" && (
                             <Badge variant="default" className="bg-yellow-500">
                               <Crown className="h-3 w-3 mr-1" />
