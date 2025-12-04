@@ -30,9 +30,15 @@ export const useAnalytics = (platform?: string) => {
         return;
       }
 
-      const path = platform ? `analytics/${platform}` : 'analytics';
-      const { data: result, error } = await supabase.functions.invoke(path, {
-        method: 'GET'
+      // Build request body with platform if specified
+      const body = platform ? { platform } : {};
+
+      const { data: result, error } = await supabase.functions.invoke('analytics', {
+        method: 'GET',
+        body,
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
+        }
       });
 
       if (error) throw error;
@@ -65,7 +71,10 @@ export const useAnalytics = (platform?: string) => {
 
       const { data: result, error } = await supabase.functions.invoke('analytics', {
         method: 'POST',
-        body: analyticsData
+        body: analyticsData,
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
+        }
       });
 
       if (error) throw error;

@@ -31,9 +31,16 @@ serve(async (req) => {
       );
     }
 
-    const url = new URL(req.url);
-    const pathParts = url.pathname.split('/').filter(Boolean);
-    const platform = pathParts[pathParts.length - 1];
+    // Get platform from body if provided
+    let platform: string | undefined;
+    if (req.method === 'GET') {
+      try {
+        const body = await req.json().catch(() => ({}));
+        platform = body?.platform;
+      } catch {
+        platform = undefined;
+      }
+    }
 
     if (req.method === 'GET') {
       let query = supabaseClient
