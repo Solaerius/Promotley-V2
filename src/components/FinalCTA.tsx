@@ -4,60 +4,52 @@ import { Link } from "react-router-dom";
 
 const FinalCTA = () => {
   return (
-    <section className="relative py-20 md:py-28 px-4 bg-gradient-warm overflow-hidden font-poppins">
-      {/* Animated background elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-48 h-48 md:w-72 md:h-72 bg-primary/20 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-1/4 right-1/4 w-48 h-48 md:w-72 md:h-72 bg-accent/20 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }} />
-      </div>
+    <section className="relative py-24 md:py-32 px-4 bg-gradient-diagonal overflow-hidden font-poppins">
+      {/* Decorative elements */}
+      <div className="absolute top-1/4 left-10 w-64 h-64 bg-primary/15 rounded-full blur-3xl animate-float" />
+      <div className="absolute bottom-1/4 right-10 w-80 h-80 bg-accent/15 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }} />
 
       <div className="container mx-auto relative z-10">
-        <div className="max-w-4xl mx-auto text-center space-y-6 md:space-y-8">
+        <div className="max-w-3xl mx-auto text-center space-y-8">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-hero-foreground/20 backdrop-blur-sm rounded-full border border-hero-foreground/30 text-hero-foreground text-xs md:text-sm font-semibold">
-            <Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4" />
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 text-white text-sm font-medium">
+            <Sparkles className="w-4 h-4" />
             Börja din tillväxtresa idag
           </div>
 
           {/* Headline */}
-          <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold text-hero-foreground leading-tight px-2">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight px-2">
             Nästa virala inlägg{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-hero-foreground via-primary-glow to-hero-foreground">
+            <span className="text-primary-glow">
               börjar här
             </span>
           </h2>
 
           {/* Subtext */}
-          <p className="text-base sm:text-lg md:text-2xl text-hero-muted max-w-2xl mx-auto px-4 leading-relaxed">
+          <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto px-4 leading-relaxed">
             Få din personliga innehållsstrategi - anpassad efter din budget, bransch och tillgängliga tid
           </p>
 
           {/* CTA Button */}
-          <div className="pt-6 md:pt-8">
+          <div className="pt-4">
             <Link to="/auth">
               <Button
                 size="lg"
-                className="text-base sm:text-lg md:text-xl px-8 sm:px-10 md:px-12 py-6 md:py-8 bg-card text-primary hover:bg-card/90 hover:scale-110 transition-all duration-300 shadow-glow font-bold"
+                className="text-lg px-10 py-7 bg-white text-primary hover:bg-white/90 hover:scale-105 transition-all duration-300 shadow-xl font-bold"
               >
                 Starta gratis
-                <ArrowRight className="w-5 h-5 md:w-6 md:h-6 ml-2" />
+                <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
           </div>
 
           {/* Social proof */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 pt-6 md:pt-8 text-hero-muted px-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm md:text-base font-medium">Gratis strategisession</span>
-            </div>
-            <div className="hidden sm:block w-1 h-1 rounded-full bg-hero-foreground/40" />
-            <div className="flex items-center gap-2">
-              <span className="text-sm md:text-base font-medium">Ingen betalmetod krävs</span>
-            </div>
-            <div className="hidden sm:block w-1 h-1 rounded-full bg-hero-foreground/40" />
-            <div className="flex items-center gap-2">
-              <span className="text-sm md:text-base font-medium">Avsluta när du vill</span>
-            </div>
+          <div className="flex flex-wrap items-center justify-center gap-6 pt-6 text-white/70">
+            <span className="text-sm font-medium">✓ Gratis strategisession</span>
+            <span className="hidden sm:inline text-white/30">•</span>
+            <span className="text-sm font-medium">✓ Ingen betalmetod krävs</span>
+            <span className="hidden sm:inline text-white/30">•</span>
+            <span className="text-sm font-medium">✓ Avsluta när du vill</span>
           </div>
         </div>
       </div>

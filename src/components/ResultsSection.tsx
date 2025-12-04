@@ -36,15 +36,17 @@ const ResultsSection = () => {
   return (
     <section 
       ref={ref as any}
-      className="relative py-20 md:py-28 px-4 bg-gradient-diagonal overflow-hidden font-poppins"
+      className="py-24 md:py-32 px-4 bg-gradient-diagonal overflow-hidden font-poppins relative"
     >
-      {/* Decorative glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] md:w-[700px] md:h-[700px] bg-primary/15 rounded-full blur-3xl animate-glow-pulse" />
+      {/* Decorative elements */}
+      <div className="absolute top-0 left-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-0 w-80 h-80 bg-accent/10 rounded-full blur-3xl" />
       
       <div className="container mx-auto relative z-10 max-w-6xl">
         {/* Header */}
-        <div className="max-w-2xl mx-auto text-center mb-14 md:mb-20 space-y-4">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white px-2 leading-tight text-balance">
+        <div className="max-w-2xl mx-auto text-center mb-16 md:mb-20 space-y-4">
+          <p className="text-sm font-semibold text-primary-glow uppercase tracking-wider">Resultat</p>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white px-2 leading-tight text-balance">
             När strategi möter{" "}
             <span className="text-primary-glow">
               verkliga resultat
@@ -55,8 +57,8 @@ const ResultsSection = () => {
           </p>
         </div>
 
-        {/* Stats cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
+        {/* Stats cards - Horizontal layout like Augmend */}
+        <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             const count = useCountUp({ 
@@ -68,23 +70,27 @@ const ResultsSection = () => {
             return (
               <Card
                 key={index}
-                className="p-6 md:p-8 bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/15 transition-all duration-300 text-center"
+                className="p-6 md:p-8 bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all duration-300"
                 style={{ 
                   transitionDelay: `${index * 100}ms`,
                   opacity: isVisible ? 1 : 0,
                   transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
                 }}
               >
-                <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-white/10 flex items-center justify-center">
-                  <Icon className="w-6 h-6 text-primary-glow" />
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+                    <Icon className="w-6 h-6 text-primary-glow" />
+                  </div>
+                  <div>
+                    <div className="text-sm text-white/60 mb-1">
+                      {stat.label}
+                    </div>
+                    <div className="text-3xl md:text-4xl font-bold text-white tabular-nums">
+                      {count}{stat.suffix}
+                    </div>
+                  </div>
                 </div>
-                <div className="text-3xl md:text-4xl font-bold mb-2 text-white tabular-nums">
-                  {count}{stat.suffix}
-                </div>
-                <div className="text-white/90 text-base font-medium mb-2">
-                  {stat.label}
-                </div>
-                <p className="text-white/60 text-sm leading-relaxed">
+                <p className="text-white/50 text-sm mt-4 leading-relaxed">
                   {stat.description}
                 </p>
               </Card>

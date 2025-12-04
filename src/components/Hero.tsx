@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, TrendingUp } from "lucide-react";
+import { ArrowRight, TrendingUp, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import gamlastan from "@/assets/gamlastan.png";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,91 +9,84 @@ const Hero = () => {
   
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden font-poppins">
-      {/* Background image with blur */}
+      {/* Background image */}
       <div className="absolute inset-0">
         <img 
           src={gamlastan} 
           alt="Stockholm Gamla Stan background" 
-          className="w-full h-full object-cover object-[center_67%] blur-[2px] opacity-50"
+          className="w-full h-full object-cover object-[center_67%] blur-[3px] opacity-40"
         />
       </div>
       
-      {/* Animated gradient background overlay */}
-      <div className="absolute inset-0 bg-gradient-warm opacity-40" />
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
       
       {/* Floating glow elements */}
-      <div className="absolute top-20 left-5 md:left-10 w-48 h-48 md:w-72 md:h-72 bg-primary/20 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-20 right-5 md:right-10 w-64 h-64 md:w-96 md:h-96 bg-accent/20 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }} />
+      <div className="absolute top-32 left-10 w-64 h-64 md:w-96 md:h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
+      <div className="absolute bottom-32 right-10 w-72 h-72 md:w-[28rem] md:h-[28rem] bg-accent/10 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }} />
       
       {/* Content */}
-      <div className="container relative z-10 px-4 py-24 md:py-32 mx-auto">
-        <div className="max-w-3xl mx-auto text-center space-y-6 md:space-y-8">
+      <div className="container relative z-10 px-4 py-32 md:py-40 mx-auto">
+        <div className="max-w-4xl mx-auto text-center space-y-8 md:space-y-10">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 backdrop-blur-sm rounded-full border border-primary/20 text-foreground text-sm font-medium animate-fade-in">
+            <Sparkles className="w-4 h-4 text-primary" />
+            AI-driven marknadsföring för UF-företag
+          </div>
+
           {/* Main Headline */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight animate-fade-in text-hero-foreground leading-[1.1] px-2 text-balance">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight animate-fade-in text-foreground leading-[1.1] px-2 text-balance">
             Bli företaget alla{" "}
-            <span className="relative inline-block">
-              <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-hero-foreground via-primary-glow to-hero-foreground">
-                pratar om
-              </span>
-              <span className="absolute inset-0 blur-xl bg-gradient-to-r from-primary via-accent to-primary opacity-40" />
+            <span className="text-transparent bg-clip-text bg-gradient-primary">
+              pratar om
             </span>
           </h1>
 
           {/* Subheadline */}
-          <p className="text-base sm:text-lg md:text-xl text-hero-muted max-w-xl mx-auto leading-relaxed animate-slide-up font-medium px-4">
+          <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-slide-up font-medium px-4">
             AI som hjälper UF-företag och startups att växa snabbare på sociala medier
           </p>
 
           {/* CTA Buttons */}
-          <div className="max-w-xl mx-auto pt-4 md:pt-6 animate-slide-up px-4" style={{ animationDelay: "0.2s" }}>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-              <Link to="/auth">
-                <Button 
-                  variant="gradient" 
-                  size="lg"
-                  className="text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-4 shadow-elegant font-semibold whitespace-nowrap h-auto"
-                >
-                  Starta gratis
-                  <ArrowRight className="w-4 h-4 ml-1" />
-                </Button>
-              </Link>
-              <span className="text-hero-muted/60 text-sm font-medium">eller</span>
-              <Link to={user ? "/join-organization" : "/auth?mode=join"}>
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  className="text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-4 border border-white/20 text-white/90 hover:bg-white/10 backdrop-blur-sm transition-all duration-300 font-medium whitespace-nowrap h-auto"
-                >
-                  Anslut till företag
-                </Button>
-              </Link>
-            </div>
-            <p className="text-xs md:text-sm text-hero-muted/60 text-center mt-4">
-              Ingen kortinformation krävs.
-            </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 animate-slide-up px-4" style={{ animationDelay: "0.2s" }}>
+            <Link to="/auth">
+              <Button variant="gradient" size="lg" className="text-base sm:text-lg px-8 sm:px-10 py-6 shadow-elegant font-semibold">
+                Starta gratis
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </Link>
+            <Link to={user ? "/join-organization" : "/auth?mode=join"}>
+              <Button variant="outline" size="lg" className="text-base sm:text-lg px-8 sm:px-10 py-6 border-border/50 hover:bg-accent/5 font-medium">
+                Anslut till företag
+              </Button>
+            </Link>
           </div>
 
-          {/* Secondary CTA */}
-          <div className="pt-2 animate-slide-up px-4" style={{ animationDelay: "0.3s" }}>
+          {/* Secondary link */}
+          <div className="animate-slide-up" style={{ animationDelay: "0.3s" }}>
             <a href="#how-it-works">
-              <Button 
-                variant="ghost" 
-                size="lg" 
-                className="text-sm sm:text-base px-5 sm:px-6 py-2.5 text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 font-medium"
-              >
+              <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
                 Se hur det funkar
+                <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </a>
           </div>
 
-          {/* Social proof badge */}
-          <div className="flex items-center justify-center gap-2 pt-6 md:pt-8 text-hero-muted animate-fade-in px-4" style={{ animationDelay: "0.4s" }}>
-            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-              <TrendingUp className="w-4 h-4 text-primary-glow" />
+          {/* Social proof */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8 text-muted-foreground animate-fade-in" style={{ animationDelay: "0.4s" }}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-primary" />
+              </div>
+              <div className="text-left">
+                <p className="font-bold text-foreground">100+</p>
+                <p className="text-sm">UF-företag växer med oss</p>
+              </div>
             </div>
-            <p className="text-xs sm:text-sm font-medium">
-              <span className="font-bold text-hero-foreground">100+</span> UF-företag växer redan med Promotley
-            </p>
+            <div className="hidden sm:block w-px h-10 bg-border" />
+            <div className="text-sm">
+              <span className="text-foreground font-medium">Ingen kortinformation krävs</span>
+            </div>
           </div>
         </div>
       </div>
