@@ -503,12 +503,27 @@ Användarens företagsprofil:
       });
 
       const knowledgeContext = Object.keys(knowledgeByCategory).length > 0 ? `
-KUNSKAPSBAS:
+KUNSKAPSBAS (CITERA EXAKT VID FRÅGOR OM UF-REGLER ELLER TÄVLINGAR):
 ${Object.entries(knowledgeByCategory).map(([category, items]) => `
 ## ${category.toUpperCase().replace(/_/g, ' ')}
-${items.map((k: any) => `${k.title}: ${k.content.substring(0, 500)}...`).join('\n\n')}
+${items.map((k: any) => `### ${k.title}\nFULL INNEHÅLL:\n${k.content}`).join('\n\n')}
 `).join('\n')}
 ` : '';
+
+      // Determine AI model based on user plan
+      // Model mapping: Starter → gpt-4o-mini, Growth → gpt-4.1-mini-2025-04-14, Pro → gpt-5-mini-2025-08-07
+      let aiModel = 'gpt-4o-mini';
+      switch (userData?.plan) {
+        case 'growth':
+          aiModel = 'gpt-4.1-mini-2025-04-14';
+          break;
+        case 'pro':
+          aiModel = 'gpt-5-mini-2025-08-07';
+          break;
+        default:
+          aiModel = 'gpt-4o-mini';
+      }
+      console.log('🤖 Using AI model:', aiModel, 'for plan:', userData?.plan);
 
       const messages = [
         {
@@ -531,6 +546,20 @@ ANVÄNDARENS KONTEXT:
 ${profileInfo}
 
 ${knowledgeContext}
+
+## KRITISK REGEL: EXAKT CITERING FRÅN KUNSKAPSBASEN
+
+När användaren frågar om specifika UF-regler, tävlingskriterier, bedömningspunkter, eller vill skriva texter för tävlingar:
+
+1) CITERA ALLTID EXAKT OCH ORDAGRANT från kunskapsbasen - förkorta eller sammanfatta ALDRIG
+2) Om kunskapsbasen innehåller en lista med t.ex. 5 punkter, inkludera ALLA punkter i ditt svar - hoppa inte över någon
+3) Använd exakt samma formuleringar som finns i kunskapsbasen
+4) Om informationen finns i kunskapsbasen, inled med: "Enligt UF:s riktlinjer:" följt av exakt citat
+5) När användaren vill skriva text för en tävling, använd ALLA relevanta bedömningskriterier för att strukturera svaret
+
+Exempel:
+- Fråga: "Vad bedömer juryn i Årets Innovation?" → Lista SAMTLIGA bedömningspunkter exakt som de står i kunskapsbasen
+- Fråga: "Hjälp mig skriva för Årets Innovation" → Strukturera svaret efter ALLA officiella bedömningskriterier
 
 ## KRITISK REGEL: Hämta faktisk data innan du svarar
 
@@ -613,11 +642,12 @@ Kom ihåg: Du är här för att hjälpa UF-företagare att växa sina företag s
       console.log('Calling OpenAI...');
 
       // Call OpenAI API with tool calling support
+      // Use dynamic model based on user plan
       const requestBody: any = {
-        model: 'gpt-4o-mini',
+        model: aiModel,
         messages: messages,
         temperature: 0.7,
-        max_tokens: 1000,
+        max_tokens: 1500, // Increased to allow for complete citations
       };
 
       if (tools.length > 0) {

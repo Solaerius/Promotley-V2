@@ -119,6 +119,7 @@ serve(async (req) => {
     }
 
     // Determine tier and enforce model policy
+    // Model mapping: Starter → gpt-4o-mini, Growth → gpt-4.1-mini-2025-04-14, Pro → gpt-5-mini-2025-08-07
     let tier = 'starter';
     let aiModel = 'gpt-4o-mini';
     let estimatedCost = 2;
@@ -131,12 +132,12 @@ serve(async (req) => {
         break;
       case 'growth':
         tier = 'growth';
-        aiModel = 'gpt-4o-mini';
+        aiModel = 'gpt-4.1-mini-2025-04-14';
         estimatedCost = 1;
         break;
       case 'pro':
         tier = 'pro';
-        aiModel = 'gpt-4o';
+        aiModel = 'gpt-5-mini-2025-08-07';
         estimatedCost = 1;
         break;
     }
@@ -235,7 +236,7 @@ serve(async (req) => {
       
       dynamicKnowledge = Object.entries(knowledgeByCategory).map(([category, items]) => `
 ## ${category.toUpperCase().replace(/_/g, ' ')}
-${items.map(k => `### ${k.title}\n${k.content}`).join('\n\n')}
+${items.map(k => `### ${k.title}\n\nFULL INNEHÅLL (CITERA EXAKT VID FRÅGOR):\n${k.content}`).join('\n\n')}
 `).join('\n\n');
     }
 
@@ -253,6 +254,19 @@ Du HÅLLER ALLTID dig till UF-reglerna och ger råd som hjälper företaget att:
 - Bygga ett professionellt och hållbart företag
 
 Ton: professionell, energisk, modern, enkel att förstå, motiverande.
+
+KRITISK REGEL - EXAKT CITERING FRÅN KUNSKAPSBASEN:
+När användaren frågar om specifika UF-regler, tävlingskriterier, bedömningspunkter eller vill skriva texter för tävlingar:
+1) Citera ALLTID exakt och ordagrant från kunskapsbasen - förkorta eller sammanfatta ALDRIG
+2) Om kunskapsbasen innehåller en lista med t.ex. 5 punkter, inkludera ALLA 5 punkter i ditt svar
+3) Använd exakt samma formuleringar som finns i kunskapsbasen
+4) Om informationen finns i kunskapsbasen, skriv: "Enligt UF:s riktlinjer: [exakt citat]"
+5) När användaren vill skriva text för en tävling (t.ex. Årets Innovation), använd alla relevanta bedömningskriterier för att strukturera svaret
+
+Exempel på frågor som kräver exakt citering:
+- "Vad bedömer juryn i Årets Innovation?" → Lista ALLA bedömningspunkter exakt som de står
+- "Vilka kriterier finns för SM i UF?" → Citera alla kriterier ordagrant
+- "Hjälp mig skriva för tävlingen" → Basera strukturen på ALLA officiella bedömningskriterier
 
 TEXTFORMATERING - KRITISKT:
 - ENDAST ren text i alla fält
