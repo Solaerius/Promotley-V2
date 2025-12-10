@@ -4,20 +4,17 @@ import {
   LayoutDashboard, 
   BarChart3, 
   Calendar, 
-  MessageSquare,
   Sparkles,
-  Settings,
-  Building2
+  User
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
-  { name: "Hem", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Home", href: "/dashboard", icon: LayoutDashboard },
   { name: "Statistik", href: "/analytics", icon: BarChart3 },
+  { name: "AI", href: "/ai", icon: Sparkles },
   { name: "Kalender", href: "/calendar", icon: Calendar },
-  { name: "AI", href: "/ai-chat", icon: MessageSquare },
-  { name: "Org", href: "/organization/settings", icon: Building2 },
-  { name: "Konto", href: "/settings", icon: Settings },
+  { name: "Konto", href: "/account", icon: User },
 ];
 
 export function BottomTabBar() {
@@ -27,11 +24,13 @@ export function BottomTabBar() {
     if (path === "/dashboard") {
       return location.pathname === "/dashboard" || location.pathname === "/";
     }
-    if (path === "/ai-chat") {
-      return location.pathname.startsWith("/ai-chat") || location.pathname.startsWith("/ai-dashboard");
+    if (path === "/ai") {
+      return location.pathname.startsWith("/ai");
     }
-    if (path === "/organization/settings") {
-      return location.pathname.startsWith("/organization");
+    if (path === "/account") {
+      return location.pathname.startsWith("/account") || 
+             location.pathname.startsWith("/settings") || 
+             location.pathname.startsWith("/organization");
     }
     return location.pathname.startsWith(path);
   };
