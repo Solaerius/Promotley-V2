@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Trash2, User, Building, Zap, Save } from "lucide-react";
+import { Trash2, User, Building, Zap, Save, CreditCard, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useAIProfile } from "@/hooks/useAIProfile";
@@ -13,6 +13,8 @@ import { ProfileImageUpload } from "@/components/ProfileImageUpload";
 import { AIProfileProgress } from "@/components/AIProfileProgress";
 import CreditsDisplay from "@/components/CreditsDisplay";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { SWISH_PLANS } from "@/lib/swishConfig";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,11 +29,14 @@ import {
 const AccountContent = () => {
   const { toast } = useToast();
   const { signOut, user } = useAuth();
+  const navigate = useNavigate();
   const { profile: aiProfile, updateProfile: updateAIProfile, loading: aiProfileLoading } = useAIProfile();
   const { credits, getPlanLabel, refetch: refetchCredits } = useUserCredits();
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
   const [companyName, setCompanyName] = useState("");
   const [originalCompanyName, setOriginalCompanyName] = useState("");
   const [isSavingCompanyName, setIsSavingCompanyName] = useState(false);
@@ -109,6 +114,30 @@ const AccountContent = () => {
     }
   };
 
+  const handleCancelSubscription = async () => {
+    if (!user?.id) return;
+    setIsCancelling(true);
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ 
+          plan: 'free_trial',
+          max_credits: 1,
+          credits_left: 0,
+          renewal_date: null
+        })
+        .eq('id', user.id);
+      if (error) throw error;
+      toast({ title: "Prenumeration avslutad", description: "Din plan har återställts." });
+      refetchCredits();
+      setShowCancelDialog(false);
+    } catch (error) {
+      toast({ title: "Fel", description: "Kunde inte avsluta prenumerationen", variant: "destructive" });
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
   const confirmDeleteAccount = async () => {
     if (!user?.id) return;
     setIsDeleting(true);
@@ -132,6 +161,8 @@ const AccountContent = () => {
     })
   };
 
+  const hasActivePlan = credits?.plan && !['free_trial'].includes(credits.plan);
+
   return (
     <div className="space-y-8 max-w-2xl mx-auto">
       {/* Credits & Plan */}
@@ -148,8 +179,29 @@ const AccountContent = () => {
           </div>
           <h2 className="text-xl font-semibold">Plan & Krediter</h2>
         </div>
-        <div className="bg-muted/30 rounded-2xl p-6">
+        <div className="bg-muted/30 rounded-2xl p-6 space-y-4">
           <CreditsDisplay variant="full" />
+          
+          <div className="flex flex-wrap gap-3 pt-4 border-t border-border/50">
+            <Button 
+              onClick={() => navigate('/pricing')}
+              className="gap-2"
+            >
+              <CreditCard className="w-4 h-4" />
+              {hasActivePlan ? "Uppgradera plan" : "Köp krediter"}
+            </Button>
+            
+            {hasActivePlan && (
+              <Button 
+                variant="outline"
+                onClick={() => setShowCancelDialog(true)}
+                className="gap-2 text-destructive hover:text-destructive"
+              >
+                <XCircle className="w-4 h-4" />
+                Avsluta prenumeration
+              </Button>
+            )}
+          </div>
         </div>
       </motion.section>
 
@@ -346,6 +398,27 @@ const AccountContent = () => {
             <AlertDialogCancel>Avbryt</AlertDialogCancel>
             <AlertDialogAction onClick={confirmDeleteAccount} disabled={isDeleting}>
               {isDeleting ? "Raderar..." : "Radera"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Avsluta prenumeration?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Din nuvarande plan ({credits ? getPlanLabel(credits.plan) : ''}) avslutas och du förlorar tillgång till dina krediter. Du kan alltid köpa en ny plan senare.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Behåll plan</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleCancelSubscription} 
+              disabled={isCancelling}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {isCancelling ? "Avslutar..." : "Avsluta prenumeration"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
