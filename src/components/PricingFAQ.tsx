@@ -31,16 +31,16 @@ const faqs = [
 const PricingFAQ = () => {
   return (
     <div className="max-w-3xl mx-auto mt-20 px-4">
-      <h3 className="text-3xl font-bold text-center mb-8">
+      <h3 className="text-3xl font-bold text-center mb-8 text-white">
         Vanliga frågor
       </h3>
       <Accordion type="single" collapsible className="w-full">
         {faqs.map((faq, index) => (
-          <AccordionItem key={index} value={`item-${index}`}>
-            <AccordionTrigger className="text-left text-lg font-semibold">
+          <AccordionItem key={index} value={`item-${index}`} className="border-white/10">
+            <AccordionTrigger className="text-left text-lg font-semibold text-white hover:text-white/80">
               {faq.question}
             </AccordionTrigger>
-            <AccordionContent className="text-muted-foreground leading-relaxed">
+            <AccordionContent className="text-white/60 leading-relaxed">
               {faq.answer}
             </AccordionContent>
           </AccordionItem>

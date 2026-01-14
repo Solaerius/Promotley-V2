@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Check, ArrowRight } from "lucide-react";
+import { Check, ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import PricingFAQ from "./PricingFAQ";
 
@@ -55,18 +55,28 @@ const plans = [
 
 const Pricing = () => {
   return (
-    <section id="pricing" className="py-24 md:py-32 px-4 bg-background font-poppins">
-      <div className="container mx-auto">
+    <section id="pricing" className="relative py-24 md:py-32 px-4 overflow-hidden font-poppins">
+      {/* Gradient background */}
+      <div className="absolute inset-0 bg-gradient-diagonal" />
+      
+      {/* Blur orbs */}
+      <div className="blur-orb blur-orb-primary w-[600px] h-[600px] -top-48 left-1/4 animate-glow-pulse" />
+      <div className="blur-orb blur-orb-secondary w-96 h-96 bottom-0 right-0 animate-glow-pulse" style={{ animationDelay: '1.5s' }} />
+      
+      <div className="container mx-auto relative z-10">
         {/* Section header */}
         <div className="max-w-3xl mx-auto text-center mb-16 md:mb-20 space-y-4">
-          <p className="text-sm font-semibold text-primary uppercase tracking-wider">Priser</p>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold px-2 leading-tight">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
+            <Sparkles className="w-4 h-4 text-white" />
+            <span className="text-sm font-medium text-white">Priser</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold px-2 leading-tight text-white">
             Enkla priser,{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-primary">
+            <span className="text-gradient">
               kraftfulla resultat
             </span>
           </h2>
-          <p className="text-base md:text-lg text-muted-foreground px-4">
+          <p className="text-base md:text-lg text-white/70 px-4">
             Välj den plan som passar ditt företags tillväxtfas
           </p>
         </div>
@@ -76,10 +86,10 @@ const Pricing = () => {
           {plans.map((plan, index) => (
             <Card
               key={index}
-              className={`relative p-6 md:p-8 bg-card transition-all duration-300 hover:-translate-y-1 ${
+              className={`relative p-6 md:p-8 transition-all duration-300 hover:-translate-y-1 backdrop-blur-sm ${
                 plan.popular
-                  ? "border-2 border-primary shadow-elegant lg:scale-105"
-                  : "border border-border/50 hover:border-primary/30 hover:shadow-lg"
+                  ? "bg-white/15 border-2 border-white/40 shadow-glow lg:scale-105"
+                  : "bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 hover:shadow-lg"
               }`}
             >
               {plan.popular && (
@@ -93,19 +103,19 @@ const Pricing = () => {
               <div className="space-y-6">
                 {/* Plan header */}
                 <div>
-                  <h3 className="text-xl md:text-2xl font-bold">{plan.name}</h3>
-                  <p className="text-sm text-muted-foreground mt-2">{plan.description}</p>
+                  <h3 className="text-xl md:text-2xl font-bold text-white">{plan.name}</h3>
+                  <p className="text-sm text-white/60 mt-2">{plan.description}</p>
                 </div>
 
                 {/* Price */}
-                <div className="pb-4 border-b border-border/50">
+                <div className="pb-4 border-b border-white/10">
                   <div className="flex items-baseline gap-1">
-                    <span className="text-4xl md:text-5xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground">kr/mån</span>
+                    <span className="text-4xl md:text-5xl font-bold text-white">{plan.price}</span>
+                    <span className="text-white/60">kr/mån</span>
                   </div>
                   <div className="flex items-center gap-2 mt-2">
-                    <span className="text-2xl font-bold text-primary">{plan.credits}</span>
-                    <span className="text-sm text-muted-foreground">krediter/mån</span>
+                    <span className="text-2xl font-bold text-gradient">{plan.credits}</span>
+                    <span className="text-sm text-white/60">krediter/mån</span>
                   </div>
                 </div>
 
@@ -113,10 +123,10 @@ const Pricing = () => {
                 <ul className="space-y-3">
                   {plan.features.map((feature, fIndex) => (
                     <li key={fIndex} className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                        <Check className="w-3 h-3 text-primary" />
+                      <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <Check className="w-3 h-3 text-green-400" />
                       </div>
-                      <span className="text-sm">{feature}</span>
+                      <span className="text-sm text-white/80">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -124,8 +134,11 @@ const Pricing = () => {
                 {/* CTA */}
                 <Link to={`/swish-checkout?plan=${index === 0 ? 'starter' : index === 1 ? 'growth' : 'pro'}`} className="block pt-2">
                   <Button
-                    variant={plan.popular ? "gradient" : "outline"}
-                    className="w-full"
+                    className={`w-full ${
+                      plan.popular 
+                        ? "bg-white text-accent hover:bg-white/90 shadow-lg" 
+                        : "bg-white/10 text-white hover:bg-white/20 border border-white/20"
+                    }`}
                     size="lg"
                   >
                     Betala med Swish
@@ -138,7 +151,7 @@ const Pricing = () => {
         </div>
 
         {/* Bottom note */}
-        <p className="text-center text-muted-foreground mt-12 text-sm md:text-base px-4">
+        <p className="text-center text-white/60 mt-12 text-sm md:text-base px-4">
           Skapa din första strategi gratis · Ingen betalmetod krävs · Avsluta när du vill
         </p>
 

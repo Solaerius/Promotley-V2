@@ -26,22 +26,26 @@ const trustFeatures = [
 
 const TrustSection = () => {
   return (
-    <section className="relative py-24 md:py-32 bg-background overflow-hidden">
-      {/* Subtle background */}
-      <div className="absolute inset-0 bg-gradient-surface" />
+    <section className="relative py-24 md:py-32 overflow-hidden">
+      {/* Gradient background instead of plain */}
+      <div className="absolute inset-0 bg-gradient-diagonal" />
+      
+      {/* Blur orbs */}
+      <div className="blur-orb blur-orb-secondary w-96 h-96 top-0 left-0 animate-glow-pulse" />
+      <div className="blur-orb blur-orb-primary w-80 h-80 bottom-0 right-0 animate-glow-pulse" style={{ animationDelay: '1.5s' }} />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10 max-w-6xl">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-success/10 border border-success/20 mb-6">
-            <Shield className="w-4 h-4 text-success" />
-            <span className="text-sm font-medium text-success">Säkerhet & Integritet</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-6 backdrop-blur-sm">
+            <Shield className="w-4 h-4 text-green-400" />
+            <span className="text-sm font-medium text-white">Säkerhet & Integritet</span>
           </div>
           
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4" style={{ textWrap: 'balance' }}>
-            Din data är trygg hos oss
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4" style={{ textWrap: 'balance' }}>
+            Din data är <span className="text-gradient">trygg hos oss</span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto" style={{ textWrap: 'balance' }}>
+          <p className="text-lg text-white/70 max-w-2xl mx-auto" style={{ textWrap: 'balance' }}>
             Vi tar säkerhet och integritet på största allvar
           </p>
         </div>
@@ -53,16 +57,16 @@ const TrustSection = () => {
             return (
               <Card 
                 key={index}
-                className="card-unified group"
+                className="bg-white/5 backdrop-blur-sm border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 group"
               >
                 <CardContent className="p-6">
-                  <div className="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <Icon className="w-6 h-6 text-success" />
+                  <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <Icon className="w-6 h-6 text-green-400" />
                   </div>
-                  <h3 className="font-semibold text-foreground mb-2">
+                  <h3 className="font-semibold text-white mb-2">
                     {feature.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-sm text-white/60 leading-relaxed">
                     {feature.description}
                   </p>
                 </CardContent>
@@ -73,10 +77,10 @@ const TrustSection = () => {
 
         {/* Bottom Trust Badge */}
         <div className="mt-12 text-center">
-          <Card className="inline-block bg-muted/50 border-border/50">
+          <Card className="inline-block bg-white/5 border-white/10 backdrop-blur-sm">
             <CardContent className="p-4 flex items-center gap-3">
-              <Lock className="w-5 h-5 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">
+              <Lock className="w-5 h-5 text-white/60" />
+              <p className="text-sm text-white/60">
                 256-bit SSL • Data lagras säkert inom EU • GDPR-kompatibel
               </p>
             </CardContent>

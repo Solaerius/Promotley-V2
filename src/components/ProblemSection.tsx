@@ -3,9 +3,14 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const ProblemSection = () => {
   return (
-    <section className="relative py-24 md:py-32 bg-background overflow-hidden section-transition-down">
-      {/* Subtle top transition from dark hero */}
-      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-accent/20 to-transparent pointer-events-none" />
+    <section className="relative py-24 md:py-32 overflow-hidden">
+      {/* Gradient background instead of plain */}
+      <div className="absolute inset-0 bg-gradient-diagonal opacity-30" />
+      <div className="absolute inset-0 bg-background/80" />
+      
+      {/* Blur orbs */}
+      <div className="blur-orb blur-orb-primary w-96 h-96 -top-32 right-0 animate-glow-pulse" />
+      <div className="blur-orb blur-orb-secondary w-80 h-80 bottom-0 -left-20 animate-glow-pulse" style={{ animationDelay: '1s' }} />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10 max-w-6xl">
         {/* Section header */}
@@ -79,7 +84,7 @@ const ProblemSection = () => {
                 ].map((item, idx) => (
                   <li key={idx} className="flex items-start gap-4 text-foreground">
                     <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                      <span className="text-primary text-sm font-bold">✓</span>
+                      <span className="text-gradient text-sm font-bold">✓</span>
                     </span>
                     <span className="text-base font-medium">{item}</span>
                   </li>
@@ -91,11 +96,14 @@ const ProblemSection = () => {
 
         {/* Transition arrow for mobile */}
         <div className="flex justify-center mt-8 md:hidden">
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-            <ArrowRight className="w-5 h-5 text-primary" />
+          <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center shadow-lg">
+            <ArrowRight className="w-5 h-5 text-white" />
           </div>
         </div>
       </div>
+      
+      {/* Bottom transition to next section */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-accent to-transparent pointer-events-none z-20" />
     </section>
   );
 };
