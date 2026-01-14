@@ -27,12 +27,21 @@ const trustFeatures = [
 const TrustSection = () => {
   return (
     <section className="relative py-24 md:py-32 overflow-hidden">
-      {/* Gradient background instead of plain */}
+      {/* Gradient background */}
       <div className="absolute inset-0 bg-gradient-diagonal" />
       
-      {/* Blur orbs */}
-      <div className="blur-orb blur-orb-secondary w-96 h-96 top-0 left-0 animate-glow-pulse" />
-      <div className="blur-orb blur-orb-primary w-80 h-80 bottom-0 right-0 animate-glow-pulse" style={{ animationDelay: '1.5s' }} />
+      {/* Fluid blur orbs */}
+      <div className="blur-orb blur-orb-secondary w-[500px] h-[500px] top-0 left-0 animate-glow-pulse" />
+      <div className="blur-orb blur-orb-primary w-[400px] h-[400px] bottom-0 right-0 animate-glow-pulse" style={{ animationDelay: '1.5s' }} />
+      
+      {/* Top blend */}
+      <div 
+        className="absolute top-0 left-0 right-0 h-48 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to bottom, hsl(344 55% 12%) 0%, transparent 100%)',
+          filter: 'blur(30px)',
+        }}
+      />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10 max-w-6xl">
         {/* Section Header */}
@@ -87,6 +96,15 @@ const TrustSection = () => {
           </Card>
         </div>
       </div>
+      
+      {/* Bottom blend */}
+      <div 
+        className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to top, hsl(344 55% 12%) 0%, transparent 100%)',
+          filter: 'blur(30px)',
+        }}
+      />
     </section>
   );
 };

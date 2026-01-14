@@ -30,9 +30,18 @@ const AIDemoSection = () => {
       {/* Gradient background */}
       <div className="absolute inset-0 bg-gradient-diagonal" />
       
-      {/* Blur orbs */}
-      <div className="blur-orb blur-orb-primary w-[500px] h-[500px] -top-32 -right-32 animate-glow-pulse" />
-      <div className="blur-orb blur-orb-secondary w-96 h-96 bottom-0 left-0 animate-glow-pulse" style={{ animationDelay: '1s' }} />
+      {/* Fluid blur orbs */}
+      <div className="blur-orb blur-orb-primary w-[600px] h-[600px] -top-32 -right-32 animate-glow-pulse" />
+      <div className="blur-orb blur-orb-secondary w-[500px] h-[500px] bottom-0 left-0 animate-glow-pulse" style={{ animationDelay: '1s' }} />
+      
+      {/* Top blend */}
+      <div 
+        className="absolute top-0 left-0 right-0 h-48 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to bottom, hsl(344 55% 12%) 0%, transparent 100%)',
+          filter: 'blur(30px)',
+        }}
+      />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10 max-w-6xl">
         {/* Header */}
@@ -132,6 +141,15 @@ const AIDemoSection = () => {
           </div>
         </div>
       </div>
+      
+      {/* Bottom blend */}
+      <div 
+        className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to top, hsl(344 55% 12%) 0%, transparent 100%)',
+          filter: 'blur(30px)',
+        }}
+      />
     </section>
   );
 };

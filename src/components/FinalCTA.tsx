@@ -11,12 +11,21 @@ const benefits = [
 const FinalCTA = () => {
   return (
     <section className="relative py-24 md:py-32 overflow-hidden">
-      {/* Vibrant gradient background - matching hero */}
+      {/* Vibrant gradient background */}
       <div className="absolute inset-0 bg-gradient-diagonal" />
       
       {/* Animated blur orbs */}
-      <div className="blur-orb blur-orb-primary w-[600px] h-[600px] -top-64 left-1/2 -translate-x-1/2 animate-glow-pulse" />
-      <div className="blur-orb blur-orb-secondary w-[400px] h-[400px] bottom-0 right-0 animate-glow-pulse" style={{ animationDelay: '1s' }} />
+      <div className="blur-orb blur-orb-primary w-[700px] h-[700px] -top-64 left-1/2 -translate-x-1/2 animate-glow-pulse" />
+      <div className="blur-orb blur-orb-secondary w-[500px] h-[500px] bottom-0 right-0 animate-glow-pulse" style={{ animationDelay: '1s' }} />
+      
+      {/* Top blend */}
+      <div 
+        className="absolute top-0 left-0 right-0 h-48 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to bottom, hsl(344 55% 12%) 0%, transparent 100%)',
+          filter: 'blur(30px)',
+        }}
+      />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="max-w-3xl mx-auto text-center">

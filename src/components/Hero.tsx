@@ -16,7 +16,6 @@ const Hero = () => {
   });
 
   useEffect(() => {
-    // Staggered entrance animations
     const timers = [
       setTimeout(() => setIsLoaded(true), 100),
       setTimeout(() => setShowElements(prev => ({ ...prev, badge: true })), 200),
@@ -30,18 +29,27 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 pb-16">
-      {/* Vibrant gradient background - restored */}
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 pb-32">
+      {/* Vibrant gradient background */}
       <div className="absolute inset-0 bg-gradient-diagonal" />
       
-      {/* Animated blur orbs */}
-      <div className="blur-orb blur-orb-primary w-[600px] h-[600px] -top-48 -right-48 animate-glow-pulse" />
-      <div className="blur-orb blur-orb-secondary w-[500px] h-[500px] bottom-0 -left-32 animate-glow-pulse" style={{ animationDelay: '1.5s' }} />
-      <div className="blur-orb blur-orb-primary w-[300px] h-[300px] top-1/2 left-1/4 animate-glow-pulse" style={{ animationDelay: '0.75s' }} />
+      {/* Animated blur orbs for fluid feel */}
+      <div className="blur-orb blur-orb-primary w-[700px] h-[700px] -top-48 -right-48 animate-glow-pulse" />
+      <div className="blur-orb blur-orb-secondary w-[600px] h-[600px] bottom-0 -left-32 animate-glow-pulse" style={{ animationDelay: '1.5s' }} />
+      <div className="blur-orb blur-orb-primary w-[400px] h-[400px] top-1/2 left-1/4 animate-glow-pulse" style={{ animationDelay: '0.75s' }} />
+      
+      {/* Extra large blur for bottom transition */}
+      <div 
+        className="absolute bottom-0 left-0 right-0 h-64 pointer-events-none z-10"
+        style={{
+          background: 'linear-gradient(to top, hsl(344 55% 12% / 0.8) 0%, transparent 100%)',
+          filter: 'blur(40px)',
+        }}
+      />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Badge with bounce animation */}
+          {/* Badge */}
           <div 
             className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-8 backdrop-blur-sm ${
               showElements.badge ? 'animate-bounce-in' : 'opacity-0'
@@ -51,7 +59,7 @@ const Hero = () => {
             <span className="text-sm font-medium text-white">AI-driven marknadsföring för UF-företag</span>
           </div>
 
-          {/* Main Headline with blur-in animation */}
+          {/* Main Headline */}
           <h1 
             className={`text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 leading-tight text-white ${
               showElements.headline ? 'animate-blur-in' : 'opacity-0'
@@ -64,7 +72,7 @@ const Hero = () => {
             </span>
           </h1>
 
-          {/* Subheadline with fade animation */}
+          {/* Subheadline */}
           <p 
             className={`text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-10 leading-relaxed ${
               showElements.subheadline ? 'animate-blur-in' : 'opacity-0'
@@ -75,7 +83,7 @@ const Hero = () => {
             som hjälper ditt UF-företag att växa på sociala medier.
           </p>
 
-          {/* CTA Buttons with staggered slide animation */}
+          {/* CTA Buttons */}
           <div 
             className={`flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 ${
               showElements.buttons ? 'animate-blur-in' : 'opacity-0'
@@ -106,7 +114,7 @@ const Hero = () => {
             )}
           </div>
 
-          {/* Social Proof with staggered fade */}
+          {/* Social Proof */}
           <div 
             className={`flex flex-wrap items-center justify-center gap-6 text-sm text-white/70 ${
               showElements.social ? 'animate-blur-in' : 'opacity-0'

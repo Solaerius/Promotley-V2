@@ -167,32 +167,86 @@
     background: var(--gradient-diagonal);
   }
   
-  /* Section transitions */
-  .section-transition-down {
+  /* Seamless section blending */
+  .section-blend {
     position: relative;
   }
-  .section-transition-down::after {
+  .section-blend::before {
     content: '';
     position: absolute;
-    bottom: 0;
+    top: -80px;
     left: 0;
     right: 0;
-    height: 150px;
-    background: linear-gradient(to bottom, transparent, hsl(344 55% 12%));
+    height: 160px;
+    background: linear-gradient(to bottom, 
+      hsl(var(--accent) / 0.9) 0%, 
+      hsl(var(--secondary) / 0.4) 30%,
+      transparent 100%
+    );
+    filter: blur(40px);
     pointer-events: none;
-    z-index: 1;
+    z-index: 5;
   }
-  .section-transition-up {
+  .section-blend::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    left: 0;
+    right: 0;
+    height: 160px;
+    background: linear-gradient(to top, 
+      hsl(var(--accent) / 0.9) 0%, 
+      hsl(var(--secondary) / 0.4) 30%,
+      transparent 100%
+    );
+    filter: blur(40px);
+    pointer-events: none;
+    z-index: 5;
+  }
+  
+  /* Fluid section transitions */
+  .section-fluid {
     position: relative;
   }
-  .section-transition-up::before {
-    content: '';
+  .section-fluid-top {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 150px;
-    background: linear-gradient(to top, transparent, hsl(344 55% 12%));
+    height: 200px;
+    background: linear-gradient(180deg, 
+      hsl(344 55% 12% / 1) 0%,
+      hsl(331 65% 28% / 0.6) 40%,
+      transparent 100%
+    );
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .section-fluid-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: linear-gradient(0deg, 
+      hsl(344 55% 12% / 1) 0%,
+      hsl(331 65% 28% / 0.6) 40%,
+      transparent 100%
+    );
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: 2;
+  }
+  
+  /* Mesh gradient overlay for seamless blending */
+  .mesh-blend {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 50% at 50% 0%, hsl(9 85% 48% / 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 40% at 20% 100%, hsl(331 65% 35% / 0.2) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 40% at 80% 100%, hsl(344 55% 20% / 0.2) 0%, transparent 50%);
     pointer-events: none;
     z-index: 1;
   }

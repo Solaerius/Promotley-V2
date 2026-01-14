@@ -4,13 +4,22 @@ import { Card, CardContent } from "@/components/ui/card";
 const ProblemSection = () => {
   return (
     <section className="relative py-24 md:py-32 overflow-hidden">
-      {/* Gradient background instead of plain */}
-      <div className="absolute inset-0 bg-gradient-diagonal opacity-30" />
-      <div className="absolute inset-0 bg-background/80" />
+      {/* Blended gradient background */}
+      <div className="absolute inset-0 bg-gradient-diagonal opacity-40" />
+      <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" />
       
-      {/* Blur orbs */}
-      <div className="blur-orb blur-orb-primary w-96 h-96 -top-32 right-0 animate-glow-pulse" />
-      <div className="blur-orb blur-orb-secondary w-80 h-80 bottom-0 -left-20 animate-glow-pulse" style={{ animationDelay: '1s' }} />
+      {/* Fluid blur orbs */}
+      <div className="blur-orb blur-orb-primary w-[500px] h-[500px] -top-32 right-0 animate-glow-pulse" />
+      <div className="blur-orb blur-orb-secondary w-[400px] h-[400px] bottom-0 -left-20 animate-glow-pulse" style={{ animationDelay: '1s' }} />
+      
+      {/* Top blend */}
+      <div 
+        className="absolute top-0 left-0 right-0 h-48 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to bottom, hsl(344 55% 12% / 0.6) 0%, transparent 100%)',
+          filter: 'blur(30px)',
+        }}
+      />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10 max-w-6xl">
         {/* Section header */}
@@ -59,7 +68,6 @@ const ProblemSection = () => {
 
           {/* After - Solution */}
           <Card className="card-unified border-primary/30 bg-gradient-warm relative">
-            {/* Recommended badge */}
             <div className="absolute -top-3 right-8">
               <span className="bg-gradient-primary text-primary-foreground px-4 py-1.5 rounded-full text-xs font-semibold shadow-md">
                 Rekommenderat
@@ -94,7 +102,7 @@ const ProblemSection = () => {
           </Card>
         </div>
 
-        {/* Transition arrow for mobile */}
+        {/* Mobile arrow */}
         <div className="flex justify-center mt-8 md:hidden">
           <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center shadow-lg">
             <ArrowRight className="w-5 h-5 text-white" />
@@ -102,8 +110,14 @@ const ProblemSection = () => {
         </div>
       </div>
       
-      {/* Bottom transition to next section */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-accent to-transparent pointer-events-none z-20" />
+      {/* Bottom blend */}
+      <div 
+        className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to top, hsl(344 55% 12% / 0.8) 0%, transparent 100%)',
+          filter: 'blur(30px)',
+        }}
+      />
     </section>
   );
 };

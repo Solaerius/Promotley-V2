@@ -31,22 +31,32 @@ const testimonials = [
 const Testimonials = () => {
   return (
     <section className="relative py-24 md:py-32 overflow-hidden">
-      {/* Background with diagonal gradient - matching ResultsSection */}
+      {/* Background with diagonal gradient */}
       <div className="absolute inset-0 bg-gradient-diagonal" />
       
-      {/* Subtle decorative element */}
-      <div className="blur-orb blur-orb-secondary w-96 h-96 bottom-0 left-0" />
+      {/* Fluid blur orbs */}
+      <div className="blur-orb blur-orb-secondary w-[500px] h-[500px] top-0 left-0 animate-glow-pulse" />
+      <div className="blur-orb blur-orb-primary w-[400px] h-[400px] bottom-0 right-1/4 animate-glow-pulse" style={{ animationDelay: '1.2s' }} />
+      
+      {/* Top blend */}
+      <div 
+        className="absolute top-0 left-0 right-0 h-48 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to bottom, hsl(344 55% 12%) 0%, transparent 100%)',
+          filter: 'blur(30px)',
+        }}
+      />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10 max-w-6xl">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-6 backdrop-blur-sm">
             <Star className="w-4 h-4 text-white fill-white" />
             <span className="text-sm font-medium text-white">Testimonials</span>
           </div>
           
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4" style={{ textWrap: 'balance' }}>
-            Vad säger andra företag?
+            Vad säger <span className="text-gradient">andra företag?</span>
           </h2>
           <p className="text-lg text-white/70 max-w-2xl mx-auto" style={{ textWrap: 'balance' }}>
             Hundratals UF-företag och startups växer redan med oss
@@ -93,6 +103,15 @@ const Testimonials = () => {
           ))}
         </div>
       </div>
+      
+      {/* Bottom blend */}
+      <div 
+        className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to top, hsl(344 55% 12%) 0%, transparent 100%)',
+          filter: 'blur(30px)',
+        }}
+      />
     </section>
   );
 };
