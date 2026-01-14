@@ -102,11 +102,11 @@ const Hero = () => {
             
             {!user && (
               <Link to="/join">
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  className="text-base px-8 py-6 border-white/30 text-black hover:bg-white/10 hover:border-white/50 transition-all duration-300 backdrop-blur-sm"
-                >
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="text-base px-8 py-6 border-white/30 text-white hover:bg-white/10 hover:border-white/50 transition-all duration-300 backdrop-blur-sm"
+              >
                   <Users className="mr-2 h-5 w-5" />
                   Anslut till företag
                 </Button>
