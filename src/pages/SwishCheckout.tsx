@@ -281,11 +281,11 @@ const SwishCheckout = () => {
               </div>
 
               {/* QR Code - Static image */}
-              <div className="bg-white rounded-2xl p-8 mx-auto w-fit shadow-lg">
+              <div className="flex justify-center">
                 <img
                   src={qrImagePath}
                   alt="Swish QR-kod"
-                  className="w-[220px] h-[220px] object-contain"
+                  className="w-[320px] h-auto"
                 />
               </div>
 
