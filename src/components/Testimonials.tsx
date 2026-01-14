@@ -52,7 +52,7 @@ const Testimonials = () => {
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-6 backdrop-blur-sm">
             <Star className="w-4 h-4 text-white fill-white" />
-            <span className="text-sm font-medium text-white">Testimonials</span>
+            <span className="text-sm font-medium text-white">Recensioner</span>
           </div>
           
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4" style={{ textWrap: 'balance' }}>
