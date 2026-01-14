@@ -81,6 +81,17 @@ export const CREDIT_PACKAGES = {
 export type SwishPlanType = keyof typeof SWISH_PLANS;
 export type CreditPackageType = keyof typeof CREDIT_PACKAGES;
 
+// Static QR code images mapping
+export const SWISH_QR_IMAGES: Record<string, string> = {
+  starter: "/swish/starter.png",
+  growth: "/swish/growth.png",
+  pro: "/swish/pro.png",
+  mini: "/swish/credits-mini.png",
+  small: "/swish/credits-small.png",
+  medium: "/swish/credits-medium.png",
+  large: "/swish/credits-large.png",
+};
+
 // Generate order ID
 export function generateOrderId(): string {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

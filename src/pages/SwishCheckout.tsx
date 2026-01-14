@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { QRCodeSVG } from "qrcode.react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Loader2, ArrowLeft, Smartphone, CreditCard, Zap } from "lucide-react";
+import { Check, Loader2, ArrowLeft, Smartphone, CreditCard, Zap, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,10 +13,9 @@ import {
   CREDIT_PACKAGES,
   SwishPlanType, 
   CreditPackageType,
-  generateOrderId, 
-  generateSwishMessage,
-  generateSwishQRData,
-  SWISH_CONFIG
+  generateOrderId,
+  SWISH_CONFIG,
+  SWISH_QR_IMAGES
 } from "@/lib/swishConfig";
 
 const SwishCheckout = () => {
@@ -100,8 +98,14 @@ const SwishCheckout = () => {
     );
   }
 
-  const swishMessage = generateSwishMessage(itemName, orderId);
-  const qrData = generateSwishQRData(itemPrice, swishMessage);
+  // Get the correct QR image path
+  const qrImageKey = isPlanPurchase ? planParam : packageParam;
+  const qrImagePath = qrImageKey ? SWISH_QR_IMAGES[qrImageKey] : "";
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${label} kopierat!`);
+  };
 
   const handleDetailsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,7 +134,7 @@ const SwishCheckout = () => {
         company_name: formData.companyName || null,
         plan: orderType,
         amount: itemPrice,
-        swish_message: swishMessage,
+        swish_message: orderId,
         status: "pending",
       });
 
@@ -272,48 +276,78 @@ const SwishCheckout = () => {
               <div className="text-center space-y-2">
                 <h2 className="text-2xl font-bold">Betala med Swish</h2>
                 <p className="text-muted-foreground">
-                  Scanna QR-koden med Swish-appen för att betala
+                  Scanna QR-koden och skriv in belopp samt meddelande manuellt
                 </p>
               </div>
 
-              {/* QR Code */}
+              {/* QR Code - Static image */}
               <div className="bg-white rounded-2xl p-8 mx-auto w-fit shadow-lg">
-                <QRCodeSVG
-                  value={qrData}
-                  size={220}
-                  level="M"
-                  includeMargin={false}
+                <img
+                  src={qrImagePath}
+                  alt="Swish QR-kod"
+                  className="w-[220px] h-[220px] object-contain"
                 />
               </div>
 
-              {/* Payment details */}
+              {/* Important notice */}
+              <div className="bg-amber-50 dark:bg-amber-950/30 rounded-xl p-4 border border-amber-200 dark:border-amber-800">
+                <p className="text-sm text-amber-800 dark:text-amber-200 font-medium text-center">
+                  ⚠️ Viktigt: Skriv in beloppet och meddelandet manuellt i Swish-appen
+                </p>
+              </div>
+
+              {/* Payment details with copy buttons */}
               <div className="bg-muted/30 rounded-2xl p-6 border border-border/50 space-y-4">
-                <div className="flex items-center gap-3">
-                  <Smartphone className="w-5 h-5 text-primary" />
-                  <span className="font-medium">Swish-nummer:</span>
-                  <span className="text-muted-foreground">{SWISH_CONFIG.phoneNumber}</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Smartphone className="w-5 h-5 text-primary" />
+                    <span className="font-medium">Swish-nummer:</span>
+                    <span className="text-muted-foreground">{SWISH_CONFIG.phoneNumber}</span>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => copyToClipboard(SWISH_CONFIG.phoneNumber, "Nummer")}
+                  >
+                    <Copy className="w-3 h-3 mr-1" />
+                    Kopiera
+                  </Button>
                 </div>
                 
-                <div className="flex items-start gap-3">
-                  <CreditCard className="w-5 h-5 text-primary mt-0.5" />
-                  <div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <CreditCard className="w-5 h-5 text-primary" />
                     <span className="font-medium">Belopp:</span>
-                    <span className="text-muted-foreground ml-2">{itemPrice} kr</span>
+                    <span className="text-xl font-bold text-primary">{itemPrice} kr</span>
                   </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => copyToClipboard(itemPrice.toString(), "Belopp")}
+                  >
+                    <Copy className="w-3 h-3 mr-1" />
+                    Kopiera
+                  </Button>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 flex items-center justify-center text-primary font-bold">M</div>
-                  <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 flex items-center justify-center text-primary font-bold">M</div>
                     <span className="font-medium">Meddelande:</span>
-                    <p className="text-sm text-muted-foreground break-all mt-1 bg-muted/50 p-2 rounded font-mono">
-                      {swishMessage}
-                    </p>
+                    <span className="font-mono bg-muted/50 px-2 py-1 rounded text-sm font-bold">{orderId}</span>
                   </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => copyToClipboard(orderId, "Order-kod")}
+                  >
+                    <Copy className="w-3 h-3 mr-1" />
+                    Kopiera
+                  </Button>
                 </div>
 
-                <p className="text-xs text-muted-foreground text-center pt-2">
-                  Kontrollera att meddelandet och beloppet stämmer i Swish-appen innan du bekräftar betalningen.
+                <p className="text-xs text-muted-foreground text-center pt-2 border-t border-border/50 mt-4">
+                  Kopiera och klistra in meddelandet exakt som det står ovan. Detta behövs för att vi ska kunna verifiera din betalning.
                 </p>
               </div>
 
