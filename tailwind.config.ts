@@ -60,6 +60,25 @@ export default {
           foreground: "hsl(var(--hero-foreground))",
           muted: "hsl(var(--hero-foreground-muted))",
         },
+        // New surface tokens
+        surface: {
+          base: "hsl(var(--surface-base))",
+          raised: "hsl(var(--surface-raised))",
+          overlay: "hsl(var(--surface-overlay))",
+          elevated: "hsl(var(--surface-elevated))",
+          muted: "hsl(var(--surface-muted))",
+        },
+        // Warm & cool brand colors
+        warm: {
+          1: "hsl(var(--warm-1))",
+          2: "hsl(var(--warm-2))",
+          3: "hsl(var(--warm-3))",
+        },
+        cool: {
+          1: "hsl(var(--cool-1))",
+          2: "hsl(var(--cool-2))",
+          3: "hsl(var(--cool-3))",
+        },
       },
       fontFamily: {
         'poppins': ['Poppins', 'sans-serif'],
