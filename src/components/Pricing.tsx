@@ -59,9 +59,18 @@ const Pricing = () => {
       {/* Gradient background */}
       <div className="absolute inset-0 bg-gradient-diagonal" />
       
-      {/* Blur orbs */}
-      <div className="blur-orb blur-orb-primary w-[600px] h-[600px] -top-48 left-1/4 animate-glow-pulse" />
-      <div className="blur-orb blur-orb-secondary w-96 h-96 bottom-0 right-0 animate-glow-pulse" style={{ animationDelay: '1.5s' }} />
+      {/* Fluid blur orbs */}
+      <div className="blur-orb blur-orb-primary w-[700px] h-[700px] -top-48 left-1/4 animate-glow-pulse" />
+      <div className="blur-orb blur-orb-secondary w-[500px] h-[500px] bottom-0 right-0 animate-glow-pulse" style={{ animationDelay: '1.5s' }} />
+      
+      {/* Top blend */}
+      <div 
+        className="absolute top-0 left-0 right-0 h-48 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to bottom, hsl(344 55% 12%) 0%, transparent 100%)',
+          filter: 'blur(30px)',
+        }}
+      />
       
       <div className="container mx-auto relative z-10">
         {/* Section header */}
@@ -158,6 +167,15 @@ const Pricing = () => {
         {/* FAQ Section */}
         <PricingFAQ />
       </div>
+      
+      {/* Bottom blend */}
+      <div 
+        className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to top, hsl(344 55% 12%) 0%, transparent 100%)',
+          filter: 'blur(30px)',
+        }}
+      />
     </section>
   );
 };
