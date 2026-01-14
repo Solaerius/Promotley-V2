@@ -1,5 +1,5 @@
 import { Shield, Lock, Eye, FileCheck } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 const trustFeatures = [
   {
@@ -26,55 +26,60 @@ const trustFeatures = [
 
 const TrustSection = () => {
   return (
-    <section className="py-24 md:py-32 px-4 bg-muted/30 font-poppins">
-      <div className="container mx-auto">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-16 md:mb-20 space-y-4">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-medium">
-              <Shield className="w-4 h-4" />
-              Säkerhet & Integritet
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold px-2 leading-tight">
-              Din data är trygg hos oss
-            </h2>
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
-              Vi tar säkerhet och integritet på största allvar. Din information delas aldrig med tredje part.
-            </p>
+    <section className="relative py-24 md:py-32 bg-background overflow-hidden">
+      {/* Subtle background */}
+      <div className="absolute inset-0 bg-gradient-surface" />
+      
+      <div className="container mx-auto px-4 md:px-6 relative z-10 max-w-6xl">
+        {/* Section Header */}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-success/10 border border-success/20 mb-6">
+            <Shield className="w-4 h-4 text-success" />
+            <span className="text-sm font-medium text-success">Säkerhet & Integritet</span>
           </div>
+          
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4" style={{ textWrap: 'balance' }}>
+            Din data är trygg hos oss
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto" style={{ textWrap: 'balance' }}>
+            Vi tar säkerhet och integritet på största allvar
+          </p>
+        </div>
 
-          {/* Trust features grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {trustFeatures.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <Card
-                  key={index}
-                  className="p-6 bg-card border border-border/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300"
-                >
-                  <div className="space-y-4">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <Icon className="w-6 h-6 text-primary" />
-                    </div>
-                    <h3 className="text-lg font-bold">{feature.title}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {feature.description}
-                    </p>
+        {/* Trust Cards Grid */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          {trustFeatures.map((feature, index) => {
+            const Icon = feature.icon;
+            return (
+              <Card 
+                key={index}
+                className="card-unified group"
+              >
+                <CardContent className="p-6">
+                  <div className="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <Icon className="w-6 h-6 text-success" />
                   </div>
-                </Card>
-              );
-            })}
-          </div>
+                  <h3 className="font-semibold text-foreground mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {feature.description}
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
 
-          {/* Additional info */}
-          <Card className="mt-10 p-6 md:p-8 bg-gradient-hero border border-primary/20 text-center">
-            <p className="text-foreground md:text-lg mb-2 leading-relaxed">
-              Vi använder samma säkerhetsstandarder som banker och följer alla GDPR-krav. 
-              Din data är krypterad både i transit och i vila.
-            </p>
-            <p className="text-muted-foreground text-sm md:text-base">
-              Data lagras säkert inom EU.
-            </p>
+        {/* Bottom Trust Badge */}
+        <div className="mt-12 text-center">
+          <Card className="inline-block bg-muted/50 border-border/50">
+            <CardContent className="p-4 flex items-center gap-3">
+              <Lock className="w-5 h-5 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">
+                256-bit SSL • Data lagras säkert inom EU • GDPR-kompatibel
+              </p>
+            </CardContent>
           </Card>
         </div>
       </div>

@@ -20,7 +20,7 @@ const AnimatedSection = ({
   });
 
   const getAnimationClasses = () => {
-    const baseClasses = 'transition-all duration-1000 ease-out';
+    const baseClasses = 'transition-all duration-500 ease-out';
     
     const animations = {
       'fade-in': {
@@ -28,7 +28,7 @@ const AnimatedSection = ({
         visible: 'opacity-100',
       },
       'slide-up': {
-        initial: 'opacity-0 translate-y-16',
+        initial: 'opacity-0 translate-y-8',
         visible: 'opacity-100 translate-y-0',
       },
       'fade-in-scale': {
@@ -36,11 +36,11 @@ const AnimatedSection = ({
         visible: 'opacity-100 scale-100',
       },
       'slide-left': {
-        initial: 'opacity-0 translate-x-16',
+        initial: 'opacity-0 translate-x-8',
         visible: 'opacity-100 translate-x-0',
       },
       'slide-right': {
-        initial: 'opacity-0 -translate-x-16',
+        initial: 'opacity-0 -translate-x-8',
         visible: 'opacity-100 translate-x-0',
       },
     };
@@ -51,7 +51,7 @@ const AnimatedSection = ({
 
   return (
     <div
-      ref={ref as any}
+      ref={ref as React.RefObject<HTMLDivElement>}
       className={`${getAnimationClasses()} ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
