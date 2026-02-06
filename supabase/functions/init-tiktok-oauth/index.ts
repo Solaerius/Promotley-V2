@@ -81,18 +81,9 @@ serve(async (req) => {
     // Build TikTok authorization URL - use exact redirect URI without extra parameters
     const redirectUri = `${supabaseUrl}/functions/v1/oauth-callback`;
     
-    // Detect which TikTok API product is available
-    // Default to Login Kit if not explicitly set to Content Posting API
-    const hasContentPosting = Deno.env.get('TIKTOK_HAS_CONTENT_POSTING_API') === 'true';
+    // Always request all four core scopes for full functionality
+    const scope = 'user.info.basic,user.info.profile,user.info.stats,video.list';
     
-    // Choose scopes based on available API product
-    // Login Kit only: basic profile and stats
-    // Content Posting API: includes video data and advanced features
-    const scope = hasContentPosting
-      ? 'user.info.basic,user.info.profile,user.info.stats,video.list,video.query,video.data'
-      : 'user.info.basic,user.info.profile,user.info.stats';
-    
-    console.log('🔍 TikTok scope mode:', hasContentPosting ? 'Content Posting API' : 'Login Kit Only');
     console.log('🧾 Requested scopes:', scope);
     
     const authUrl = new URL('https://www.tiktok.com/v2/auth/authorize/');

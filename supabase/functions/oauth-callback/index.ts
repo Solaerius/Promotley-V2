@@ -290,19 +290,10 @@ Deno.serve(async (req) => {
 
       const grantedScopes = grantedScopesString.split(',').map((s: string) => s.trim());
       
-      // Adjust required scopes based on API level
-      // If Content Posting API is not enabled, video.list is optional
-      const hasContentPosting = Deno.env.get('TIKTOK_HAS_CONTENT_POSTING_API') === 'true';
+      // All four scopes are always requested
+      const requiredScopes = ['user.info.basic', 'user.info.stats'];
+      const optionalScopes = ['user.info.profile', 'video.list'];
       
-      const requiredScopes = hasContentPosting
-        ? ['user.info.basic', 'user.info.stats', 'video.list']
-        : ['user.info.basic', 'user.info.stats'];
-      
-      const optionalScopes = hasContentPosting
-        ? ['video.query', 'video.data', 'user.info.profile']
-        : ['user.info.profile', 'video.list', 'video.query', 'video.data'];
-      
-      console.log('🔍 TikTok API mode:', hasContentPosting ? 'Content Posting API' : 'Login Kit Only');
       console.log('🔍 Required scopes:', requiredScopes.join(', '));
       console.log('🔍 Optional scopes:', optionalScopes.join(', '));
 

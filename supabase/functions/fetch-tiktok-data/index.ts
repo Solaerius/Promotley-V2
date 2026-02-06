@@ -185,10 +185,21 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log('📱 Fetching TikTok user info with user.info.stats scope...');
-    // Fetch user info with stats using user.info.stats scope
+    // Check which profile scopes are available
+    const hasUserInfoProfile = grantedScopes.includes('user.info.profile');
+    
+    // Build fields list based on granted scopes
+    const userInfoFields = ['open_id', 'display_name', 'avatar_url'];
+    if (hasUserInfoProfile) {
+      userInfoFields.push('bio_description', 'profile_web_link', 'profile_deep_link', 'is_verified');
+    }
+    if (hasUserInfoStats) {
+      userInfoFields.push('likes_count', 'follower_count', 'following_count', 'video_count');
+    }
+    
+    console.log('📱 Fetching TikTok user info with fields:', userInfoFields.join(','));
     const userInfoResponse = await fetch(
-      'https://open.tiktokapis.com/v2/user/info/?fields=open_id,display_name,avatar_url,bio_description,likes_count,follower_count,following_count,video_count',
+      `https://open.tiktokapis.com/v2/user/info/?fields=${userInfoFields.join(',')}`,
       {
         method: 'GET',
         headers: {
@@ -269,6 +280,8 @@ Deno.serve(async (req) => {
     let scopeErrorMessage = '';
     let videoErrorCode: string | null = null;
     let videoFetchAttempted = false;
+    let initialCursor: string | null = null;
+    let initialHasMore = false;
     
     // Check if video.list scope is granted before attempting API call
     if (!hasVideoList) {
@@ -306,7 +319,7 @@ Deno.serve(async (req) => {
           if (videoListData.data && videoListData.data.videos) {
             videos = videoListData.data.videos.map((video: any) => ({
               id: video.id,
-              title: video.title || video.video_description || 'Untitled',
+              title: video.title || video.video_description || 'Utan titel',
               views: video.view_count || 0,
               likes: video.like_count || 0,
               shares: video.share_count || 0,
@@ -316,7 +329,10 @@ Deno.serve(async (req) => {
               share_url: video.share_url,
               duration: video.duration,
             }));
-            console.log(`✅ Successfully fetched ${videos.length} videos using video.list scope`);
+            // Capture pagination from initial fetch
+            initialCursor = videoListData.data.cursor ? String(videoListData.data.cursor) : null;
+            initialHasMore = videoListData.data.has_more || false;
+            console.log(`✅ Successfully fetched ${videos.length} videos, cursor: ${initialCursor}, has_more: ${initialHasMore}`);
             
             // Check if any videos are missing view_count and need fallback
             const videosMissingViews = videos.filter(v => !v.views && v.id);
@@ -424,6 +440,10 @@ Deno.serve(async (req) => {
       ? `${((totalLikes + totalComments + totalShares) / totalViews * 100).toFixed(2)}%`
       : '0%';
 
+    // For first page, use cursor from initial fetch
+    let paginationCursor: string | null = initialCursor;
+    let hasMoreVideos = initialHasMore;
+
     // Extract user data from response
     const userData = userInfo.data?.user || userInfo.user || {};
     
@@ -431,9 +451,13 @@ Deno.serve(async (req) => {
       success: true,
       connected: true,
       user: {
-        display_name: userData.display_name || 'Unknown',
+        open_id: userData.open_id || '',
+        display_name: userData.display_name || 'Okänd',
         avatar_url: userData.avatar_url || '',
         bio_description: userData.bio_description || '',
+        profile_web_link: userData.profile_web_link || '',
+        profile_deep_link: userData.profile_deep_link || '',
+        is_verified: userData.is_verified || false,
         follower_count: userData.follower_count || 0,
         following_count: userData.following_count || 0,
         likes_count: userData.likes_count || 0,
@@ -448,6 +472,13 @@ Deno.serve(async (req) => {
         videoCount: videos.length,
       },
       videos: videos,
+      pagination: {
+        cursor: paginationCursor,
+        has_more: hasMoreVideos,
+      },
+      granted_scopes: grantedScopes,
+      requested_scopes: ['user.info.basic', 'user.info.profile', 'user.info.stats', 'video.list'],
+      missing_scopes: ['user.info.basic', 'user.info.profile', 'user.info.stats', 'video.list'].filter(s => !grantedScopes.includes(s)),
       limited_access: limitedAccess,
       scope_message: scopeErrorMessage || undefined,
       videoErrorCode: videoErrorCode || undefined,

@@ -26,6 +26,7 @@ import { useTikTokData } from "@/hooks/useTikTokData";
 import { useConnections } from "@/hooks/useConnections";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { Link } from "react-router-dom";
+import TikTokProfileSection from "@/components/TikTokProfileSection";
 
 const AnalyticsContent = () => {
   const { isConnected, connections } = useConnections();
@@ -214,25 +215,8 @@ const AnalyticsContent = () => {
             </TabsContent>
 
             <TabsContent value="tiktok" className="pt-4">
-              {isConnected('tiktok') && tiktokData.user && tiktokData.stats ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10">
-                    <p className="text-sm dashboard-subheading-dark mb-1">Följare</p>
-                    <p className="text-2xl font-bold dashboard-heading-dark">{tiktokData.user.follower_count?.toLocaleString() || 0}</p>
-                  </div>
-                  <div className="p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10">
-                    <p className="text-sm dashboard-subheading-dark mb-1">Visningar</p>
-                    <p className="text-2xl font-bold dashboard-heading-dark">{tiktokData.stats.totalViews?.toLocaleString() || 0}</p>
-                  </div>
-                  <div className="p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10">
-                    <p className="text-sm dashboard-subheading-dark mb-1">Likes</p>
-                    <p className="text-2xl font-bold dashboard-heading-dark">{tiktokData.stats.totalLikes?.toLocaleString() || 0}</p>
-                  </div>
-                  <div className="p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10">
-                    <p className="text-sm dashboard-subheading-dark mb-1">Engagemang</p>
-                    <p className="text-2xl font-bold dashboard-heading-dark">{tiktokData.stats.avgEngagementRate || "0"}%</p>
-                  </div>
-                </div>
+              {isConnected('tiktok') ? (
+                <TikTokProfileSection />
               ) : (
                 <p className="dashboard-subheading-dark">Anslut TikTok för att se statistik</p>
               )}
