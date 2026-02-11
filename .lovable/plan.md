@@ -1,38 +1,56 @@
 
-# Fix: "permission denied for table users" på admin Swish-sidan
 
-## Problemet
-Två RLS-problem blockerar admin-funktionaliteten:
+# Fix: Support-chatten visar inte meddelanden i realtid och visar "Ansluter..." konstant
 
-1. **swish_orders-tabellen**: Båda SELECT-policyer är RESTRICTIVE, vilket innebär att ALLA måste vara uppfyllda samtidigt. Policyn "Users can view own orders" innehåller en subquery mot `auth.users`-tabellen som inte är tillgänglig för `authenticated`-rollen — det ger felet "permission denied for table users".
+## Problemet (2 buggar)
 
-2. **users-tabellen**: När en admin godkänner en order behöver den läsa och uppdatera en annan användares krediter/plan. Nuvarande RLS tillåter bara `auth.uid() = id`, så admins kan inte ändra andra användares konton.
+### 1. "Ansluter..." visas konstant
+I `ChatWidget.tsx` rad 264-265 satts `connectionStatus` till `'connecting'` nar kanalen ar `SUBSCRIBED`. Den byter bara till `'connected'` nar ett databasevent faktiskt kommer in -- men det hander aldrig pa grund av bugg 2.
 
-## Lösning
+### 2. Admin-meddelanden visas inte i realtid
+ChatWidget anvander `postgres_changes` for att lyssna pa nya meddelanden i `live_chat_messages`. MEN: Supabase Realtime `postgres_changes` **kraver att anvandaren har SELECT-rattigheter** pa tabellen. RLS-policyn pa `live_chat_messages` tillater **bara admins** att lasa meddelanden. Darfor far vanliga anvandare aldrig nagon realtime-event -- de maste ladda om sidan.
 
-### Steg 1: Fixa swish_orders RLS-policyer
-- Ta bort de två befintliga RESTRICTIVE SELECT-policyerna
-- Skapa två nya PERMISSIVE SELECT-policyer (där NÅGON av dem räcker):
-  - "Admins can view all orders" — `has_role(auth.uid(), 'admin')` 
-  - "Users can view own orders" — `auth.uid() = user_id` (utan subquery mot auth.users)
+## Losning: Anvand Supabase Broadcast
 
-### Steg 2: Lägg till admin-policyer på users-tabellen
-- Lägg till en PERMISSIVE SELECT-policy: "Admins can view all users" — `has_role(auth.uid(), 'admin')`
-- Lägg till en PERMISSIVE UPDATE-policy: "Admins can update all users" — `has_role(auth.uid(), 'admin')`
+Istallet for att forlita sig pa `postgres_changes` (som kraver databasrattigheter) anvander vi **Supabase Broadcast** -- en kanal dar admins skickar meddelanden direkt till anvandarens widget utan att ga via databasen.
 
-Detta ger admins rätt att läsa kreditbalans och uppdatera plan/krediter vid godkännande.
+### Steg 1: AdminChat.tsx -- Skicka broadcast nar admin svarar
+Nar admin skickar ett meddelande, lagg till en broadcast pa kanalen `live_chat_{sessionId}` med meddelandedata. Samma sak nar admin stangar en chatt -- broadcast closure-event.
 
-### Steg 3: Fixa swish_orders UPDATE-policy
-- Ta bort den befintliga RESTRICTIVE UPDATE-policyn
-- Skapa en ny PERMISSIVE UPDATE-policy för admins
-
-### SQL-migration (sammanfattning)
 ```text
--- Drop restrictive SELECT policies on swish_orders
--- Create permissive SELECT policies (admin + own orders)
--- Drop restrictive UPDATE policy on swish_orders  
--- Create permissive UPDATE policy for admins
--- Add permissive SELECT + UPDATE policies on users for admins
+Fil: src/pages/AdminChat.tsx
+- I handleSend(): Efter lyckad insert, broadcast meddelandet pa kanalen
+- I handleCloseChat(): Efter lyckad stangning, broadcast closure-event
+- Skapa en persistent broadcast-kanal per vald session
 ```
 
-Inga frontend-ändringar behövs — all kod i AdminSwishOrders.tsx fungerar redan korrekt, det är bara databasrättigheterna som blockerar.
+### Steg 2: ChatWidget.tsx -- Lyssna pa broadcast istallet for postgres_changes
+Byt ut `postgres_changes`-prenumerationen mot en **broadcast-lyssnare** pa samma kanal `live_chat_{sessionId}`.
+
+```text
+Fil: src/components/ChatWidget.tsx
+- Byt fran postgres_changes till broadcast-lyssnare
+- Lyssna pa tva event-typer: "new_message" och "chat_closed"
+- Satt connectionStatus till 'connected' direkt vid SUBSCRIBED (rad 264)
+- Ta bort polling-fallback (behovs inte med broadcast)
+```
+
+### Steg 3: Fixa connectionStatus
+Andra rad 264 fran `setConnectionStatus('connecting')` till `setConnectionStatus('connected')` sa att "Live" visas direkt nar kanalen ar ansluten.
+
+## Teknisk sammanfattning
+
+```text
+FORE:
+  Admin -> insert i DB -> postgres_changes -> (blockeras av RLS) -> anvandaren ser inget
+
+EFTER:
+  Admin -> insert i DB + broadcast pa kanal -> ChatWidget tar emot broadcast -> visar meddelande direkt
+```
+
+### Filer som andras:
+1. `src/pages/AdminChat.tsx` -- Lagg till broadcast vid skicka/stang
+2. `src/components/ChatWidget.tsx` -- Byt till broadcast-lyssnare, fixa connectionStatus
+
+Inga databasandringar behovs.
+
