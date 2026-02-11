@@ -201,94 +201,34 @@ const ChatWidget = () => {
 
     loadMessages();
 
-    // Subscribe to realtime updates
-    let retryCount = 0;
-    const maxRetries = 3;
+    // Subscribe to broadcast channel (bypasses RLS)
+    console.log("📡 Setting up Broadcast listener for session:", sessionId);
     
-    const setupRealtimeSubscription = () => {
-      console.log("📡 Setting up Realtime subscription for session:", sessionId);
-      
-      const channel = supabase
-        .channel(`live_chat_${sessionId}_${Date.now()}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "live_chat_messages",
-            filter: `session_id=eq.${sessionId}`,
-          },
-          (payload) => {
-            console.log("✅ Realtime INSERT event received!", payload.new);
-            
-            // Mark that we received a realtime event
-            gotRealtimeEventRef.current = true;
-            
-            // Stop polling since realtime is working
-            stopPolling();
-            setConnectionStatus('connected');
-            
-            const newMessage = payload.new as Message;
-            setMessages((prev) => {
-              // Check for duplicates and remove temp messages
-              const filtered = prev.filter(m => 
-                m.id !== newMessage.id && !m.id.startsWith('temp-')
-              );
-              return [...filtered, newMessage];
-            });
-            lastMessageTimestampRef.current = newMessage.created_at;
-          }
-        )
-        .on(
-          "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "live_chat_sessions",
-            filter: `session_id=eq.${sessionId}`,
-          },
-          (payload: any) => {
-            console.log("✅ Realtime session UPDATE event received!", payload.new);
-            gotRealtimeEventRef.current = true;
-            stopPolling();
-            setConnectionStatus('connected');
-            
-            if (payload.new?.status === "closed") {
-              setIsChatClosed(true);
-            }
-          }
-        )
-        .subscribe((status, err) => {
-          console.log("📡 Realtime subscription status:", status, err ? `Error: ${err}` : '');
-          
-          if (status === 'SUBSCRIBED') {
-            setConnectionStatus('connecting');
-            console.log("✅ Subscribed to Realtime, waiting for first event...");
-          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-            console.warn("⚠️ Realtime channel error/timeout, ensuring polling is active");
-            setConnectionStatus('disconnected');
-            startPolling();
-            
-            // Retry connection
-            if (retryCount < maxRetries) {
-              retryCount++;
-              console.log(`🔄 Retrying realtime connection (${retryCount}/${maxRetries})`);
-              setTimeout(() => {
-                supabase.removeChannel(channel);
-                setupRealtimeSubscription();
-              }, 2000 * retryCount);
-            }
-          } else if (status === 'CLOSED') {
-            console.log("📡 Realtime channel closed");
-            setConnectionStatus('disconnected');
-            startPolling();
-          }
+    const channel = supabase
+      .channel(`live_chat_${sessionId}`)
+      .on('broadcast', { event: 'new_message' }, (payload) => {
+        console.log("✅ Broadcast: new_message received!", payload.payload);
+        const newMessage = payload.payload as Message;
+        setMessages((prev) => {
+          const filtered = prev.filter(m => 
+            m.id !== newMessage.id && !m.id.startsWith('temp-')
+          );
+          return [...filtered, newMessage];
         });
-      
-      return channel;
-    };
-
-    const channel = setupRealtimeSubscription();
+        lastMessageTimestampRef.current = newMessage.created_at;
+      })
+      .on('broadcast', { event: 'chat_closed' }, () => {
+        console.log("✅ Broadcast: chat_closed received!");
+        setIsChatClosed(true);
+      })
+      .subscribe((status) => {
+        console.log("📡 Broadcast subscription status:", status);
+        if (status === 'SUBSCRIBED') {
+          setConnectionStatus('connected');
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+          setConnectionStatus('disconnected');
+        }
+      });
 
     return () => {
       console.log("🧹 Cleaning up: Unsubscribing and stopping polling");

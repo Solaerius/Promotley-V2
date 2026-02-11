@@ -191,11 +191,11 @@ const AdminChat = () => {
 
     setIsLoading(true);
 
-    const { error } = await supabase.from("live_chat_messages").insert({
+    const { data, error } = await supabase.from("live_chat_messages").insert({
       session_id: selectedSession,
       sender_type: "admin",
       message: inputValue,
-    });
+    }).select().single();
 
     if (error) {
       console.error("Error sending message:", error);
@@ -206,6 +206,15 @@ const AdminChat = () => {
       });
     } else {
       setInputValue("");
+      
+      // Broadcast the message to the user's chat widget
+      const broadcastChannel = supabase.channel(`live_chat_${selectedSession}`);
+      await broadcastChannel.send({
+        type: 'broadcast',
+        event: 'new_message',
+        payload: data,
+      });
+      supabase.removeChannel(broadcastChannel);
     }
 
     setIsLoading(false);
@@ -246,6 +255,16 @@ const AdminChat = () => {
           title: "Chatt avslutad",
           description: "Chatten har markerats som avslutad",
         });
+        
+        // Broadcast closure to user's chat widget
+        const broadcastChannel = supabase.channel(`live_chat_${selectedSession}`);
+        await broadcastChannel.send({
+          type: 'broadcast',
+          event: 'chat_closed',
+          payload: { session_id: selectedSession },
+        });
+        supabase.removeChannel(broadcastChannel);
+        
         setSelectedSession(null);
         loadSessions();
       }
@@ -272,6 +291,16 @@ const AdminChat = () => {
           title: "Chatt avslutad",
           description: "Chatten har markerats som avslutad",
         });
+        
+        // Broadcast closure to user's chat widget
+        const broadcastChannel = supabase.channel(`live_chat_${selectedSession}`);
+        await broadcastChannel.send({
+          type: 'broadcast',
+          event: 'chat_closed',
+          payload: { session_id: selectedSession },
+        });
+        supabase.removeChannel(broadcastChannel);
+        
         setSelectedSession(null);
         loadSessions();
       }
