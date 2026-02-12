@@ -195,26 +195,33 @@ const Settings = () => {
       const connection = getConnection(provider);
       if (!connection) return;
 
-      const { error: tokenError } = await supabase
-        .from('tokens')
-        .delete()
-        .eq('user_id', session.user.id)
-        .eq('provider', provider);
+      if (provider === 'meta_ig') {
+        // Use server-side disconnect to also revoke Meta permissions
+        const { error } = await supabase.functions.invoke('disconnect-meta', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+          body: { provider },
+        });
+        if (error) throw error;
+      } else {
+        const { error: tokenError } = await supabase
+          .from('tokens')
+          .delete()
+          .eq('user_id', session.user.id)
+          .eq('provider', provider);
+        if (tokenError) throw tokenError;
 
-      if (tokenError) throw tokenError;
-
-      const { error: connectionError } = await supabase
-        .from('connections')
-        .delete()
-        .eq('id', connection.id);
-
-      if (connectionError) throw connectionError;
+        const { error: connectionError } = await supabase
+          .from('connections')
+          .delete()
+          .eq('id', connection.id);
+        if (connectionError) throw connectionError;
+      }
 
       await loadConnections();
       
       toast({
         title: "Frånkopplad",
-        description: `${provider === 'tiktok' ? 'TikTok' : 'Facebook'} har kopplats från ditt konto`,
+        description: `${provider === 'tiktok' ? 'TikTok' : 'Instagram'} har kopplats från ditt konto`,
       });
     } catch (error) {
       console.error('Error disconnecting:', error);

@@ -58,8 +58,18 @@ const AppSettingsContent = () => {
       const connection = getConnection(provider);
       if (!connection) return;
 
-      await supabase.from('tokens').delete().eq('user_id', session.user.id).eq('provider', provider);
-      await supabase.from('connections').delete().eq('id', connection.id);
+      if (provider === 'meta_ig') {
+        // Use server-side disconnect to also revoke Meta permissions
+        const { error } = await supabase.functions.invoke('disconnect-meta', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+          body: { provider },
+        });
+        if (error) throw error;
+      } else {
+        await supabase.from('tokens').delete().eq('user_id', session.user.id).eq('provider', provider);
+        await supabase.from('connections').delete().eq('id', connection.id);
+      }
+
       await loadConnections();
       toast({ title: "Frånkopplad" });
     } catch (error) {

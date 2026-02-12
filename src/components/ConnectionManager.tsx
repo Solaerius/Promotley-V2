@@ -164,47 +164,43 @@ export const ConnectionManager = () => {
 
       console.log('Disconnecting provider:', provider, 'for user:', session.user.id);
 
-      // Delete connection first with verification
-      const { data: deletedConnection, error: connectionError } = await supabase
-        .from('connections')
-        .delete()
-        .eq('user_id', session.user.id)
-        .eq('provider', provider as any)
-        .select();
+      if (provider === 'meta_ig' || provider === 'meta_fb') {
+        // Use server-side disconnect to also revoke Meta permissions
+        const { error } = await supabase.functions.invoke('disconnect-meta', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+          body: { provider },
+        });
+        if (error) throw error;
+      } else {
+        // Delete connection first with verification
+        const { data: deletedConnection, error: connectionError } = await supabase
+          .from('connections')
+          .delete()
+          .eq('user_id', session.user.id)
+          .eq('provider', provider as any)
+          .select();
 
-      if (connectionError) {
-        console.error('Failed to delete connection:', connectionError);
-        throw connectionError;
+        if (connectionError) throw connectionError;
+
+        if (!deletedConnection || deletedConnection.length === 0) {
+          throw new Error('No connection was deleted - connection may not exist');
+        }
+
+        // Then delete associated tokens
+        const { error: tokenError } = await supabase
+          .from('tokens')
+          .delete()
+          .eq('user_id', session.user.id)
+          .eq('provider', provider as any);
+
+        if (tokenError) throw tokenError;
       }
 
-      console.log('Deleted connection:', deletedConnection);
-
-      if (!deletedConnection || deletedConnection.length === 0) {
-        throw new Error('No connection was deleted - connection may not exist');
-      }
-
-      // Then delete associated tokens with verification
-      const { data: deletedTokens, error: tokenError } = await supabase
-        .from('tokens')
-        .delete()
-        .eq('user_id', session.user.id)
-        .eq('provider', provider as any)
-        .select();
-
-      if (tokenError) {
-        console.error('Failed to delete tokens:', tokenError);
-        throw tokenError;
-      }
-
-      console.log('Deleted tokens:', deletedTokens);
-
-      // ONLY show success if both operations succeeded
       toast({
         title: "✓ Frånkopplad",
-        description: `${provider} har kopplats från ditt konto`,
+        description: `${provider === 'meta_ig' ? 'Instagram' : provider === 'tiktok' ? 'TikTok' : provider} har kopplats från ditt konto`,
       });
 
-      // Reload connections to update UI
       await loadConnections();
     } catch (error) {
       console.error('Error disconnecting:', error);
