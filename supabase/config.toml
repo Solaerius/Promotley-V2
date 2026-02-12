@@ -65,3 +65,12 @@ verify_jwt = false
 
 [functions.send-org-invite]
 verify_jwt = true
+
+[functions.meta-deauthorize]
+verify_jwt = false
+
+[functions.meta-data-deletion]
+verify_jwt = false
+
+[functions.disconnect-meta]
+verify_jwt = false
