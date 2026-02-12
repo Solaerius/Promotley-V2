@@ -1,56 +1,42 @@
 
+# Ta bort separat Facebook-knapp -- behall bara Instagram
 
-# Fix: Support-chatten visar inte meddelanden i realtid och visar "Ansluter..." konstant
+Eftersom Instagram-anslutningen redan gar via Facebook OAuth (kräver Facebook-sida), är den separata Facebook-knappen onödig. Den tas bort fran UI och analytics.
 
-## Problemet (2 buggar)
+## Andringar
 
-### 1. "Ansluter..." visas konstant
-I `ChatWidget.tsx` rad 264-265 satts `connectionStatus` till `'connecting'` nar kanalen ar `SUBSCRIBED`. Den byter bara till `'connected'` nar ett databasevent faktiskt kommer in -- men det hander aldrig pa grund av bugg 2.
+### 1. AppSettingsContent.tsx (Inställningar -- ny layout)
+- Ta bort `connectFacebook`-funktionen
+- Ta bort Facebook-objektet fran `platformConnections`-arrayen
+- Behall bara Instagram och TikTok
 
-### 2. Admin-meddelanden visas inte i realtid
-ChatWidget anvander `postgres_changes` for att lyssna pa nya meddelanden i `live_chat_messages`. MEN: Supabase Realtime `postgres_changes` **kraver att anvandaren har SELECT-rattigheter** pa tabellen. RLS-policyn pa `live_chat_messages` tillater **bara admins** att lasa meddelanden. Darfor far vanliga anvandare aldrig nagon realtime-event -- de maste ladda om sidan.
+### 2. Settings.tsx (Inställningar-sidan)
+- Ta bort Facebook-raden fran plattformslistan (rad 667)
+- Ta bort `connectFacebook`-funktionen
+- Uppdatera `disconnectProvider`-typen till `'tiktok' | 'meta_ig'`
 
-## Losning: Anvand Supabase Broadcast
+### 3. ConnectionManager.tsx
+- Ta bort Facebook-kopplingsknappen och `connectFacebook`-funktionen
+- Ta bort Facebook-raden fran UI:t
 
-Istallet for att forlita sig pa `postgres_changes` (som kraver databasrattigheter) anvander vi **Supabase Broadcast** -- en kanal dar admins skickar meddelanden direkt till anvandarens widget utan att ga via databasen.
+### 4. Analytics.tsx
+- Ta bort `meta_fb` followers-summering (rad 87-88)
+- Ta bort Facebook-tabben fran TabsList (rad 302-304)
+- Ta bort Facebook TabsContent-sektionen
+- Ändra grid fran `grid-cols-3` till `grid-cols-2`
 
-### Steg 1: AdminChat.tsx -- Skicka broadcast nar admin svarar
-Nar admin skickar ett meddelande, lagg till en broadcast pa kanalen `live_chat_{sessionId}` med meddelandedata. Samma sak nar admin stangar en chatt -- broadcast closure-event.
+### 5. AnalyticsContent.tsx
+- Samma som Analytics.tsx -- ta bort Facebook-tab, followers-summering, och TabsContent
+- Ändra grid fran `grid-cols-3` till `grid-cols-2`
 
-```text
-Fil: src/pages/AdminChat.tsx
-- I handleSend(): Efter lyckad insert, broadcast meddelandet pa kanalen
-- I handleCloseChat(): Efter lyckad stangning, broadcast closure-event
-- Skapa en persistent broadcast-kanal per vald session
-```
+### 6. Dashboard.tsx
+- Ta bort `meta_fb` followers-summering (rad 63)
 
-### Steg 2: ChatWidget.tsx -- Lyssna pa broadcast istallet for postgres_changes
-Byt ut `postgres_changes`-prenumerationen mot en **broadcast-lyssnare** pa samma kanal `live_chat_{sessionId}`.
-
-```text
-Fil: src/components/ChatWidget.tsx
-- Byt fran postgres_changes till broadcast-lyssnare
-- Lyssna pa tva event-typer: "new_message" och "chat_closed"
-- Satt connectionStatus till 'connected' direkt vid SUBSCRIBED (rad 264)
-- Ta bort polling-fallback (behovs inte med broadcast)
-```
-
-### Steg 3: Fixa connectionStatus
-Andra rad 264 fran `setConnectionStatus('connecting')` till `setConnectionStatus('connected')` sa att "Live" visas direkt nar kanalen ar ansluten.
+## Vad som INTE ändras
+- **Backend (edge functions)**: `init-meta-oauth`, `oauth-callback`, `fetch-meta-data` behåller stöd för `meta_fb` -- det skadar inte och kan vara användbart i framtiden
+- **Databas-enum** (`social_provider`): Behåller `meta_fb` i enum -- att ta bort det kräver databasmigrering och kan orsaka problem med befintlig data
+- **useMetaData hook**: Behåller Facebook-data-hämtning i bakgrunden -- det kostar ingenting och gör det enkelt att återaktivera Facebook i framtiden
 
 ## Teknisk sammanfattning
 
-```text
-FORE:
-  Admin -> insert i DB -> postgres_changes -> (blockeras av RLS) -> anvandaren ser inget
-
-EFTER:
-  Admin -> insert i DB + broadcast pa kanal -> ChatWidget tar emot broadcast -> visar meddelande direkt
-```
-
-### Filer som andras:
-1. `src/pages/AdminChat.tsx` -- Lagg till broadcast vid skicka/stang
-2. `src/components/ChatWidget.tsx` -- Byt till broadcast-lyssnare, fixa connectionStatus
-
-Inga databasandringar behovs.
-
+Alla ändringar är UI-only. Inga databas- eller backend-ändringar behövs. Facebook-stödet finns kvar i backend ifall ni vill återaktivera det senare.
