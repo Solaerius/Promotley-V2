@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageSquare, Wand2, BarChart3 } from "lucide-react";
+import { MessageSquare, Wand2, BarChart3, Radar } from "lucide-react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { motion } from "framer-motion";
 
@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import AIChatContent from "@/components/ai/AIChatContent";
 import AIToolsContent from "@/components/ai/AIToolsContent";
 import AIAnalysisContent from "@/components/analytics/AIAnalysisContent";
+import SalesRadarContent from "@/components/ai/SalesRadarContent";
 
 const AIPage = () => {
   const [activeTab, setActiveTab] = useState("chat");
@@ -15,7 +16,7 @@ const AIPage = () => {
   return (
     <DashboardLayout>
       <div className="flex flex-col h-full min-h-0">
-        {/* Sticky Header - Transparent with glass effect */}
+        {/* Sticky Header */}
         <div className="sticky top-0 z-20 backdrop-blur-xl pb-4 -mx-4 px-4 pt-2 border-b border-white/10 mb-4">
           <div className="mb-4">
             <h1 className="text-2xl md:text-3xl font-bold dashboard-heading-dark">AI-Assistent</h1>
@@ -24,40 +25,46 @@ const AIPage = () => {
             </p>
           </div>
 
-          {/* Tabs - Glass styling */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="inline-flex h-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 p-1">
               <TabsTrigger 
                 value="chat" 
-                className="flex items-center gap-2 rounded-full px-4 dashboard-subheading-dark data-[state=active]:bg-white/20 data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
+                className="flex items-center gap-2 rounded-full px-3 sm:px-4 text-xs sm:text-sm dashboard-subheading-dark data-[state=active]:bg-white/20 data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
               >
                 <MessageSquare className="w-4 h-4" />
-                Chat
+                <span className="hidden sm:inline">Chat</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="verktyg" 
-                className="flex items-center gap-2 rounded-full px-4 dashboard-subheading-dark data-[state=active]:bg-white/20 data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
+                className="flex items-center gap-2 rounded-full px-3 sm:px-4 text-xs sm:text-sm dashboard-subheading-dark data-[state=active]:bg-white/20 data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
               >
                 <Wand2 className="w-4 h-4" />
-                Verktyg
+                <span className="hidden sm:inline">Verktyg</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="analys" 
-                className="flex items-center gap-2 rounded-full px-4 dashboard-subheading-dark data-[state=active]:bg-white/20 data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
+                className="flex items-center gap-2 rounded-full px-3 sm:px-4 text-xs sm:text-sm dashboard-subheading-dark data-[state=active]:bg-white/20 data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
               >
                 <BarChart3 className="w-4 h-4" />
-                Analys
+                <span className="hidden sm:inline">Analys</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="radar" 
+                className="flex items-center gap-2 rounded-full px-3 sm:px-4 text-xs sm:text-sm dashboard-subheading-dark data-[state=active]:bg-white/20 data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
+              >
+                <Radar className="w-4 h-4" />
+                <span className="hidden sm:inline">Säljradar</span>
               </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
 
-        {/* Content - Full height */}
+        {/* Content */}
         <div className="flex-1 min-h-0">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <motion.div
               key={activeTab}
-              initial={{ opacity: 0, x: activeTab === "chat" ? -10 : 10 }}
+              initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.2 }}
               className="h-full"
@@ -72,6 +79,10 @@ const AIPage = () => {
 
               <TabsContent value="analys" className="mt-0">
                 <AIAnalysisContent />
+              </TabsContent>
+
+              <TabsContent value="radar" className="mt-0">
+                <SalesRadarContent />
               </TabsContent>
             </motion.div>
           </Tabs>

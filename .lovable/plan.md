@@ -1,11 +1,16 @@
 
 
-# 3.3 AI & Analys-omstrukturering -- KLAR
+# 3.4 Säljradar -- KLAR
 
 ## Sammanfattning
-AI-analys flyttad från Statistik-sidan till AI-sidan som tredje flik. Statistik-sidan förenklad till enbart statistikvy utan tabs. Historikväljare tillagd i AI-analys.
+Ny funktion "Säljradar" som kombinerar AI-genererade leads med trendbevakning. Tillgänglig som 4:e flik på AI-sidan.
 
-## Ändringar genomförda
-1. AIPage: 3 tabs (Chat, Verktyg, Analys)
-2. AnalyticsPage: Förenklad, inga tabs, bara AnalyticsContent
-3. AIAnalysisContent: Historik-dropdown för att bläddra mellan gamla analyser
+## Implementerat
+1. DB: `sales_radar_results` tabell med RLS
+2. Edge function: `sales-radar` med OpenAI + förberedd Perplexity-hook
+3. Hook: `useSalesRadar` för data-hantering
+4. Komponent: `SalesRadarContent` med leads, trender, historik
+5. AIPage: 4 tabs (Chat, Verktyg, Analys, Säljradar)
+
+## Perplexity-integration
+Backenden har kommenterad kod redo för Perplexity API. När API-nyckeln konfigureras kan realtidstrender aktiveras.

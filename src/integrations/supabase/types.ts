@@ -846,6 +846,47 @@ export type Database = {
         }
         Relationships: []
       }
+      sales_radar_results: {
+        Row: {
+          created_at: string
+          id: string
+          input_context: Json | null
+          leads: Json | null
+          organization_id: string | null
+          radar_type: string
+          trends: Json | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          input_context?: Json | null
+          leads?: Json | null
+          organization_id?: string | null
+          radar_type?: string
+          trends?: Json | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          input_context?: Json | null
+          leads?: Json | null
+          organization_id?: string | null
+          radar_type?: string
+          trends?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_radar_results_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       security_events: {
         Row: {
           created_at: string
