@@ -4,15 +4,22 @@ import { useAIProfile } from '@/hooks/useAIProfile';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, TrendingUp, Calendar, Target, Lightbulb, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Sparkles, TrendingUp, Calendar, Target, Lightbulb, CheckCircle2, AlertCircle, History } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 
 const AIAnalysisContent = () => {
-  const { latestAnalysis, loading, generating, generateAnalysis } = useAIAnalysis();
+  const { latestAnalysis, history, loading, generating, generateAnalysis } = useAIAnalysis();
   const { profile: aiProfile, loading: aiProfileLoading } = useAIProfile();
   const [hasAccess, setHasAccess] = useState(true);
   const [accessError, setAccessError] = useState<string | null>(null);
+  const [selectedAnalysisId, setSelectedAnalysisId] = useState<string | null>(null);
+
+  // Use selected analysis or latest
+  const currentAnalysis = selectedAnalysisId 
+    ? history.find(a => a.id === selectedAnalysisId) || latestAnalysis
+    : latestAnalysis;
 
   const filledFields = aiProfile ? [
     aiProfile.branch,
@@ -52,37 +59,65 @@ const AIAnalysisContent = () => {
 
   return (
     <div className="space-y-6">
-      {/* Generate Button */}
+      {/* Header with Generate + History */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <p className="dashboard-subheading-dark">
-            Få skräddarsydda rekommendationer baserat på UF-regler
-          </p>
-        </div>
-        <Button
-          variant="gradient"
-          onClick={async () => {
-            try {
-              await generateAnalysis();
-              setHasAccess(true);
-              setAccessError(null);
-            } catch (error: any) {
-              if (error?.message?.includes('NO_ACTIVE_PLAN')) {
-                setHasAccess(false);
-                setAccessError('no_plan');
-              } else if (error?.message?.includes('INSUFFICIENT_CREDITS')) {
-                setHasAccess(false);
-                setAccessError('no_credits');
+        <div className="flex items-center gap-3 flex-wrap">
+          <Button
+            variant="gradient"
+            onClick={async () => {
+              try {
+                await generateAnalysis();
+                setSelectedAnalysisId(null);
+                setHasAccess(true);
+                setAccessError(null);
+              } catch (error: any) {
+                if (error?.message?.includes('NO_ACTIVE_PLAN')) {
+                  setHasAccess(false);
+                  setAccessError('no_plan');
+                } else if (error?.message?.includes('INSUFFICIENT_CREDITS')) {
+                  setHasAccess(false);
+                  setAccessError('no_credits');
+                }
               }
-            }
-          }}
-          disabled={generating || !hasAccess || isAIBlocked}
-          size="lg"
-          className="gap-2"
-        >
-          <Sparkles className="h-5 w-5" />
-          {generating ? 'Genererar...' : isAIBlocked ? 'Fyll i AI-profil först' : 'Generera Analys'}
-        </Button>
+            }}
+            disabled={generating || !hasAccess || isAIBlocked}
+            size="lg"
+            className="gap-2"
+          >
+            <Sparkles className="h-5 w-5" />
+            {generating ? 'Genererar...' : isAIBlocked ? 'Fyll i AI-profil först' : 'Generera Analys'}
+          </Button>
+
+          {/* History Selector */}
+          {history.length > 1 && (
+            <Select
+              value={selectedAnalysisId || 'latest'}
+              onValueChange={(val) => setSelectedAnalysisId(val === 'latest' ? null : val)}
+            >
+              <SelectTrigger className="w-[200px] liquid-glass-light border-white/20">
+                <History className="w-4 h-4 mr-2 shrink-0" />
+                <SelectValue placeholder="Historik" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="latest">Senaste analysen</SelectItem>
+                {history.map((item) => (
+                  <SelectItem key={item.id} value={item.id}>
+                    {new Date(item.created_at).toLocaleDateString('sv-SE', { 
+                      day: 'numeric', month: 'short', year: 'numeric',
+                      hour: '2-digit', minute: '2-digit'
+                    })}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+
+        {history.length > 0 && (
+          <p className="text-xs dashboard-subheading-dark">
+            {history.length} {history.length === 1 ? 'analys' : 'analyser'} sparade
+          </p>
+        )}
       </div>
 
       {/* Warnings */}
@@ -112,11 +147,11 @@ const AIAnalysisContent = () => {
       )}
 
       {/* No Analysis State */}
-      {!latestAnalysis ? (
+      {!currentAnalysis ? (
         <Card className="liquid-glass-light">
           <CardContent className="pt-6">
             <div className="text-center py-12">
-              <Sparkles className="h-16 w-16 text-white/40 mx-auto mb-4" />
+              <Sparkles className="h-16 w-16 text-muted-foreground/40 mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2 dashboard-heading-dark">Ingen analys genererad än</h3>
               <p className="dashboard-subheading-dark">
                 Klicka på "Generera Analys" för att få din AI-drivna marknadsföringsplan
@@ -134,11 +169,11 @@ const AIAnalysisContent = () => {
                 Sammanfattning
               </CardTitle>
               <CardDescription className="dashboard-subheading-dark">
-                Genererad {new Date(latestAnalysis.created_at).toLocaleDateString('sv-SE')}
+                Genererad {new Date(currentAnalysis.created_at).toLocaleDateString('sv-SE')}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <MarkdownRenderer content={latestAnalysis.ai_output?.sammanfattning ?? ''} />
+              <MarkdownRenderer content={currentAnalysis.ai_output?.sammanfattning ?? ''} />
             </CardContent>
           </Card>
 
@@ -151,7 +186,7 @@ const AIAnalysisContent = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <MarkdownRenderer content={latestAnalysis.ai_output?.social_medier_analys ?? ''} />
+              <MarkdownRenderer content={currentAnalysis.ai_output?.social_medier_analys ?? ''} />
             </CardContent>
           </Card>
 
@@ -165,7 +200,7 @@ const AIAnalysisContent = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {(latestAnalysis.ai_output?.["7_dagars_plan"] ?? []).map((item: any, index: number) => (
+                {(currentAnalysis.ai_output?.["7_dagars_plan"] ?? []).map((item: any, index: number) => (
                   <div key={index} className="border border-white/20 rounded-lg p-4 hover:bg-white/5 transition-colors">
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="font-semibold text-lg dashboard-heading-dark">{item.dag}</h4>
@@ -189,12 +224,12 @@ const AIAnalysisContent = () => {
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-2">
-                {(latestAnalysis.ai_output?.content_forslag ?? []).map((item: any, index: number) => (
+                {(currentAnalysis.ai_output?.content_forslag ?? []).map((item: any, index: number) => (
                   <div key={index} className="border border-white/20 rounded-lg p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="font-semibold dashboard-heading-dark">{item.titel}</h4>
                       <div className="flex gap-2">
-                        <Badge variant="outline" className="border-white/30 text-white/80">{item.format}</Badge>
+                        <Badge variant="outline" className="border-white/30 dashboard-subheading-dark">{item.format}</Badge>
                         <Badge className={getPlatformColor(item.plattform)}>{item.plattform}</Badge>
                       </div>
                     </div>
@@ -214,7 +249,7 @@ const AIAnalysisContent = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <MarkdownRenderer content={latestAnalysis.ai_output?.uf_tavlingsstrategi ?? ''} />
+              <MarkdownRenderer content={currentAnalysis.ai_output?.uf_tavlingsstrategi ?? ''} />
             </CardContent>
           </Card>
 
@@ -228,11 +263,11 @@ const AIAnalysisContent = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {(latestAnalysis.ai_output?.rekommendationer ?? []).map((item: any, index: number) => (
+                {(currentAnalysis.ai_output?.rekommendationer ?? []).map((item: any, index: number) => (
                   <div key={index} className="border border-white/20 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant={getPriorityColor(item.prioritet)}>{item.prioritet}</Badge>
-                      <Badge variant="outline" className="border-white/30 text-white/80">{item.kategori}</Badge>
+                      <Badge variant="outline" className="border-white/30 dashboard-subheading-dark">{item.kategori}</Badge>
                     </div>
                     <h4 className="font-semibold text-lg dashboard-heading-dark">{item.titel}</h4>
                     <p className="text-sm dashboard-subheading-dark mb-2">{item.beskrivning}</p>
