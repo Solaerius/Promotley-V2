@@ -12,6 +12,7 @@ import { useAIProfile } from "@/hooks/useAIProfile";
 import { ConnectionManager } from "@/components/ConnectionManager";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Check, Sparkles } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 
 const STEPS = [
@@ -108,6 +109,8 @@ const Onboarding = () => {
     }
     setIsSubmitting(true);
     try {
+      const wasAlreadyComplete = profile?.onboarding_completed === true;
+
       await updateProfile({
         foretagsnamn: formData.foretagsnamn.trim(),
         branch: formData.branch.trim(),
@@ -126,6 +129,13 @@ const Onboarding = () => {
         allman_info: formData.allman_info.trim() || undefined,
         onboarding_completed: true,
       });
+
+      // Send welcome email + in-app notification (only first time)
+      if (!wasAlreadyComplete) {
+        supabase.functions.invoke("send-onboarding-complete").catch((err) => {
+          console.error("Failed to send onboarding complete notification:", err);
+        });
+      }
 
       toast({
         title: "Välkommen! 🎉",
