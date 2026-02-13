@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageSquare, Wand2 } from "lucide-react";
+import { MessageSquare, Wand2, BarChart3 } from "lucide-react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { motion } from "framer-motion";
 
 // Import content components
 import AIChatContent from "@/components/ai/AIChatContent";
 import AIToolsContent from "@/components/ai/AIToolsContent";
+import AIAnalysisContent from "@/components/analytics/AIAnalysisContent";
 
 const AIPage = () => {
   const [activeTab, setActiveTab] = useState("chat");
@@ -40,6 +41,13 @@ const AIPage = () => {
                 <Wand2 className="w-4 h-4" />
                 Verktyg
               </TabsTrigger>
+              <TabsTrigger 
+                value="analys" 
+                className="flex items-center gap-2 rounded-full px-4 dashboard-subheading-dark data-[state=active]:bg-white/20 data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
+              >
+                <BarChart3 className="w-4 h-4" />
+                Analys
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
@@ -60,6 +68,10 @@ const AIPage = () => {
 
               <TabsContent value="verktyg" className="mt-0">
                 <AIToolsContent />
+              </TabsContent>
+
+              <TabsContent value="analys" className="mt-0">
+                <AIAnalysisContent />
               </TabsContent>
             </motion.div>
           </Tabs>
