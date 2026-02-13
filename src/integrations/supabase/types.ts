@@ -78,46 +78,76 @@ export type Database = {
       }
       ai_profiles: {
         Row: {
+          allman_info: string | null
           branch: string | null
+          budgetniva: string | null
           created_at: string | null
+          foretagsnamn: string | null
           id: string
+          kanaler: string[] | null
+          lan: string | null
+          land: string | null
           malgrupp: string | null
           malsattning: string | null
           marknadsplan: string | null
+          nyckelord: string[] | null
+          onboarding_completed: boolean | null
           organization_id: string | null
+          postnummer: string | null
           prisniva: string | null
           produkt_beskrivning: string | null
           sprakpreferens: string | null
+          stad: string | null
           tonalitet: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          allman_info?: string | null
           branch?: string | null
+          budgetniva?: string | null
           created_at?: string | null
+          foretagsnamn?: string | null
           id?: string
+          kanaler?: string[] | null
+          lan?: string | null
+          land?: string | null
           malgrupp?: string | null
           malsattning?: string | null
           marknadsplan?: string | null
+          nyckelord?: string[] | null
+          onboarding_completed?: boolean | null
           organization_id?: string | null
+          postnummer?: string | null
           prisniva?: string | null
           produkt_beskrivning?: string | null
           sprakpreferens?: string | null
+          stad?: string | null
           tonalitet?: string | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          allman_info?: string | null
           branch?: string | null
+          budgetniva?: string | null
           created_at?: string | null
+          foretagsnamn?: string | null
           id?: string
+          kanaler?: string[] | null
+          lan?: string | null
+          land?: string | null
           malgrupp?: string | null
           malsattning?: string | null
           marknadsplan?: string | null
+          nyckelord?: string[] | null
+          onboarding_completed?: boolean | null
           organization_id?: string | null
+          postnummer?: string | null
           prisniva?: string | null
           produkt_beskrivning?: string | null
           sprakpreferens?: string | null
+          stad?: string | null
           tonalitet?: string | null
           updated_at?: string | null
           user_id?: string

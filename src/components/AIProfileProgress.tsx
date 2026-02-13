@@ -13,10 +13,12 @@ export const AIProfileProgress = ({ compact = false }: AIProfileProgressProps) =
   if (loading) return null;
 
   const fields = [
+    { key: "foretagsnamn", label: "Företagsnamn" },
     { key: "branch", label: "Bransch" },
+    { key: "stad", label: "Stad" },
+    { key: "postnummer", label: "Postnummer" },
     { key: "malgrupp", label: "Målgrupp" },
-    { key: "produkt_beskrivning", label: "Produktbeskrivning" },
-    { key: "malsattning", label: "Målsättning" },
+    { key: "produkt_beskrivning", label: "Företagsbeskrivning" },
   ];
 
   const filledFields = fields.filter(
@@ -24,7 +26,7 @@ export const AIProfileProgress = ({ compact = false }: AIProfileProgressProps) =
   ).length;
 
   const progress = (filledFields / fields.length) * 100;
-  const isComplete = filledFields >= 3;
+  const isComplete = filledFields >= fields.length;
 
   if (compact) {
     return (
@@ -35,7 +37,7 @@ export const AIProfileProgress = ({ compact = false }: AIProfileProgressProps) =
           <AlertCircle className="h-4 w-4 text-amber-500" />
         )}
         <span className="text-sm text-muted-foreground">
-          AI-profil: {filledFields}/4 fält
+          AI-profil: {filledFields}/{fields.length} fält
         </span>
       </div>
     );
@@ -82,7 +84,7 @@ export const AIProfileProgress = ({ compact = false }: AIProfileProgressProps) =
           to="/settings" 
           className="block mt-3 text-xs text-primary hover:underline"
         >
-          Fyll i minst 3 fält för att låsa upp AI-funktioner →
+          Fyll i alla obligatoriska fält för att låsa upp AI-funktioner →
         </Link>
       )}
     </div>

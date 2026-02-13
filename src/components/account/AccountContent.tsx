@@ -54,12 +54,20 @@ const AccountContent = () => {
   const [companyLogoUrl, setCompanyLogoUrl] = useState<string | null>(null);
 
   const [aiFormData, setAiFormData] = useState({
+    foretagsnamn: "",
     branch: "",
+    stad: "",
+    postnummer: "",
+    lan: "",
+    land: "",
     malgrupp: "",
     produkt_beskrivning: "",
     prisniva: "",
     marknadsplan: "",
     malsattning: "",
+    tonalitet: "",
+    allman_info: "",
+    nyckelord: "",
   });
   const [isSavingAIProfile, setIsSavingAIProfile] = useState(false);
 
@@ -84,12 +92,20 @@ const AccountContent = () => {
   useEffect(() => {
     if (aiProfile) {
       setAiFormData({
+        foretagsnamn: aiProfile.foretagsnamn || "",
         branch: aiProfile.branch || "",
+        stad: aiProfile.stad || "",
+        postnummer: aiProfile.postnummer || "",
+        lan: aiProfile.lan || "",
+        land: aiProfile.land || "",
         malgrupp: aiProfile.malgrupp || "",
         produkt_beskrivning: aiProfile.produkt_beskrivning || "",
         prisniva: aiProfile.prisniva || "",
         marknadsplan: aiProfile.marknadsplan || "",
         malsattning: aiProfile.malsattning || "",
+        tonalitet: aiProfile.tonalitet || "",
+        allman_info: aiProfile.allman_info || "",
+        nyckelord: aiProfile.nyckelord?.join(", ") || "",
       });
     }
   }, [aiProfile]);
@@ -115,7 +131,11 @@ const AccountContent = () => {
   const handleSaveAIProfile = async () => {
     setIsSavingAIProfile(true);
     try {
-      await updateAIProfile(aiFormData);
+      const { nyckelord, ...rest } = aiFormData;
+      await updateAIProfile({
+        ...rest,
+        nyckelord: nyckelord ? nyckelord.split(",").map((k) => k.trim()).filter(Boolean) : undefined,
+      });
       toast({ title: "AI-profil sparad" });
     } catch (error) {
       toast({ title: "Fel", variant: "destructive" });
@@ -367,14 +387,23 @@ const AccountContent = () => {
         <div>
           <h2 className="text-xl font-semibold mb-1">AI-profil</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Fyll i för bättre AI-svar (minst 3 av 4 första)
+            Fyll i alla obligatoriska fält för bästa AI-svar
           </p>
         </div>
         <AIProfileProgress />
         <div className="space-y-5 mt-6">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-sm">Bransch</Label>
+              <Label className="text-sm">Företagsnamn <span className="text-destructive">*</span></Label>
+              <Input
+                value={aiFormData.foretagsnamn}
+                onChange={(e) => setAiFormData(p => ({ ...p, foretagsnamn: e.target.value }))}
+                placeholder="t.ex. Solglimtar UF"
+                className="bg-muted/30 border-0"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm">Bransch <span className="text-destructive">*</span></Label>
               <Input
                 value={aiFormData.branch}
                 onChange={(e) => setAiFormData(p => ({ ...p, branch: e.target.value }))}
@@ -383,11 +412,56 @@ const AccountContent = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-sm">Målgrupp</Label>
+              <Label className="text-sm">Stad <span className="text-destructive">*</span></Label>
+              <Input
+                value={aiFormData.stad}
+                onChange={(e) => setAiFormData(p => ({ ...p, stad: e.target.value }))}
+                placeholder="t.ex. Stockholm"
+                className="bg-muted/30 border-0"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm">Postnummer <span className="text-destructive">*</span></Label>
+              <Input
+                value={aiFormData.postnummer}
+                onChange={(e) => setAiFormData(p => ({ ...p, postnummer: e.target.value }))}
+                placeholder="t.ex. 114 52"
+                className="bg-muted/30 border-0"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm">Län</Label>
+              <Input
+                value={aiFormData.lan}
+                onChange={(e) => setAiFormData(p => ({ ...p, lan: e.target.value }))}
+                placeholder="t.ex. Stockholms län"
+                className="bg-muted/30 border-0"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm">Land</Label>
+              <Input
+                value={aiFormData.land}
+                onChange={(e) => setAiFormData(p => ({ ...p, land: e.target.value }))}
+                placeholder="Sverige"
+                className="bg-muted/30 border-0"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm">Målgrupp <span className="text-destructive">*</span></Label>
               <Input
                 value={aiFormData.malgrupp}
                 onChange={(e) => setAiFormData(p => ({ ...p, malgrupp: e.target.value }))}
                 placeholder="t.ex. 18-25 år"
+                className="bg-muted/30 border-0"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm">Målsättning</Label>
+              <Input
+                value={aiFormData.malsattning}
+                onChange={(e) => setAiFormData(p => ({ ...p, malsattning: e.target.value }))}
+                placeholder="t.ex. Öka synlighet"
                 className="bg-muted/30 border-0"
               />
             </div>
@@ -401,17 +475,26 @@ const AccountContent = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-sm">Målsättning</Label>
+              <Label className="text-sm">Tonalitet</Label>
               <Input
-                value={aiFormData.malsattning}
-                onChange={(e) => setAiFormData(p => ({ ...p, malsattning: e.target.value }))}
-                placeholder="t.ex. Öka synlighet"
+                value={aiFormData.tonalitet}
+                onChange={(e) => setAiFormData(p => ({ ...p, tonalitet: e.target.value }))}
+                placeholder="t.ex. Lekfull, professionell"
+                className="bg-muted/30 border-0"
+              />
+            </div>
+            <div className="space-y-2 col-span-2">
+              <Label className="text-sm">Nyckelord</Label>
+              <Input
+                value={aiFormData.nyckelord}
+                onChange={(e) => setAiFormData(p => ({ ...p, nyckelord: e.target.value }))}
+                placeholder="hållbarhet, handgjort (separera med komma)"
                 className="bg-muted/30 border-0"
               />
             </div>
           </div>
           <div className="space-y-2">
-            <Label className="text-sm">Produktbeskrivning</Label>
+            <Label className="text-sm">Företagsbeskrivning <span className="text-destructive">*</span></Label>
             <Textarea
               value={aiFormData.produkt_beskrivning}
               onChange={(e) => setAiFormData(p => ({ ...p, produkt_beskrivning: e.target.value }))}
@@ -427,6 +510,16 @@ const AccountContent = () => {
               onChange={(e) => setAiFormData(p => ({ ...p, marknadsplan: e.target.value }))}
               placeholder="Nuvarande marknadsföringsstrategi..."
               rows={3}
+              className="bg-muted/30 border-0 resize-none"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-sm">Allmän information</Label>
+            <Textarea
+              value={aiFormData.allman_info}
+              onChange={(e) => setAiFormData(p => ({ ...p, allman_info: e.target.value }))}
+              placeholder="Berätta mer om ert företag – era värderingar, framtidsplaner, unika styrkor..."
+              rows={4}
               className="bg-muted/30 border-0 resize-none"
             />
           </div>

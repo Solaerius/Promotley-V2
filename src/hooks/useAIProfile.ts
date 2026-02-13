@@ -13,6 +13,16 @@ interface AIProfile {
   malsattning?: string;
   tonalitet?: string;
   sprakpreferens?: string;
+  foretagsnamn?: string;
+  stad?: string;
+  postnummer?: string;
+  lan?: string;
+  land?: string;
+  budgetniva?: string;
+  kanaler?: string[];
+  allman_info?: string;
+  onboarding_completed?: boolean;
+  nyckelord?: string[];
   created_at?: string;
   updated_at?: string;
 }
@@ -91,10 +101,13 @@ export const useAIProfile = () => {
     fetchProfile();
   }, []);
 
+  const isOnboardingComplete = profile?.onboarding_completed === true;
+
   return {
     profile,
     loading,
     updateProfile,
     refetch: fetchProfile,
+    isOnboardingComplete,
   };
 };
