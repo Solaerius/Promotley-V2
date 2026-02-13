@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -13,107 +13,115 @@ interface Notification {
 export const useNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
   const { toast } = useToast();
 
-  // Helper to invoke Edge Functions with retry on 401
-  const invokeWithRetry = async (
-    functionName: string,
-    options: { method?: 'GET' | 'POST'; body?: any } = {}
-  ) => {
-    const getFreshToken = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      return session?.access_token ?? null;
-    };
-
-    const attempt = async () => {
-      const token = await getFreshToken();
-      if (!token) {
-        throw new Error('not_authenticated');
-      }
-
-      const { data, error } = await supabase.functions.invoke(functionName, {
-        method: options.method || 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: options.body,
-      });
-
-      if (error) {
-        if (error.message?.includes('Unauthorized') || error.message?.includes('invalid_jwt') || (error as any).status === 401) {
-          throw { ...error, status: 401 };
-        }
-        throw error;
-      }
-
-      return data;
-    };
-
-    try {
-      return await attempt();
-    } catch (err: any) {
-      if (err.status === 401 || err.message === 'not_authenticated') {
-        await supabase.auth.getSession();
-        return await attempt();
-      }
-      throw err;
-    }
-  };
-
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       setLoading(true);
-      const result = await invokeWithRetry('notifications', { method: 'GET' });
-      setNotifications(result || []);
-    } catch (err: any) {
-      setError(err as Error);
-      console.error('Error fetching notifications:', err);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setNotifications([]);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("notifications")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(50);
+
+      if (error) {
+        console.error("Error fetching notifications:", error);
+        setNotifications([]);
+        return;
+      }
+
+      setNotifications((data as Notification[]) || []);
+    } catch (err) {
+      console.error("Error fetching notifications:", err);
       setNotifications([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const markAsRead = async (id: string) => {
+  const markAsRead = useCallback(async (id: string) => {
     try {
-      await invokeWithRetry(`notifications/read/${id}`, {
-        method: 'POST',
-      });
+      const { error } = await supabase
+        .from("notifications")
+        .update({ read: true })
+        .eq("id", id);
 
-      // Update local state
-      setNotifications(prev => 
-        prev.map(notif => 
-          notif.id === id ? { ...notif, read: true } : notif
-        )
+      if (error) throw error;
+
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, read: true } : n))
       );
-    } catch (err: any) {
-      console.error('Error marking notification as read:', err);
-      const errorMsg = err.message || 'Kunde inte markera notis som läst.';
+    } catch (err) {
+      console.error("Error marking notification as read:", err);
       toast({
         title: "Fel",
-        description: errorMsg,
+        description: "Kunde inte markera notis som läst.",
         variant: "destructive",
       });
-      throw err;
     }
-  };
+  }, [toast]);
+
+  const markAllAsRead = useCallback(async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from("notifications")
+        .update({ read: true })
+        .eq("user_id", user.id)
+        .eq("read", false);
+
+      if (error) throw error;
+
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    } catch (err) {
+      console.error("Error marking all as read:", err);
+    }
+  }, []);
 
   useEffect(() => {
     fetchNotifications();
-  }, []);
+
+    // Subscribe to realtime notifications
+    const channel = supabase
+      .channel("notifications-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+        },
+        (payload) => {
+          const newNotif = payload.new as Notification;
+          setNotifications((prev) => [newNotif, ...prev].slice(0, 50));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchNotifications]);
 
   const hasNotifications = notifications.length > 0;
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   return {
     notifications,
     loading,
-    error,
     hasNotifications,
     unreadCount,
     fetchNotifications,
     markAsRead,
+    markAllAsRead,
   };
 };
