@@ -1,59 +1,28 @@
 
 
-# Kontrastfix: Anvand samma system som Statistik-sidan
+# Kontosidan: Bredare layout och centrering
 
-## Sammanfattning
+## Problem
 
-Statistik-sidan anvander klasserna `dashboard-heading-dark` och `dashboard-subheading-dark` som automatiskt byter farg mellan svart (ljust lage) och vitt (morkt lage). Samma system ska appliceras pa alla komponenter dar text forsvinner i ljust lage.
+1. **AccountPage** har `max-w-4xl` som begransar hela sidans bredd
+2. **AccountContent** och **OrganizationContent** har `max-w-2xl mx-auto` som ytterligare krymper innehallet
+3. **AppSettingsContent** har `max-w-3xl` utan `mx-auto`, darfor hamnar den vansterstjalld istallet for centrerad
 
-## Berorda filer och andringar
+## Andringar
 
-### 1. HeroBanner (`src/components/ui/HeroBanner.tsx`)
+### 1. `src/pages/AccountPage.tsx` (rad 17)
+- Byt `max-w-4xl` till `max-w-6xl` for att ge hela sidan mer utrymme (samma bredd som dashboarden)
 
-Tar bort hardkodad `text-white` fran wrappern och applicerar temamedvetna klasser:
+### 2. `src/components/account/AccountContent.tsx` (rad 229)
+- Byt `max-w-2xl mx-auto` till `max-w-4xl mx-auto` sa att formularen och sektionerna tar upp mer plats
 
-- Titel (`h2`): lagg till `dashboard-heading-dark`
-- Undertitel (`p`): lagg till `dashboard-subheading-dark`
-- "Dagens fokus"-text: `dashboard-subheading-dark`
-- Quick action-titlar: `dashboard-heading-dark`
-- Quick action-undertitlar: `dashboard-subheading-dark`
-- Ikonbakgrunder och action-bakgrunder: `bg-black/5 dark:bg-white/20`
-- Kalenderikon-bakgrund: `bg-black/5 dark:bg-white/20`
-- Ta bort `text-white` fran wrapperns className
+### 3. `src/components/account/OrganizationContent.tsx` (rad 85)
+- Byt `max-w-2xl mx-auto` till `max-w-4xl mx-auto`
 
-### 2. Kontosidans tabs (`src/pages/AccountPage.tsx`)
+### 4. `src/components/account/AppSettingsContent.tsx` (rad 99)
+- Byt `max-w-3xl` till `max-w-4xl mx-auto` (lagger till `mx-auto` for centrering och okar bredden)
 
-Rubriken anvander redan `dashboard-heading-dark` / `dashboard-subheading-dark` (korrekt). Problemet ar flikarna:
+## Resultat
 
-- TabsList bakgrund: `bg-black/5 dark:bg-white/10`
-- TabsList border: `border-black/10 dark:border-white/20`
-- TabsTrigger inaktiv text: `text-foreground/60 dark:text-white/70`
-- TabsTrigger aktiv bakgrund: `data-[state=active]:bg-black/10 dark:data-[state=active]:bg-white/20`
-- TabsTrigger aktiv text: `data-[state=active]:text-foreground dark:data-[state=active]:text-white`
+Alla tre flikar (Konto, Organisation, App) kommer anvanda `max-w-4xl` centrerat inuti en `max-w-6xl`-wrapper, vilket ger mer utrymme at innehallet och centrerar App-fliken korrekt.
 
-### 3. ChatSidebar (`src/components/ai/ChatSidebar.tsx`)
-
-Alla hardkodade vita farger byts:
-
-- Borders: `border-border dark:border-white/10`
-- "Historik"-text: `text-foreground/70 dark:text-white/70`
-- Knappfargerna: `text-foreground/60 dark:text-white/60`, hover `text-foreground dark:text-white`
-- "Laddar..." och "Inga konversationer"-text: `text-muted-foreground dark:text-white/40`
-- Aktiv konversation: `bg-black/10 dark:bg-white/15 text-foreground dark:text-white`
-- Inaktiv konversation: `text-foreground/60 dark:text-white/60`
-- Ikoner/bakgrunder: `bg-black/5 dark:bg-white/10`
-
-### 4. DashboardFooter (`src/components/DashboardFooter.tsx`)
-
-Hela footern anvander hardkodade vita farger:
-
-- Footer border: `border-border dark:border-white/10`
-- Container text: `text-muted-foreground dark:text-white/70`
-- Rubriker (h3): `dashboard-heading-dark` istallet for `text-white`
-- Brodtext (p-taggar): arver fran containern (muted-foreground)
-- Hover-farg pa lankar: `hover:text-foreground dark:hover:text-white`
-- Copyright-border: `border-border dark:border-white/10`
-
-## Ingen logik andras
-
-Samtliga andringar ar rena CSS-klassbyte. Ingen funktionalitet eller struktur paverkas.
