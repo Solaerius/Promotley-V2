@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Send,
@@ -45,6 +45,7 @@ const AIChatContent = () => {
   const { profile: aiProfile, loading: aiProfileLoading } = useAIProfile();
   const [inputMessage, setInputMessage] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isNearBottom, setIsNearBottom] = useState(true);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -108,6 +109,7 @@ const AIChatContent = () => {
 
     const messageToSend = inputMessage.trim();
     setInputMessage("");
+    if (textareaRef.current) textareaRef.current.style.height = 'auto';
     setIsSending(true);
 
     try {
@@ -402,14 +404,21 @@ const AIChatContent = () => {
 
         {/* Input */}
         <motion.div className="mt-4 relative px-2" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="flex gap-2 items-center liquid-glass-light rounded-2xl p-2 border border-white/20">
-            <Input
+          <div className="flex gap-2 items-end liquid-glass-light rounded-2xl p-2 border border-white/20">
+            <Textarea
+              ref={textareaRef}
               placeholder={isAIBlocked ? "Fyll i AI-profil först..." : "Skriv ett meddelande..."}
               value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
+              onChange={(e) => {
+                setInputMessage(e.target.value);
+                const el = e.target;
+                el.style.height = 'auto';
+                el.style.height = Math.min(el.scrollHeight, 150) + 'px';
+              }}
               onKeyDown={handleKeyDown}
               disabled={loading || isAIBlocked || hasInsufficientCredits}
-              className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-base"
+              rows={1}
+              className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-base resize-none min-h-[40px] max-h-[150px] overflow-y-auto py-2"
             />
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
