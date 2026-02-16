@@ -1,54 +1,60 @@
 
-# Fyra steg: Live-anpassning, glasnavbar, chattbubbla pa konto, och z-index-fix
+# Tydligare kort och textrutor for en snyggare hemsida
 
-## Steg 1: Live-anpassning utan refresh
+## Problem
 
-**Problem:** `useNavbarPosition` anvands i bade `DashboardLayout` och `ChatWidget`, men varje komponent skapar sin egen instans av hooken med sin egen `useState`. Nar positionen andras i navbaren uppdateras bara navbarens lokala state -- layouten och chattbubblan laser fortfarande det gamla vardet fran `localStorage` tills sidan laddas om.
+Korten pa landningssidan -- sarskilt de pa morka gradient-sektioner -- anvander extremt laga opacitetsvarden (`bg-white/5`, `border-white/10`) som gor dem nastan osynliga. Textrutor och inmatningsfalt har liknande problem med bristande kontrast.
 
-**Losning:** Byt fran `localStorage` + lokal `useState` till en delad React-kontext (`NavbarPositionContext`) sa att alla komponenter som anvander positionen reagerar direkt nar den andras.
+## Losning
 
-**Filer:**
-- **`src/hooks/useNavbarPosition.ts`**: Skapa en `NavbarPositionProvider` som wrappar hela appen. Flytta state och localStorage-logik hit. Exportera `useNavbarPosition` som laser fran kontexten.
-- **`src/App.tsx`** (eller `main.tsx`): Wrappa app-tradet med `NavbarPositionProvider`.
-- Inga andringar behovs i `DashboardLayout.tsx`, `DashboardNavbar.tsx` eller `ChatWidget.tsx` -- de anvander redan `useNavbarPosition()` och kommer automatiskt fa det delade vardet.
+Oka opacitet pa bakgrund och kanter for alla kort pa morka sektioner, och forbattra inmatningsfaltens synlighet i bade ljust och morkt lage.
 
----
+## Andringar per fil
 
-## Steg 2: Glasmorfism pa DashboardNavbar
+### 1. `src/components/HowItWorks.tsx`
+- Kort: `bg-white/5 border-white/10` -> `bg-white/10 border-white/20`
+- Hover: `hover:bg-white/10 hover:border-white/20` -> `hover:bg-white/[0.15] hover:border-white/30`
+- Ikon-bakgrund: `bg-white/10` -> `bg-white/15`
 
-**Problem:** DashboardNavbar anvander en nastan helt opak gradient (`0.95`, `0.85`, `0.8` opacity) -- den ser solid ut, inte som glas.
+### 2. `src/components/ResultsSection.tsx`
+- Stat-rutor: `bg-white/5 border-white/10` -> `bg-white/10 border-white/20`
+- Hover: `hover:bg-white/10 hover:border-white/20` -> `hover:bg-white/[0.15] hover:border-white/30`
 
-**Losning:** Andra bakgrunden till en subtil, genomskinlig gradient som matchar startsidans Navbar-stil.
+### 3. `src/components/Testimonials.tsx`
+- Kort: `bg-white/5 border-white/10` -> `bg-white/10 border-white/20`
+- Hover: `hover:bg-white/10 hover:border-white/20` -> `hover:bg-white/[0.15] hover:border-white/30`
 
-**Filer:**
-- **`src/components/DashboardNavbar.tsx`**: Pa bada stallen dar `style={{ background: 'linear-gradient(...)' }}` anvands (vertikalt och horisontellt lage), andra fran:
-  ```
-  hsl(var(--accent) / 0.95) ... hsl(var(--primary) / 0.8)
-  ```
-  till nagot i stil med:
-  ```
-  hsl(var(--primary) / 0.1) ... hsl(var(--secondary) / 0.08) ... hsl(var(--accent) / 0.1)
-  ```
-  Behall `backdrop-blur-xl` och `border border-white/20`. Justera textfarger fran `text-white` till temamedvetna farger (`text-foreground`) for lasbarhet i ljust lage.
+### 4. `src/components/TrustSection.tsx`
+- Kort: `bg-white/5 border-white/10` -> `bg-white/10 border-white/20`
+- Hover: samma monster som ovan
+- Bottom Trust Badge: samma justering
 
----
+### 5. `src/components/Pricing.tsx`
+- Vanliga kort: `bg-white/5 border-white/10` -> `bg-white/10 border-white/20`
+- Popular-kort: `bg-white/15 border-white/40` -> `bg-white/20 border-white/50`
+- Checkmark-ikoner: `bg-white/10` -> `bg-white/15`
 
-## Steg 3: Chattbubbla pa kontosidan
+### 6. `src/components/ProblemSection.tsx`
+- "Innan Promotley"-kortet: `border-destructive/20 bg-destructive/5` -> `border-destructive/30 bg-destructive/8`
+- "Med Promotley"-kortet: `border-primary/30` -> `border-primary/40`
 
-**Problem:** `ChatWidget` renderas bara i `Dashboard.tsx` och `Index.tsx`. Kontosidan (`AccountPage.tsx`) inkluderar den inte.
+### 7. `src/index.css` -- Forbattra textrutor/inmatningsfalt
+- `.input-field`: Oka border-opacitet och lagg till tydligare bakgrund
+- Uppdatera `--border` CSS-variabeln fran `30 15% 88%` (ljust) till nagot med mer kontrast, t.ex. `30 15% 82%`
+- I dark mode: `--border` fran `344 25% 18%` till `344 25% 22%`
+- Lagg till en subtil `shadow-sm` pa `.input-field` for bade ljust och morkt lage
 
-**Losning:** Lagga till `<ChatWidget />` i `AccountPage.tsx`.
+### 8. `src/components/ui/card.tsx`
+- Lagg till en fallback `shadow-sm` sa att alla Card-komponenter har en subtil skugga aven i vilolagen (redan `shadow-card`, men vi forstarker CSS-variabeln)
 
-**Filer:**
-- **`src/pages/AccountPage.tsx`**: Importera och rendera `ChatWidget` inuti `DashboardLayout`, precis som i `Dashboard.tsx`.
+### 9. CSS-variablar i `src/index.css`
+- `--shadow-card`: Oka opacity fran `0.06/0.04` till `0.1/0.06` for tydligare kortskuggor i ljust lage
+- `--shadow-card-hover`: Oka fran `0.12/0.06` till `0.16/0.08`
+- I dark mode: justera skuggvarden uppat pa liknande satt
 
----
+## Temamedvetenhet
 
-## Steg 4: Chattbubblans z-index under footer
-
-**Problem:** Chattbubblan har `z-50` men footern eller andra element renderas ovanpa den.
-
-**Losning:** Hoj chattbubblans z-index till `z-[60]` (eller hogre) sa den alltid visas ovanfor footer-innehall. Footern har `relative z-10` i DashboardLayout.
-
-**Filer:**
-- **`src/components/ChatWidget.tsx`**: Andra bubbla-knappens klass fran `z-50` till `z-[60]`. Aven chattfonstrets `z-50` bor hojas till `z-[60]` for konsekvens.
+Alla andringar respekterar ljust/morkt lage:
+- Morka sektioner (gradient-diagonal): hojer white-opacity for synlighet
+- Ljusa sektioner (bg-background): forstarker border och shadow-variablar
+- Inmatningsfalt: tydligare kanter i bada teman genom CSS-variablar
