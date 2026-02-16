@@ -1,8 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 
 export type NavbarPosition = 'top' | 'bottom' | 'left' | 'right';
 
-export function useNavbarPosition() {
+interface NavbarPositionContextValue {
+  position: NavbarPosition;
+  setPosition: (pos: NavbarPosition) => void;
+  cyclePosition: () => void;
+  getPositionLabel: (pos: NavbarPosition) => string;
+}
+
+const NavbarPositionContext = createContext<NavbarPositionContextValue | null>(null);
+
+export function NavbarPositionProvider({ children }: { children: ReactNode }) {
   const [position, setPosition] = useState<NavbarPosition>(() => {
     const saved = localStorage.getItem('navbar-position');
     return (saved as NavbarPosition) || 'right';
@@ -30,5 +39,17 @@ export function useNavbarPosition() {
     return labels[pos];
   };
 
-  return { position, setPosition, cyclePosition, getPositionLabel };
+  return (
+    <NavbarPositionContext.Provider value={{ position, setPosition, cyclePosition, getPositionLabel }}>
+      {children}
+    </NavbarPositionContext.Provider>
+  );
+}
+
+export function useNavbarPosition() {
+  const context = useContext(NavbarPositionContext);
+  if (!context) {
+    throw new Error('useNavbarPosition must be used within a NavbarPositionProvider');
+  }
+  return context;
 }

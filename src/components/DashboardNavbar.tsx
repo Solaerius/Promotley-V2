@@ -120,9 +120,9 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
     return (
       <nav className={getNavbarPositionClasses()}>
         <div 
-          className="rounded-2xl border border-white/20 backdrop-blur-xl p-2"
+          className="rounded-2xl border border-white/20 dark:border-white/15 backdrop-blur-xl p-2"
           style={{
-            background: 'linear-gradient(180deg, hsl(var(--accent) / 0.95) 0%, hsl(var(--secondary) / 0.85) 50%, hsl(var(--primary) / 0.8) 100%)',
+            background: 'linear-gradient(180deg, hsl(var(--primary) / 0.12) 0%, hsl(var(--secondary) / 0.1) 50%, hsl(var(--accent) / 0.12) 100%)',
           }}
         >
           <div className="flex flex-col items-center gap-1">
@@ -145,14 +145,14 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                         className={cn(
                           "relative flex items-center justify-center w-9 h-9 rounded-xl transition-colors",
                           active 
-                            ? "text-white bg-white/20" 
-                            : "text-white/60 hover:text-white hover:bg-white/10"
+                            ? "text-foreground bg-foreground/15" 
+                            : "text-foreground/60 hover:text-foreground hover:bg-foreground/10"
                         )}
                       >
                         {active && (
                           <motion.div
                             layoutId="activeTabVertical"
-                            className="absolute inset-0 rounded-xl bg-white/15 border border-white/20"
+                            className="absolute inset-0 rounded-xl bg-foreground/10 border border-foreground/15"
                             transition={{ type: "spring", stiffness: 500, damping: 30 }}
                           />
                         )}
@@ -168,7 +168,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
             })}
 
             {/* Separator */}
-            <div className="w-6 h-px bg-white/20 my-2" />
+            <div className="w-6 h-px bg-foreground/20 my-2" />
 
             {/* Position toggle */}
             <TooltipProvider>
@@ -178,7 +178,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                     variant="ghost" 
                     size="icon" 
                     onClick={cyclePosition}
-                    className="w-9 h-9 rounded-xl text-white/50 hover:text-white hover:bg-white/10"
+                    className="w-9 h-9 rounded-xl text-foreground/50 hover:text-foreground hover:bg-foreground/10"
                   >
                     <Move className="w-3.5 h-3.5" />
                   </Button>
@@ -194,7 +194,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
             {/* Notifications */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative w-9 h-9 rounded-xl text-white/60 hover:text-white hover:bg-white/10">
+                <Button variant="ghost" size="icon" className="relative w-9 h-9 rounded-xl text-foreground/60 hover:text-foreground hover:bg-foreground/10">
                   <Bell className="w-4 h-4" />
                   {unreadCount > 0 && (
                     <Badge 
@@ -252,10 +252,10 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
             {/* User Profile */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full hover:bg-white/10">
-                  <Avatar className="w-7 h-7 border border-white/30">
+                <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full hover:bg-foreground/10">
+                  <Avatar className="w-7 h-7 border border-foreground/20">
                     <AvatarImage src={userAvatarUrl || undefined} />
-                    <AvatarFallback className="bg-white/20 text-white text-xs">
+                    <AvatarFallback className="bg-foreground/10 text-foreground text-xs">
                       {activeOrganization?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
                     </AvatarFallback>
                   </Avatar>
@@ -295,9 +295,9 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
   return (
     <nav className={getNavbarPositionClasses()}>
       <div 
-        className="rounded-2xl border border-white/20 backdrop-blur-xl"
+        className="rounded-2xl border border-white/20 dark:border-white/15 backdrop-blur-xl"
         style={{
-          background: 'linear-gradient(135deg, hsl(var(--accent) / 0.95) 0%, hsl(var(--secondary) / 0.85) 50%, hsl(var(--primary) / 0.8) 100%)',
+          background: 'linear-gradient(135deg, hsl(var(--primary) / 0.12) 0%, hsl(var(--secondary) / 0.1) 50%, hsl(var(--accent) / 0.12) 100%)',
         }}
       >
         <div className="px-3 py-2">
@@ -309,18 +309,18 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                   variant="ghost"
                   size="icon"
                   onClick={() => navigate(-1)}
-                  className="rounded-xl text-white/90 hover:text-white hover:bg-white/10 w-8 h-8"
+                  className="rounded-xl text-foreground/90 hover:text-foreground hover:bg-foreground/10 w-8 h-8"
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </Button>
               ) : (
                 <Link to="/dashboard" className="flex items-center gap-2 group">
                   <img src={logo} alt="Promotley" className="w-7 h-7" />
-                  <span className="font-semibold text-sm text-white hidden sm:inline">Promotley</span>
+                  <span className="font-semibold text-sm text-foreground hidden sm:inline">Promotley</span>
                 </Link>
               )}
               {title && (
-                <h1 className="font-medium text-sm text-white">{title}</h1>
+                <h1 className="font-medium text-sm text-foreground">{title}</h1>
               )}
             </div>
 
@@ -337,14 +337,14 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                     className={cn(
                       "relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors",
                       active 
-                        ? "text-white bg-white/20" 
-                        : "text-white/60 hover:text-white hover:bg-white/10"
+                        ? "text-foreground bg-foreground/15" 
+                        : "text-foreground/60 hover:text-foreground hover:bg-foreground/10"
                     )}
                   >
                     {active && (
                       <motion.div
                         layoutId="activeTabDesktop"
-                        className="absolute inset-0 rounded-lg bg-white/15 border border-white/20"
+                        className="absolute inset-0 rounded-lg bg-foreground/10 border border-foreground/15"
                         transition={{ type: "spring", stiffness: 500, damping: 30 }}
                       />
                     )}
@@ -365,7 +365,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                       variant="ghost" 
                       size="icon" 
                       onClick={cyclePosition}
-                      className="w-8 h-8 rounded-lg text-white/50 hover:text-white hover:bg-white/10"
+                      className="w-8 h-8 rounded-lg text-foreground/50 hover:text-foreground hover:bg-foreground/10"
                     >
                       <Move className="w-3.5 h-3.5" />
                     </Button>
@@ -381,7 +381,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
               {/* Notifications */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="relative w-8 h-8 rounded-lg text-white/60 hover:text-white hover:bg-white/10">
+                  <Button variant="ghost" size="icon" className="relative w-8 h-8 rounded-lg text-foreground/60 hover:text-foreground hover:bg-foreground/10">
                     <Bell className="w-4 h-4" />
                     {unreadCount > 0 && (
                       <Badge 
@@ -439,10 +439,10 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
               {/* User Profile */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full hover:bg-white/10">
-                    <Avatar className="w-7 h-7 border border-white/30">
+                  <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full hover:bg-foreground/10">
+                    <Avatar className="w-7 h-7 border border-foreground/20">
                       <AvatarImage src={userAvatarUrl || undefined} />
-                      <AvatarFallback className="bg-white/20 text-white text-xs">
+                      <AvatarFallback className="bg-foreground/10 text-foreground text-xs">
                         {activeOrganization?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
@@ -476,7 +476,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
           </div>
 
           {/* Mobile navigation tabs */}
-          <div className="flex md:hidden items-center justify-around mt-2 pt-2 border-t border-white/10">
+          <div className="flex md:hidden items-center justify-around mt-2 pt-2 border-t border-foreground/10">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const active = isActive(tab.href);
@@ -488,18 +488,18 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                   className={cn(
                     "relative flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition-colors",
                     active 
-                      ? "text-white" 
-                      : "text-white/50 hover:text-white"
+                      ? "text-foreground" 
+                      : "text-foreground/50 hover:text-foreground"
                   )}
                 >
                   {active && (
                     <motion.div
                       layoutId="activeTabMobile"
-                      className="absolute inset-0 rounded-lg bg-white/15"
+                      className="absolute inset-0 rounded-lg bg-foreground/10"
                       transition={{ type: "spring", stiffness: 500, damping: 30 }}
                     />
                   )}
-                  <Icon className={cn("w-4 h-4 relative z-10", active && "text-white")} />
+                  <Icon className={cn("w-4 h-4 relative z-10", active && "text-foreground")} />
                   <span className={cn("relative z-10 text-[9px]", active && "font-medium")}>{tab.name}</span>
                 </Link>
               );

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Building2, Palette } from "lucide-react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
+import ChatWidget from "@/components/ChatWidget";
 import { motion } from "framer-motion";
 
 // Import content components
@@ -73,6 +74,7 @@ const AccountPage = () => {
           </motion.div>
         </Tabs>
       </div>
+      <ChatWidget />
     </DashboardLayout>
   );
 };

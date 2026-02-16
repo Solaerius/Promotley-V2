@@ -527,7 +527,7 @@ const ChatWidget = () => {
       {!isOpen && (
         <button
           onClick={handleOpen}
-          className={`fixed z-50 w-14 h-14 rounded-full bg-gradient-primary text-primary-foreground shadow-elegant hover:shadow-glow transition-all duration-300 hover:scale-110 flex items-center justify-center group ${
+          className={`fixed z-[60] w-14 h-14 rounded-full bg-gradient-primary text-primary-foreground shadow-elegant hover:shadow-glow transition-all duration-300 hover:scale-110 flex items-center justify-center group ${
             navbarPosition === 'bottom' ? 'bottom-20 right-6' :
             navbarPosition === 'right' ? 'bottom-6 right-20' :
             'bottom-6 right-6'
@@ -543,7 +543,7 @@ const ChatWidget = () => {
       {isOpen && (
         <div 
           ref={chatRef}
-          className={`fixed z-50 bg-background/95 backdrop-blur-xl rounded-2xl shadow-elegant border border-border/50 flex flex-col overflow-hidden ${
+          className={`fixed z-[60] bg-background/95 backdrop-blur-xl rounded-2xl shadow-elegant border border-border/50 flex flex-col overflow-hidden ${
             isClosing 
               ? "animate-out slide-out-to-bottom-4 fade-out duration-200" 
               : "animate-in slide-in-from-bottom-4 fade-in duration-300"
