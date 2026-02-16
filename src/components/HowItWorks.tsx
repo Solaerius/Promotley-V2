@@ -61,7 +61,7 @@ const HowItWorks = () => {
             return (
               <Card 
                 key={index} 
-                className="bg-white/5 backdrop-blur-sm border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 group relative"
+                className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/[0.15] hover:border-white/30 transition-all duration-300 group relative"
               >
                 <CardContent className="p-6 md:p-8">
                   {/* Step Number */}
@@ -70,7 +70,7 @@ const HowItWorks = () => {
                   </div>
                   
                   {/* Icon */}
-                  <div className="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center mb-6 mt-2 group-hover:scale-110 group-hover:bg-white/20 transition-all duration-300">
+                  <div className="w-14 h-14 rounded-xl bg-white/15 flex items-center justify-center mb-6 mt-2 group-hover:scale-110 group-hover:bg-white/25 transition-all duration-300">
                     <Icon className="w-7 h-7 text-white" />
                   </div>
                   

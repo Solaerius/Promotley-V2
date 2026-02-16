@@ -97,8 +97,8 @@ const Pricing = () => {
               key={index}
               className={`relative p-6 md:p-8 transition-all duration-300 hover:-translate-y-1 backdrop-blur-sm ${
                 plan.popular
-                  ? "bg-white/15 border-2 border-white/40 shadow-glow lg:scale-105"
-                  : "bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 hover:shadow-lg"
+                  ? "bg-white/20 border-2 border-white/50 shadow-glow lg:scale-105"
+                  : "bg-white/10 border border-white/20 hover:bg-white/[0.15] hover:border-white/30 hover:shadow-lg"
               }`}
             >
               {plan.popular && (
@@ -132,7 +132,7 @@ const Pricing = () => {
                 <ul className="space-y-3">
                   {plan.features.map((feature, fIndex) => (
                     <li key={fIndex} className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <div className="w-5 h-5 rounded-full bg-white/15 flex items-center justify-center shrink-0 mt-0.5">
                         <Check className="w-3 h-3 text-green-400" />
                       </div>
                       <span className="text-sm text-white/80">{feature}</span>

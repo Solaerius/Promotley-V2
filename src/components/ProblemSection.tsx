@@ -17,7 +17,7 @@ const ProblemSection = () => {
         {/* Comparison cards */}
         <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-stretch">
           {/* Before - Problem */}
-          <Card className="relative p-8 md:p-10 border-2 border-destructive/20 bg-destructive/5 hover:border-destructive/30 transition-all duration-300">
+          <Card className="relative p-8 md:p-10 border-2 border-destructive/30 bg-destructive/[0.08] hover:border-destructive/40 transition-all duration-300">
             <div className="flex items-center gap-4 mb-8">
               <div className="w-12 h-12 rounded-2xl bg-destructive/10 flex items-center justify-center shrink-0">
                 <AlertCircle className="w-6 h-6 text-destructive" />
@@ -36,7 +36,7 @@ const ProblemSection = () => {
           </Card>
 
           {/* After - Solution */}
-          <Card className="relative p-8 md:p-10 border-2 border-primary/30 bg-gradient-hero shadow-elegant hover:border-primary/50 transition-all duration-300">
+          <Card className="relative p-8 md:p-10 border-2 border-primary/40 bg-gradient-hero shadow-elegant hover:border-primary/50 transition-all duration-300">
             {/* Recommended badge */}
             <div className="absolute -top-3 right-8">
               <span className="bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-xs font-semibold shadow-md">
