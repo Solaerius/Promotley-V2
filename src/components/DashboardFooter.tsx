@@ -67,7 +67,7 @@ export function DashboardFooter() {
         </div>
 
         {/* Copyright */}
-        <div className="text-center text-xs pt-5 border-t border-white/10">
+        <div className="text-center text-xs pt-5 border-t border-border dark:border-white/10">
           <p>© 2025 Promotley UF. Alla rättigheter förbehållna.</p>
         </div>
       </div>

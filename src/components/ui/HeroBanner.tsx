@@ -26,27 +26,27 @@ const HeroBanner = React.forwardRef<HTMLDivElement, HeroBannerProps>(
     return (
       <motion.div
         ref={ref}
-        className={cn("hero-banner text-white", className)}
+        className={cn("hero-banner", className)}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         {/* Background decorative elements */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-1/4 w-24 h-24 bg-white/5 rounded-full blur-2xl" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-black/5 dark:bg-white/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-1/4 w-24 h-24 bg-black/3 dark:bg-white/5 rounded-full blur-2xl" />
         
         <div className="relative z-10">
           {/* Header */}
           <div className="flex items-start justify-between mb-6">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold mb-2">{title}</h2>
+              <h2 className="text-2xl md:text-3xl font-bold dashboard-heading-dark mb-2">{title}</h2>
               {subtitle && (
-                <p className="text-white/80 text-sm md:text-base">{subtitle}</p>
+                <p className="dashboard-subheading-dark text-sm md:text-base">{subtitle}</p>
               )}
             </div>
             {showCalendarIcon && (
-              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                <Calendar className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-black/5 dark:bg-white/20 flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-foreground/70 dark:text-white" />
               </div>
             )}
           </div>
@@ -54,27 +54,27 @@ const HeroBanner = React.forwardRef<HTMLDivElement, HeroBannerProps>(
           {/* Quick Actions */}
           {quickActions && quickActions.length > 0 && (
             <div className="space-y-2">
-              <p className="text-sm font-medium text-white/70 mb-3">Dagens fokus</p>
+              <p className="text-sm font-medium dashboard-subheading-dark mb-3">Dagens fokus</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {quickActions.map((action, index) => {
                   const Icon = action.icon;
                   return (
                     <motion.div
                       key={index}
-                      className="flex items-center gap-3 p-3 rounded-xl bg-white/10 hover:bg-white/20 cursor-pointer transition-colors group"
+                      className="flex items-center gap-3 p-3 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 cursor-pointer transition-colors group"
                       whileHover={{ x: 4 }}
                       onClick={action.onClick}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
-                        <Icon className="w-4 h-4" />
+                      <div className="w-8 h-8 rounded-lg bg-black/5 dark:bg-white/20 flex items-center justify-center">
+                        <Icon className="w-4 h-4 text-foreground/70 dark:text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">{action.title}</p>
+                        <p className="font-medium text-sm truncate dashboard-heading-dark">{action.title}</p>
                         {action.subtitle && (
-                          <p className="text-xs text-white/60">{action.subtitle}</p>
+                          <p className="text-xs dashboard-subheading-dark">{action.subtitle}</p>
                         )}
                       </div>
-                      <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity text-foreground/60 dark:text-white" />
                     </motion.div>
                   );
                 })}
