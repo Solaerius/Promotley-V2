@@ -50,16 +50,20 @@
     --gradient-text: linear-gradient(135deg, hsl(9 90% 58%) 0%, hsl(331 75% 50%) 50%, hsl(344 60% 40%) 100%);
     
     /* Shadows */
-    --shadow-xs: 0 1px 2px hsl(344 45% 10% / 0.04);
-    --shadow-sm: 0 2px 4px hsl(344 45% 10% / 0.06);
-    --shadow-md: 0 4px 12px hsl(344 45% 10% / 0.1);
-    --shadow-lg: 0 8px 24px hsl(344 45% 10% / 0.12);
-    --shadow-xl: 0 16px 48px hsl(344 45% 10% / 0.15);
-    --shadow-elegant: 0 8px 32px -8px hsl(9 84% 52% / 0.3), 0 4px 16px -4px hsl(344 45% 10% / 0.1);
+    --shadow-xs: 0 1px 3px hsl(344 45% 10% / 0.06);
+    --shadow-sm: 0 2px 6px hsl(344 45% 10% / 0.1);
+    --shadow-md: 0 6px 16px hsl(344 45% 10% / 0.14);
+    --shadow-lg: 0 10px 30px hsl(344 45% 10% / 0.18);
+    --shadow-xl: 0 20px 50px hsl(344 45% 10% / 0.22);
+    --shadow-elegant: 0 8px 32px -8px hsl(9 84% 52% / 0.35), 0 4px 16px -4px hsl(344 45% 10% / 0.15);
     --shadow-glow: 0 0 30px hsl(9 84% 52% / 0.4);
-    --shadow-soft: 0 4px 16px hsl(344 45% 10% / 0.08);
-    --shadow-card: 0 2px 8px hsl(344 45% 10% / 0.1), 0 1px 2px hsl(344 45% 10% / 0.06);
-    --shadow-card-hover: 0 8px 24px hsl(344 45% 10% / 0.16), 0 4px 8px hsl(344 45% 10% / 0.08);
+    --shadow-soft: 0 6px 20px hsl(344 45% 10% / 0.12);
+    --shadow-card: 0 4px 12px hsl(344 45% 10% / 0.14), 0 2px 4px hsl(344 45% 10% / 0.08);
+    --shadow-card-hover: 0 10px 30px hsl(344 45% 10% / 0.2), 0 6px 12px hsl(344 45% 10% / 0.1);
+    --shadow-input: 0 2px 8px hsl(344 45% 10% / 0.12), inset 0 1px 2px hsl(344 45% 10% / 0.04);
+    --shadow-input-focus: 0 4px 14px hsl(9 84% 52% / 0.18), inset 0 1px 2px hsl(344 45% 10% / 0.04);
+    --outline-subtle: hsl(344 20% 70%);
+    --outline-subtle-focus: hsl(9 84% 52%);
   }
 
   .dark {
@@ -92,16 +96,20 @@
     --gradient-diagonal: linear-gradient(135deg, hsl(344 40% 10%) 0%, hsl(331 55% 25%) 40%, hsl(9 75% 45%) 100%);
     --gradient-warm: linear-gradient(135deg, hsl(9 85% 55% / 0.15) 0%, hsl(331 60% 42% / 0.1) 100%);
     --gradient-text: linear-gradient(135deg, hsl(9 90% 60%) 0%, hsl(331 70% 52%) 50%, hsl(344 55% 42%) 100%);
-    --shadow-xs: 0 1px 2px hsl(0 0% 0% / 0.2);
-    --shadow-sm: 0 2px 4px hsl(0 0% 0% / 0.25);
-    --shadow-md: 0 4px 12px hsl(0 0% 0% / 0.3);
-    --shadow-lg: 0 8px 24px hsl(0 0% 0% / 0.35);
-    --shadow-xl: 0 16px 48px hsl(0 0% 0% / 0.4);
-    --shadow-elegant: 0 8px 32px -8px hsl(9 85% 55% / 0.25), 0 4px 16px -4px hsl(0 0% 0% / 0.3);
-    --shadow-glow: 0 0 30px hsl(9 85% 55% / 0.25);
-    --shadow-soft: 0 4px 16px hsl(0 0% 0% / 0.2);
-    --shadow-card: 0 2px 8px hsl(0 0% 0% / 0.25), 0 1px 2px hsl(0 0% 0% / 0.12);
-    --shadow-card-hover: 0 8px 24px hsl(0 0% 0% / 0.35), 0 4px 8px hsl(0 0% 0% / 0.18);
+    --shadow-xs: 0 1px 3px hsl(0 0% 0% / 0.25);
+    --shadow-sm: 0 2px 6px hsl(0 0% 0% / 0.3);
+    --shadow-md: 0 6px 16px hsl(0 0% 0% / 0.35);
+    --shadow-lg: 0 10px 30px hsl(0 0% 0% / 0.4);
+    --shadow-xl: 0 20px 50px hsl(0 0% 0% / 0.45);
+    --shadow-elegant: 0 8px 32px -8px hsl(9 85% 55% / 0.3), 0 4px 16px -4px hsl(0 0% 0% / 0.35);
+    --shadow-glow: 0 0 30px hsl(9 85% 55% / 0.3);
+    --shadow-soft: 0 6px 20px hsl(0 0% 0% / 0.25);
+    --shadow-card: 0 4px 12px hsl(0 0% 0% / 0.3), 0 2px 4px hsl(0 0% 0% / 0.15);
+    --shadow-card-hover: 0 10px 30px hsl(0 0% 0% / 0.4), 0 6px 12px hsl(0 0% 0% / 0.2);
+    --shadow-input: 0 2px 8px hsl(0 0% 0% / 0.25), inset 0 1px 2px hsl(0 0% 0% / 0.1);
+    --shadow-input-focus: 0 4px 14px hsl(9 85% 55% / 0.25), inset 0 1px 2px hsl(0 0% 0% / 0.1);
+    --outline-subtle: hsl(344 20% 35%);
+    --outline-subtle-focus: hsl(9 85% 55%);
   }
 
   html {
@@ -158,7 +166,8 @@
   .badge-primary { @apply inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 text-sm font-medium; }
   .badge-light { @apply inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white border border-white/20 text-sm font-medium; }
   .divider { @apply h-px w-full bg-gradient-to-r from-transparent via-border to-transparent; }
-  .input-field { @apply w-full px-4 py-3 rounded-xl bg-background border-2 border-border text-foreground placeholder:text-muted-foreground transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary shadow-sm; }
+  .input-field { @apply w-full px-4 py-3 rounded-xl bg-background border-2 text-foreground placeholder:text-muted-foreground transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30; border-color: var(--outline-subtle); box-shadow: var(--shadow-input); }
+  .input-field:focus { border-color: var(--outline-subtle-focus); box-shadow: var(--shadow-input-focus); }
   /* Liquid glass card for dashboard */
   .liquid-glass {
     @apply rounded-2xl border border-white/20 backdrop-blur-xl;
