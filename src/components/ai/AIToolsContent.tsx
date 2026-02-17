@@ -11,6 +11,10 @@ import {
   ArrowRight
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAIProfile } from "@/hooks/useAIProfile";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const tools = [
   {
@@ -59,6 +63,16 @@ const tools = [
 
 const AIToolsContent = () => {
   const navigate = useNavigate();
+  const { profile: aiProfile, loading: aiProfileLoading } = useAIProfile();
+
+  const filledFields = aiProfile ? [
+    aiProfile.branch,
+    aiProfile.malgrupp,
+    aiProfile.produkt_beskrivning,
+    aiProfile.malsattning
+  ].filter(Boolean).length : 0;
+  const isAIProfileComplete = filledFields >= 3;
+  const isAIBlocked = !isAIProfileComplete && !aiProfileLoading;
 
   const handleToolClick = (action: string) => {
     // Navigate to chat tab with the action pre-filled
@@ -67,22 +81,25 @@ const AIToolsContent = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <p className="dashboard-subheading-dark">
-          Snabbverktyg för att skapa innehåll med AI
-        </p>
-      </div>
+    <div className="space-y-4">
+      {isAIBlocked && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Din AI-profil är inte komplett. <Link to="/account" className="underline font-medium">Fyll i den först</Link> för att använda AI-funktioner.
+          </AlertDescription>
+        </Alert>
+      )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 ${isAIBlocked ? 'opacity-50 pointer-events-none' : ''}`}>
         {tools.map((tool) => (
           <Card 
             key={tool.title} 
             className="group cursor-pointer liquid-glass-light hover:shadow-elegant transition-all duration-300 hover:scale-[1.02]"
             onClick={() => handleToolClick(tool.action)}
           >
-            <CardHeader className="pb-3">
-              <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${tool.color} flex items-center justify-center mb-3`}>
+            <CardHeader className="pb-2">
+              <div className={`w-10 h-10 rounded-xl bg-gradient-to-r ${tool.color} flex items-center justify-center mb-2`}>
                 <tool.icon className="w-6 h-6 text-white" />
               </div>
               <CardTitle className="text-lg flex items-center justify-between dashboard-heading-dark">

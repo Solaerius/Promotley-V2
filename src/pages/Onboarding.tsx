@@ -267,15 +267,6 @@ const Onboarding = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Län <OptionalHint /></Label>
-                    <Input
-                      value={formData.lan}
-                      onChange={(e) => updateField("lan", e.target.value)}
-                      placeholder="T.ex. Stockholms län"
-                      disabled={isSubmitting}
-                    />
-                  </div>
-                  <div className="space-y-2">
                     <Label>Land <OptionalHint /></Label>
                     <Input
                       value={formData.land}
@@ -329,7 +320,7 @@ const Onboarding = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Nyckelord <OptionalHint /></Label>
+                    <Label>Era grundprinciper <OptionalHint /></Label>
                     <Input
                       value={formData.nyckelord}
                       onChange={(e) => updateField("nyckelord", e.target.value)}
@@ -358,7 +349,7 @@ const Onboarding = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Tonalitet <OptionalHint /></Label>
+                  <Label>Vilken ton ska Promotely AI ha? <OptionalHint /></Label>
                   <Input
                     value={formData.tonalitet}
                     onChange={(e) => updateField("tonalitet", e.target.value)}

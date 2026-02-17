@@ -99,14 +99,14 @@ const AnalyticsContent = () => {
             const Icon = stat.icon;
             return (
               <Card key={index} className="liquid-glass-light hover:shadow-elegant transition-all duration-300">
-                <CardContent className="p-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-primary flex items-center justify-center">
-                      <Icon className="w-4 h-4 text-white" />
+                <CardContent className="p-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="w-6 h-6 rounded-lg bg-gradient-primary flex items-center justify-center">
+                      <Icon className="w-3 h-3 text-white" />
                     </div>
                   </div>
-                  <p className="text-xs dashboard-subheading-dark mb-1">{stat.title}</p>
-                  <p className="text-lg md:text-xl font-bold dashboard-heading-dark">{stat.value}</p>
+                  <p className="text-xs dashboard-subheading-dark mb-0.5">{stat.title}</p>
+                  <p className="text-lg font-bold dashboard-heading-dark">{stat.value}</p>
                 </CardContent>
               </Card>
             );
@@ -122,7 +122,7 @@ const AnalyticsContent = () => {
           </CardHeader>
           <CardContent>
             {analyticsData.some(a => a.history && Array.isArray(a.history) && a.history.length > 0) ? (
-              <ResponsiveContainer width="100%" height={200}>
+              <ResponsiveContainer width="100%" height={160}>
                 <LineChart data={getHistoryData(analyticsData[0]?.platform || '')}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
@@ -133,7 +133,7 @@ const AnalyticsContent = () => {
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[200px] flex items-center justify-center">
+              <div className="h-[160px] flex items-center justify-center">
                 <div className="text-center">
                   <Eye className="w-8 h-8 mx-auto mb-2 text-white/40" />
                   <p className="text-sm dashboard-subheading-dark">Ingen historikdata ännu</p>
@@ -148,7 +148,7 @@ const AnalyticsContent = () => {
             <CardTitle className="dashboard-heading-dark">Engagemangsöversikt</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[200px] flex items-center justify-center">
+            <div className="h-[160px] flex items-center justify-center">
               <div className="text-center">
                 <Heart className="w-8 h-8 mx-auto mb-2 text-white/40" />
                 <p className="text-sm dashboard-subheading-dark">Ingen historikdata ännu</p>

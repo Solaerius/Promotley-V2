@@ -111,6 +111,7 @@ export const ConnectionManager = () => {
   const getConnection = (provider: string) => connections.find(c => c.provider === provider);
 
   const comingSoonPlatforms = [
+    { name: "Instagram", icon: Instagram, gradient: "from-purple-600 via-pink-500 to-orange-400" },
     { name: "LinkedIn", icon: LinkedInIcon, gradient: "from-blue-700 to-blue-500" },
     { name: "X (Twitter)", icon: TwitterIcon, gradient: "from-gray-900 to-gray-700" },
     { name: "Facebook", icon: FacebookIcon, gradient: "from-blue-600 to-blue-400" },
@@ -129,39 +130,6 @@ export const ConnectionManager = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Instagram */}
-        <div className="flex items-center justify-between p-4 border rounded-lg">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 flex items-center justify-center">
-              <Instagram className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="font-medium">Instagram</p>
-              {isConnected('meta_ig') ? (
-                <p className="text-sm text-accent flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" />
-                  Connected as {getConnection('meta_ig')?.username || 'Okänd'}
-                </p>
-              ) : (
-                <>
-                  <p className="text-sm text-muted-foreground">Kräver Instagram Business/Creator-konto</p>
-                  <p className="text-xs text-muted-foreground">Måste vara kopplat till en Facebook-sida</p>
-                </>
-              )}
-            </div>
-          </div>
-          {isConnected('meta_ig') ? (
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-accent" />
-              <Button variant="outline" size="sm" onClick={() => disconnectProvider('meta_ig')}>Koppla från</Button>
-            </div>
-          ) : (
-            <Button variant="gradient" size="sm" onClick={connectInstagram} disabled={connectingProvider !== null}>
-              {connectingProvider === 'meta_ig' ? "Kopplar..." : "Anslut konto"}
-            </Button>
-          )}
-        </div>
-
         {/* TikTok */}
         <div className="flex items-center justify-between p-4 border rounded-lg">
           <div className="flex items-center gap-3">
