@@ -35,19 +35,19 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
             <a 
-              href="#funktioner" 
+              href="#how-it-works" 
               className="text-white/90 dark:text-foreground/90 hover:text-white dark:hover:text-foreground transition-colors text-sm font-medium"
             >
               Funktioner
             </a>
             <a 
-              href="#priser" 
+              href="#pricing" 
               className="text-white/90 dark:text-foreground/90 hover:text-white dark:hover:text-foreground transition-colors text-sm font-medium"
             >
               Priser
             </a>
             <a 
-              href="#demo" 
+              href="#demo-preview" 
               className="text-white/90 dark:text-foreground/90 hover:text-white dark:hover:text-foreground transition-colors text-sm font-medium"
             >
               Demo
@@ -65,7 +65,7 @@ const Navbar = () => {
               </Link>
             ) : (
               <>
-                <Link to="/auth">
+                <Link to="/auth?mode=login">
                   <Button 
                     variant="ghost" 
                     className="text-white/90 dark:text-foreground/90 hover:text-white dark:hover:text-foreground hover:bg-white/10 dark:hover:bg-foreground/10"
@@ -73,7 +73,7 @@ const Navbar = () => {
                     Logga in
                   </Button>
                 </Link>
-                <Link to="/auth">
+                <Link to="/auth?mode=register">
                   <Button 
                     variant="gradient"
                     className="transition-shadow duration-300 shadow-[0_6px_18px_rgba(238,89,61,0.35)] hover:shadow-[0_8px_24px_rgba(238,89,61,0.45)]"
@@ -102,21 +102,21 @@ const Navbar = () => {
           <div className="md:hidden pt-4 pb-2 border-t border-white/10 dark:border-border/30 mt-3 animate-fade-in-up">
             <div className="flex flex-col gap-2">
               <a 
-                href="#funktioner" 
+                href="#how-it-works" 
                 className="text-white/90 dark:text-foreground/90 hover:text-white dark:hover:text-foreground py-2 text-sm font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Funktioner
               </a>
               <a 
-                href="#priser" 
+                href="#pricing" 
                 className="text-white/90 dark:text-foreground/90 hover:text-white dark:hover:text-foreground py-2 text-sm font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Priser
               </a>
               <a 
-                href="#demo" 
+                href="#demo-preview" 
                 className="text-white/90 dark:text-foreground/90 hover:text-white dark:hover:text-foreground py-2 text-sm font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -131,12 +131,12 @@ const Navbar = () => {
                   </Link>
                 ) : (
                   <>
-                    <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                    <Link to="/auth?mode=login" onClick={() => setMobileMenuOpen(false)}>
                       <Button variant="ghost" className="w-full text-white/90 dark:text-foreground/90 hover:bg-white/10 dark:hover:bg-foreground/10">
                         Logga in
                       </Button>
                     </Link>
-                    <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                    <Link to="/auth?mode=register" onClick={() => setMobileMenuOpen(false)}>
                       <Button variant="gradient" className="w-full">
                         Starta gratis
                       </Button>
