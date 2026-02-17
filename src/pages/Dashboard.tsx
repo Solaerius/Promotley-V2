@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { HeroBanner } from "@/components/ui/HeroBanner";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
@@ -42,15 +43,71 @@ const formatNumber = (num: number): string => {
   return num.toString();
 };
 
-// Example data shown when no connections exist
-const exampleData = [
-  { week: "V1", value: 120 },
-  { week: "V2", value: 280 },
-  { week: "V3", value: 450 },
-  { week: "V4", value: 680 },
-];
+type TimeRange = '1m' | '6m' | '1y' | 'all';
+
+const timeRangeLabels: Record<TimeRange, string> = {
+  '1m': 'Denna månad',
+  '6m': '6 månader',
+  '1y': '1 år',
+  'all': 'All tid',
+};
+
+// Generate example data based on time range
+const generateExampleData = (range: TimeRange) => {
+  const points: { week: string; value: number }[] = [];
+  const now = new Date();
+  
+  const configs: Record<TimeRange, { count: number; labelFn: (i: number) => string; baseFn: (i: number, count: number) => number }> = {
+    '1m': {
+      count: 4,
+      labelFn: (i) => `V${Math.max(1, getWeekNumberStatic(now) - 3 + i)}`,
+      baseFn: (i, count) => 120 + Math.round(i * 180 + Math.random() * 50),
+    },
+    '6m': {
+      count: 6,
+      labelFn: (i) => {
+        const d = new Date(now);
+        d.setMonth(d.getMonth() - 5 + i);
+        return d.toLocaleString('sv-SE', { month: 'short' });
+      },
+      baseFn: (i) => 80 + Math.round(i * 250 + Math.random() * 80),
+    },
+    '1y': {
+      count: 12,
+      labelFn: (i) => {
+        const d = new Date(now);
+        d.setMonth(d.getMonth() - 11 + i);
+        return d.toLocaleString('sv-SE', { month: 'short' });
+      },
+      baseFn: (i) => 50 + Math.round(i * 150 + Math.random() * 60),
+    },
+    'all': {
+      count: 8,
+      labelFn: (i) => {
+        const d = new Date(now);
+        d.setMonth(d.getMonth() - 21 + i * 3);
+        return d.toLocaleString('sv-SE', { month: 'short', year: '2-digit' });
+      },
+      baseFn: (i) => 30 + Math.round(i * 200 + Math.random() * 100),
+    },
+  };
+
+  const cfg = configs[range];
+  for (let i = 0; i < cfg.count; i++) {
+    points.push({ week: cfg.labelFn(i), value: cfg.baseFn(i, cfg.count) });
+  }
+  return points;
+};
+
+const getWeekNumberStatic = (date: Date) => {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+};
 
 const Dashboard = () => {
+  const [timeRange, setTimeRange] = useState<TimeRange>('1m');
   const { isConnected, connections } = useConnections();
   const tiktokData = useTikTokData();
   const metaData = useMetaData();
@@ -58,25 +115,21 @@ const Dashboard = () => {
   const { posts } = useCalendar();
   const { data: analyticsData } = useAnalytics();
 
+  const exampleData = generateExampleData(timeRange);
+
   // Build chart data from real analytics
   const buildChartData = (data: any[]) => {
     if (!data || data.length === 0) return exampleData;
-    // Use followers history if available, otherwise use current values
+    const total = data.reduce((sum, d) => sum + (d.followers || 0), 0);
+    const cfg = { '1m': 4, '6m': 6, '1y': 12, 'all': 8 };
+    const count = cfg[timeRange];
     const now = new Date();
-    return Array.from({ length: 4 }, (_, i) => {
-      const weekNum = Math.max(1, getWeekNumber(now) - 3 + i);
-      return {
-        week: `V${weekNum}`,
-        value: data.reduce((sum, d) => sum + (d.followers || 0), 0) * (0.7 + i * 0.1),
-      };
+    return Array.from({ length: count }, (_, i) => {
+      const label = timeRange === '1m'
+        ? `V${Math.max(1, getWeekNumberStatic(now) - count + 1 + i)}`
+        : (() => { const d = new Date(now); d.setMonth(d.getMonth() - count + 1 + i); return d.toLocaleString('sv-SE', { month: 'short' }); })();
+      return { week: label, value: Math.round(total * (0.5 + (i / count) * 0.5)) };
     });
-  };
-
-  const getWeekNumber = (date: Date) => {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
   };
 
   // Calculate total metrics
@@ -233,13 +286,30 @@ const Dashboard = () => {
           transition={{ delay: 0.35, duration: 0.4 }}
           className="liquid-glass-light p-6"
         >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold dashboard-heading-dark">Tillväxt</h3>
-            {connections.length === 0 && (
-              <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">
-                Exempeldata
-              </span>
-            )}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-semibold dashboard-heading-dark">Tillväxt</h3>
+              {connections.length === 0 && (
+                <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">
+                  Exempeldata
+                </span>
+              )}
+            </div>
+            <div className="flex gap-1 p-1 rounded-xl bg-muted/50">
+              {(Object.keys(timeRangeLabels) as TimeRange[]).map((range) => (
+                <button
+                  key={range}
+                  onClick={() => setTimeRange(range)}
+                  className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${
+                    timeRange === range
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {timeRangeLabels[range]}
+                </button>
+              ))}
+            </div>
           </div>
           {connections.length === 0 && (
             <p className="text-sm text-muted-foreground mb-3">
