@@ -30,7 +30,7 @@ const Auth = () => {
   const fromDemo = searchParams.get('from') === 'demo';
   const joinMode = searchParams.get('mode') === 'join';
   
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(searchParams.get('mode') !== 'register');
   const [isCreatingCompany, setIsCreatingCompany] = useState(!joinMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

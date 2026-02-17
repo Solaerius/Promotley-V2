@@ -3,7 +3,7 @@ import Hero from "@/components/Hero";
 import ProblemSection from "@/components/ProblemSection";
 import HowItWorks from "@/components/HowItWorks";
 import ResultsSection from "@/components/ResultsSection";
-import AIDemoSection from "@/components/AIDemoSection";
+import DemoPreviewSection from "@/components/DemoPreviewSection";
 import Pricing from "@/components/Pricing";
 import Testimonials from "@/components/Testimonials";
 import TrustSection from "@/components/TrustSection";
@@ -28,7 +28,9 @@ const Index = () => {
       
       <ResultsSection />
       
-      
+      <AnimatedSection animation="slide-up" delay={100}>
+        <DemoPreviewSection />
+      </AnimatedSection>
       
       <AnimatedSection animation="fade-in" delay={100}>
         <Pricing />

@@ -90,7 +90,7 @@ const Hero = () => {
             }`}
             style={{ animationDelay: '0.15s' }}
           >
-            <Link to="/auth">
+            <Link to="/auth?mode=register">
               <Button 
                 size="lg"
                 className="text-base px-8 py-6 bg-white text-accent hover:bg-white/90 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] font-semibold"
