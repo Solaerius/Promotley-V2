@@ -54,7 +54,7 @@ const ChatWidget = () => {
   const MIN_HEIGHT = 350;
   const MAX_HEIGHT = window.innerHeight - 100;
 
-  // Load or create session on mount
+  // Load or create session on mount (no DB calls needed - uses localStorage)
   useEffect(() => {
     const savedSessionId = localStorage.getItem("live_chat_session_id");
     const autoReplySent = localStorage.getItem("live_chat_auto_reply_sent");
@@ -62,9 +62,8 @@ const ChatWidget = () => {
     if (savedSessionId) {
       setSessionId(savedSessionId);
       setAutoReplyHasBeenSent(autoReplySent === "true");
-      checkSessionStatus(savedSessionId);
+      // Only check session status if chat is open to avoid unnecessary DB calls
     } else {
-      // Create new session
       const newSessionId = crypto.randomUUID();
       localStorage.setItem("live_chat_session_id", newSessionId);
       setSessionId(newSessionId);
@@ -169,13 +168,16 @@ const ChatWidget = () => {
     }
   };
 
-  // Load messages when session is ready
+  // Load messages only when chat is opened and session is ready
   useEffect(() => {
-    if (!sessionId) return;
+    if (!sessionId || !isOpen) return;
 
     // Reset refs for new session
     gotRealtimeEventRef.current = false;
     pollingTickCountRef.current = 0;
+
+    // Check session status
+    checkSessionStatus(sessionId);
 
     const loadMessages = async () => {
       // Note: Non-admin users cannot read messages from DB due to RLS
@@ -246,7 +248,7 @@ const ChatWidget = () => {
         noEventWarningRef.current = null;
       }
     };
-  }, [sessionId]);
+  }, [sessionId, isOpen]);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageSquare, Wand2, BarChart3, Radar } from "lucide-react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { motion } from "framer-motion";
+import { useSearchParams } from "react-router-dom";
 
 // Import content components
 import AIChatContent from "@/components/ai/AIChatContent";
@@ -11,9 +12,26 @@ import AIAnalysisContent from "@/components/analytics/AIAnalysisContent";
 import SalesRadarContent from "@/components/ai/SalesRadarContent";
 
 const AIPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(() => {
-    return localStorage.getItem('promotely_ai_tab') || 'verktyg';
+    return searchParams.get('tab') || localStorage.getItem('promotely_ai_tab') || 'verktyg';
   });
+  const [prefillAction, setPrefillAction] = useState<string | null>(null);
+
+  // Read URL params on mount and when they change
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    const actionParam = searchParams.get('action');
+    if (tabParam) {
+      setActiveTab(tabParam);
+      localStorage.setItem('promotely_ai_tab', tabParam);
+    }
+    if (actionParam) {
+      setPrefillAction(actionParam);
+      // Clear URL params after reading
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -77,7 +95,7 @@ const AIPage = () => {
               className="h-full"
             >
               <TabsContent value="chat" className="mt-0 h-full">
-                <AIChatContent />
+                <AIChatContent prefillMessage={prefillAction} onPrefillConsumed={() => setPrefillAction(null)} />
               </TabsContent>
 
               <TabsContent value="verktyg" className="mt-0">

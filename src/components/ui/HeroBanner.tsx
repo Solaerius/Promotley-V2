@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { LucideIcon, Calendar, ArrowRight } from "lucide-react";
 import { Button } from "./button";
+import { Link } from "react-router-dom";
 
 interface QuickAction {
   icon: LucideIcon;
@@ -58,9 +59,9 @@ const HeroBanner = React.forwardRef<HTMLDivElement, HeroBannerProps>(
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {quickActions.map((action, index) => {
                   const Icon = action.icon;
-                  return (
+                  const content = (
                     <motion.div
-                      key={index}
+                      key={action.href ? undefined : index}
                       className="flex items-center gap-3 p-3 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 cursor-pointer transition-colors group"
                       whileHover={{ x: 4 }}
                       onClick={action.onClick}
@@ -77,6 +78,7 @@ const HeroBanner = React.forwardRef<HTMLDivElement, HeroBannerProps>(
                       <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity text-foreground/60 dark:text-white" />
                     </motion.div>
                   );
+                  return action.href ? <Link key={index} to={action.href}>{content}</Link> : <React.Fragment key={index}>{content}</React.Fragment>;
                 })}
               </div>
             </div>

@@ -12,7 +12,8 @@ import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useToast } from "@/hooks/use-toast";
 import { useCalendar } from "@/hooks/useCalendar";
 import { useAIProfile } from "@/hooks/useAIProfile";
-import { useAIAssistant } from "@/hooks/useAIAssistant";
+import { useConversations } from "@/hooks/useConversations";
+import { supabase } from "@/integrations/supabase/client";
 import CalendarSkeleton from "@/components/CalendarSkeleton";
 import CalendarErrorState from "@/components/CalendarErrorState";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -49,6 +50,7 @@ const Calendar = () => {
   const { toast } = useToast();
   const { posts, loading, error, hasPosts, createPost, updatePost, deletePost, fetchPosts } = useCalendar();
   const { profile: aiProfile, loading: aiProfileLoading } = useAIProfile();
+  const { createConversation } = useConversations();
 
   // Check if AI profile is complete (at least 3 of 4 key fields)
   const aiProfileFields = [
@@ -66,7 +68,6 @@ const Calendar = () => {
   const [editingPost, setEditingPost] = useState<any | null>(null);
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
-  const { sendMessage, implementPlan } = useAIAssistant(null);
   const [formData, setFormData] = useState({
     date: "",
     platform: "inlagg",
@@ -82,10 +83,12 @@ const Calendar = () => {
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
+    // Convert Sunday=0 to Monday-start: Mon=0, Tue=1, ..., Sun=6
+    const mondayStart = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1;
 
     const days = [];
     // Lägg till tomma platser för dagar före månadens start
-    for (let i = 0; i < startingDayOfWeek; i++) {
+    for (let i = 0; i < mondayStart; i++) {
       days.push(null);
     }
     // Lägg till alla dagar i månaden
@@ -143,17 +146,33 @@ const Calendar = () => {
     setGenerationProgress(10);
     
     try {
-      // Simulate progress while waiting
+      const convId = await createConversation("Marknadsföringsplan");
+      if (!convId) throw new Error("Kunde inte skapa konversation");
+
       const progressInterval = setInterval(() => {
         setGenerationProgress(prev => Math.min(prev + 8, 85));
       }, 800);
 
       const planMessage = "Skapa en marknadsföringsplan för kommande 4 veckor som maximerar räckvidd och engagemang. Utgå från min kalender och företagsprofil. Svara ENBART med en plan i JSON-format.";
-      await sendMessage(planMessage, {
-        action: 'create_marketing_plan',
-        timeframe: { preset: 'next_4_weeks' },
-        targets: ['reach', 'engagement'],
-        requestId: crypto.randomUUID(),
+
+      await supabase.from('ai_chat_messages').insert({
+        conversation_id: convId, role: 'user', message: planMessage,
+      });
+
+      const { data: contextData } = await supabase.functions.invoke('calendar/context');
+      const { data: result, error: invokeError } = await supabase.functions.invoke('ai-assistant/chat', {
+        method: 'POST',
+        body: {
+          message: planMessage, history: [],
+          calendarContextDigest: contextData?.digest || [],
+          meta: { action: 'create_marketing_plan', timeframe: { preset: 'next_4_weeks' }, targets: ['reach', 'engagement'], requestId: crypto.randomUUID() },
+          conversationId: convId,
+        }
+      });
+      if (invokeError) throw invokeError;
+
+      await supabase.from('ai_chat_messages').insert({
+        conversation_id: convId, role: 'assistant', message: result.response, plan: result.plan || null,
       });
 
       clearInterval(progressInterval);
@@ -190,7 +209,7 @@ const Calendar = () => {
     "Juli", "Augusti", "September", "Oktober", "November", "December"
   ];
 
-  const weekDays = ["Sön", "Mån", "Tis", "Ons", "Tor", "Fre", "Lör"];
+  const weekDays = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"];
 
   if (loading) {
     return (
@@ -233,7 +252,7 @@ const Calendar = () => {
                 <AlertCircle className="h-4 w-4 text-amber-600" />
                 <AlertDescription className="text-amber-700 dark:text-amber-400 text-sm">
                   Fyll i din{" "}
-                  <Link to="/settings" className="underline font-medium">
+                  <Link to="/account" className="underline font-medium">
                     AI-profil
                   </Link>{" "}
                   för att använda AI.
@@ -440,6 +459,7 @@ const Calendar = () => {
           <CardContent>
             <div className="space-y-3">
                 {posts
+                .filter(p => new Date(p.date) >= new Date(new Date().toDateString()))
                 .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
                 .slice(0, 5)
                 .map((post) => {

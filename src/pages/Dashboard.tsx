@@ -69,13 +69,13 @@ const Dashboard = () => {
       icon: Sparkles,
       title: "AI-analys",
       subtitle: "Få insikter",
-      onClick: () => window.location.href = '/analytics',
+      href: '/analytics',
     },
     {
       icon: Calendar,
       title: "Planera",
       subtitle: `${upcomingPosts} inlägg`,
-      onClick: () => window.location.href = '/calendar',
+      href: '/calendar',
     },
   ];
 
@@ -277,7 +277,7 @@ const Dashboard = () => {
                 variant="gradient" 
                 size="sm" 
                 className="whitespace-nowrap"
-                onClick={() => window.location.href = '/#pricing'}
+                onClick={() => window.location.href = '/pricing'}
               >
                 Se planer
                 <ArrowRight className="w-4 h-4 ml-2" />

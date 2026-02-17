@@ -26,7 +26,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { trackEvent } from "@/lib/trackEvent";
 
-const AIChatContent = () => {
+interface AIChatContentProps {
+  prefillMessage?: string | null;
+  onPrefillConsumed?: () => void;
+}
+
+const AIChatContent = ({ prefillMessage, onPrefillConsumed }: AIChatContentProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -50,6 +55,14 @@ const AIChatContent = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+
+  // Handle prefill message from AI tools
+  useEffect(() => {
+    if (prefillMessage && activeConversationId && !loading) {
+      setInputMessage(prefillMessage);
+      onPrefillConsumed?.();
+    }
+  }, [prefillMessage, activeConversationId, loading]);
 
   const hasInsufficientCredits = credits && credits.credits_left <= 0;
 
