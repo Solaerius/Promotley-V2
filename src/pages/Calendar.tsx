@@ -19,10 +19,29 @@ import { Link } from "react-router-dom";
 interface CalendarPost {
   id: string;
   date: string;
-  platform: "instagram" | "tiktok" | "facebook";
+  platform: string;
   title: string;
   description: string;
+  event_type?: string;
 }
+
+type EventType = "inlagg" | "uf_marknad" | "event" | "deadline" | "ovrigt";
+
+const eventTypeLabels: Record<EventType, string> = {
+  inlagg: "Inlägg",
+  uf_marknad: "UF-marknad",
+  event: "Event/aktivitet",
+  deadline: "Deadline",
+  ovrigt: "Övrigt",
+};
+
+const eventTypeColors: Record<EventType, string> = {
+  inlagg: "bg-pink-500",
+  uf_marknad: "bg-green-500",
+  event: "bg-blue-500",
+  deadline: "bg-orange-500",
+  ovrigt: "bg-gray-500",
+};
 
 const Calendar = () => {
   const { toast } = useToast();
@@ -45,22 +64,10 @@ const Calendar = () => {
   const [editingPost, setEditingPost] = useState<any | null>(null);
   const [formData, setFormData] = useState({
     date: "",
-    platform: "",
+    platform: "inlagg",
     title: "",
     description: "",
   });
-
-  const platformColors = {
-    instagram: "bg-pink-500",
-    tiktok: "bg-cyan-500",
-    facebook: "bg-blue-600",
-  };
-
-  const platformIcons = {
-    instagram: Instagram,
-    tiktok: Music2,
-    facebook: Facebook,
-  };
 
   // Generera kalenderdagar
   const getDaysInMonth = () => {
@@ -102,7 +109,7 @@ const Calendar = () => {
       }
       setIsDialogOpen(false);
       setEditingPost(null);
-      setFormData({ date: "", platform: "", title: "", description: "" });
+      setFormData({ date: "", platform: "inlagg", title: "", description: "" });
     } catch (err: any) {
       console.error('Error saving post:', err);
       // Toast already shown by hook
@@ -203,14 +210,14 @@ const Calendar = () => {
               </Button>
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button onClick={() => { setEditingPost(null); setFormData({ date: "", platform: "", title: "", description: "" }); }}>
+                <Button variant="secondary" onClick={() => { setEditingPost(null); setFormData({ date: "", platform: "inlagg", title: "", description: "" }); }}>
                   <Plus className="w-4 h-4 mr-2" />
-                  Lägg till
+                  Lägg till händelse
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-md">
                 <DialogHeader>
-                  <DialogTitle>{editingPost ? "Redigera inlägg" : "Nytt inlägg"}</DialogTitle>
+                  <DialogTitle>{editingPost ? "Redigera händelse" : "Ny händelse"}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
@@ -223,15 +230,15 @@ const Calendar = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="platform">Plattform</Label>
+                    <Label htmlFor="platform">Typ</Label>
                     <Select value={formData.platform} onValueChange={(value) => setFormData({ ...formData, platform: value })}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Välj plattform" />
+                        <SelectValue placeholder="Välj typ" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="instagram">Instagram</SelectItem>
-                        <SelectItem value="tiktok">TikTok</SelectItem>
-                        <SelectItem value="facebook">Facebook</SelectItem>
+                        {Object.entries(eventTypeLabels).map(([key, label]) => (
+                          <SelectItem key={key} value={key}>{label}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -320,7 +327,7 @@ const Calendar = () => {
                 return (
                   <div
                     key={index}
-                    className={`min-h-[80px] p-1.5 rounded-lg border transition-colors ${
+                    className={`min-h-[76px] p-1.5 rounded-lg border transition-colors ${
                       day
                         ? isToday
                           ? "bg-primary/10 border-primary"
@@ -333,15 +340,15 @@ const Calendar = () => {
                         <div className="text-sm font-semibold mb-2">{day}</div>
                         <div className="space-y-1">
                           {dayPosts.map((post) => {
-                            const Icon = platformIcons[post.platform];
+                            const eventType = (post as any).event_type as EventType || 'inlagg';
+                            const colorClass = eventTypeColors[eventType] || 'bg-gray-500';
                             return (
                               <div
                                 key={post.id}
-                                className={`${platformColors[post.platform]} text-white text-xs p-2 rounded cursor-pointer hover:opacity-90 transition-opacity group relative`}
+                                className={`${colorClass} text-white text-xs p-1.5 rounded cursor-pointer hover:opacity-90 transition-opacity group relative`}
                                 onClick={() => handleEditPost(post)}
                               >
                                 <div className="flex items-center gap-1">
-                                  <Icon className="w-3 h-3" />
                                   <span className="truncate flex-1">{post.title}</span>
                                 </div>
                                 <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -377,19 +384,20 @@ const Calendar = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {posts
+                {posts
                 .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
                 .slice(0, 5)
                 .map((post) => {
-                  const Icon = platformIcons[post.platform];
+                  const eventType = (post as any).event_type as EventType || 'inlagg';
+                  const colorClass = eventTypeColors[eventType] || 'bg-gray-500';
                   return (
                     <div
                       key={post.id}
-                      className="flex items-center justify-between p-4 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+                      className="flex items-center justify-between p-3 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className={`w-10 h-10 rounded-lg ${platformColors[post.platform]} flex items-center justify-center`}>
-                          <Icon className="w-5 h-5 text-white" />
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-lg ${colorClass} flex items-center justify-center`}>
+                          <CalendarIcon className="w-4 h-4 text-white" />
                         </div>
                         <div>
                           <p className="font-semibold">{post.title}</p>

@@ -81,11 +81,15 @@ const CreditsDisplay = ({ variant = 'compact', showUpgrade = true }: CreditsDisp
         </Button>
       )}
 
-      {credits.renewal_date && (
+      {['starter', 'growth', 'pro'].includes(credits.plan) && credits.renewal_date ? (
         <p className="text-xs text-muted-foreground text-center">
           Förnyas {new Date(credits.renewal_date).toLocaleDateString('sv-SE')}
         </p>
-      )}
+      ) : credits.plan === 'free_trial' ? (
+        <p className="text-xs text-muted-foreground text-center">
+          Gratis plan – <button onClick={() => navigate('/pricing')} className="text-primary hover:underline font-medium">uppgradera för mer</button>
+        </p>
+      ) : null}
     </div>
   );
 };

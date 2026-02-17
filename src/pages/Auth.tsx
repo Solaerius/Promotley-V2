@@ -35,6 +35,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
@@ -186,7 +187,7 @@ const Auth = () => {
       // Perform authentication
       const result = isLogin
         ? await signIn(email, password)
-        : await signUp(email, password, isCreatingCompany ? companyName : undefined);
+        : await signUp(email, password, isCreatingCompany ? companyName : undefined, !isCreatingCompany && inviteCode ? inviteCode : undefined);
 
       if (result.error) {
         // Handle specific error messages
@@ -393,8 +394,8 @@ const Auth = () => {
                     : 'border-border hover:border-primary/50'
                 }`}
               >
-                <div className="font-medium text-sm">Skapa företag</div>
-                <div className="text-xs text-muted-foreground mt-1">Registrera ditt UF-företag</div>
+                <div className="font-medium text-sm">Registrera nytt företag</div>
+                <div className="text-xs text-muted-foreground mt-1">Skapa ditt UF-företag</div>
               </button>
               <button
                 type="button"
@@ -409,6 +410,23 @@ const Auth = () => {
                 <div className="text-xs text-muted-foreground mt-1">Anslut med inbjudningskod</div>
               </button>
             </div>
+            
+            {/* Invite code field when joining */}
+            {!isCreatingCompany && (
+              <div className="mt-3 space-y-2">
+                <Label htmlFor="inviteCode">Inbjudningskod <span className="text-xs text-muted-foreground">(valfritt)</span></Label>
+                <Input
+                  id="inviteCode"
+                  type="text"
+                  placeholder="T.ex. AB12CD34"
+                  value={inviteCode}
+                  onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Har du fått en kod? Fyll i den här. Du kan även ange den senare.
+                </p>
+              </div>
+            )}
           </div>
         )}
 

@@ -9,7 +9,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, companyName?: string) => Promise<{ error: any; needsVerification?: boolean }>;
+  signUp: (email: string, password: string, companyName?: string, inviteCode?: string) => Promise<{ error: any; needsVerification?: boolean }>;
   signOut: () => Promise<void>;
 }
 
@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return { error };
   };
 
-  const signUp = async (email: string, password: string, companyName?: string) => {
+  const signUp = async (email: string, password: string, companyName?: string, inviteCode?: string) => {
     const redirectUrl = `${window.location.origin}/auth/callback`;
     
     const { data, error } = await supabase.auth.signUp({
@@ -100,17 +100,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         emailRedirectTo: redirectUrl,
         data: {
           company_name: companyName,
+          invite_code: inviteCode || undefined,
         }
       }
     });
 
     if (!error && data.user) {
-      // Update user profile with company name if provided
+      // Update user profile with company name if provided (with retry)
       if (companyName) {
-        await supabase
-          .from('users')
-          .update({ company_name: companyName })
-          .eq('id', data.user.id);
+        const updateWithRetry = async (retries = 3) => {
+          for (let i = 0; i < retries; i++) {
+            const { error: updateError } = await supabase
+              .from('users')
+              .update({ company_name: companyName })
+              .eq('id', data.user!.id);
+            if (!updateError) return;
+            if (i < retries - 1) await new Promise(r => setTimeout(r, 500 * (i + 1)));
+          }
+        };
+        updateWithRetry();
       }
 
       // Check if email confirmation is required

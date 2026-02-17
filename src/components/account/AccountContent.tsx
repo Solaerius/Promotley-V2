@@ -131,9 +131,11 @@ const AccountContent = () => {
   const handleSaveAIProfile = async () => {
     setIsSavingAIProfile(true);
     try {
-      const { nyckelord, ...rest } = aiFormData;
+      const { nyckelord, foretagsnamn, ...rest } = aiFormData;
       await updateAIProfile({
         ...rest,
+        // Sync company name from account info
+        foretagsnamn: companyName.trim() || foretagsnamn,
         nyckelord: nyckelord ? nyckelord.split(",").map((k) => k.trim()).filter(Boolean) : undefined,
       });
       toast({ title: "AI-profil sparad" });
@@ -219,34 +221,33 @@ const AccountContent = () => {
   const hasActivePlan = credits?.plan && !['free_trial'].includes(credits.plan);
   const currentTierLevel = credits?.plan ? getTierLevel(credits.plan) : 0;
 
-  // Get plans user can downgrade to
   const downgradeOptions = Object.entries(SWISH_PLANS).filter(([key]) => {
     const planLevel = getTierLevel(key);
     return planLevel < currentTierLevel;
   });
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
+    <div className="space-y-4 max-w-4xl mx-auto">
       {/* Credits & Plan */}
       <motion.section 
         custom={0} 
         variants={sectionVariants} 
         initial="hidden" 
         animate="visible"
-        className="space-y-4"
+        className="space-y-2"
       >
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center">
-            <Zap className="w-5 h-5 text-warning" />
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-8 h-8 rounded-lg bg-warning/10 flex items-center justify-center">
+            <Zap className="w-4 h-4 text-warning" />
           </div>
-          <h2 className="text-xl font-semibold">Plan & Krediter</h2>
+          <h2 className="text-lg font-semibold">Plan & Krediter</h2>
         </div>
-        <div className="bg-muted/30 rounded-2xl p-6 space-y-6">
+        <div className="bg-muted/30 rounded-2xl p-3 space-y-3">
           <CreditsDisplay variant="full" />
           
           {/* Credit top-up packages */}
-          <div className="pt-4 border-t border-border/50">
-            <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+          <div className="pt-2 border-t border-border/50">
+            <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
               <Plus className="w-4 h-4" />
               Fyll på krediter
             </h3>
@@ -255,22 +256,23 @@ const AccountContent = () => {
                 <Button
                   key={key}
                   variant="outline"
-                  className="flex flex-col h-auto py-3 hover:bg-primary/5 hover:border-primary/50"
+                  className="flex flex-col h-auto py-2 hover:bg-primary/5 hover:border-primary/50"
                   onClick={() => navigate(`/swish-checkout?type=credits&package=${key}`)}
                 >
-                  <span className="text-lg font-bold">{pkg.credits}</span>
+                  <span className="text-base font-bold">{pkg.credits}</span>
                   <span className="text-xs text-muted-foreground">krediter</span>
-                  <span className="text-sm font-semibold text-primary mt-1">{pkg.price} kr</span>
+                  <span className="text-sm font-semibold text-primary mt-0.5">{pkg.price} kr</span>
                 </Button>
               ))}
             </div>
           </div>
           
           {/* Plan actions */}
-          <div className="flex flex-wrap gap-3 pt-4 border-t border-border/50">
+          <div className="flex flex-wrap gap-2 pt-2 border-t border-border/50">
             <Button 
               onClick={() => navigate('/pricing')}
               className="gap-2"
+              size="sm"
             >
               <CreditCard className="w-4 h-4" />
               {hasActivePlan ? "Uppgradera plan" : "Välj plan"}
@@ -279,6 +281,7 @@ const AccountContent = () => {
             {hasActivePlan && downgradeOptions.length > 0 && (
               <Button 
                 variant="outline"
+                size="sm"
                 onClick={() => setShowDowngradeDialog(true)}
                 className="gap-2"
               >
@@ -290,6 +293,7 @@ const AccountContent = () => {
             {hasActivePlan && (
               <Button 
                 variant="outline"
+                size="sm"
                 onClick={() => setShowCancelDialog(true)}
                 className="gap-2 text-destructive hover:text-destructive"
               >
@@ -307,13 +311,13 @@ const AccountContent = () => {
         variants={sectionVariants} 
         initial="hidden" 
         animate="visible"
-        className="space-y-4"
+        className="space-y-2"
       >
-        <h2 className="text-xl font-semibold mb-4">Profilbilder</h2>
-        <div className="grid grid-cols-2 gap-6">
-          <div className="flex flex-col items-center p-6 bg-muted/30 rounded-2xl">
-            <User className="h-5 w-5 mb-3 text-muted-foreground" />
-            <p className="font-medium mb-4 text-sm">Profilbild</p>
+        <h2 className="text-lg font-semibold mb-2">Profilbilder</h2>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="flex flex-col items-center p-3 bg-muted/30 rounded-2xl">
+            <User className="h-4 w-4 mb-2 text-muted-foreground" />
+            <p className="font-medium mb-2 text-sm">Profilbild</p>
             {user?.id && (
               <ProfileImageUpload
                 userId={user.id}
@@ -324,9 +328,9 @@ const AccountContent = () => {
               />
             )}
           </div>
-          <div className="flex flex-col items-center p-6 bg-muted/30 rounded-2xl">
-            <Building className="h-5 w-5 mb-3 text-muted-foreground" />
-            <p className="font-medium mb-4 text-sm">Företagslogga</p>
+          <div className="flex flex-col items-center p-3 bg-muted/30 rounded-2xl">
+            <Building className="h-4 w-4 mb-2 text-muted-foreground" />
+            <p className="font-medium mb-2 text-sm">Företagslogga</p>
             {user?.id && (
               <ProfileImageUpload
                 userId={user.id}
@@ -346,22 +350,22 @@ const AccountContent = () => {
         variants={sectionVariants} 
         initial="hidden" 
         animate="visible"
-        className="space-y-4"
+        className="space-y-2"
       >
-        <h2 className="text-xl font-semibold mb-4">Kontoinformation</h2>
-        <div className="space-y-5">
+        <h2 className="text-lg font-semibold mb-2">Kontoinformation</h2>
+        <div className="space-y-3">
           <div>
             <Label className="text-sm text-muted-foreground">E-post</Label>
             <p className="font-medium mt-1">{user?.email}</p>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label className="text-sm text-muted-foreground">Företagsnamn</Label>
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               <Input
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 placeholder="Mitt UF-företag"
-                className="bg-muted/30 border-0"
+                className="bg-muted/30 border border-border"
               />
               <Button 
                 onClick={handleSaveCompanyName}
@@ -382,145 +386,127 @@ const AccountContent = () => {
         variants={sectionVariants} 
         initial="hidden" 
         animate="visible"
-        className="space-y-4"
+        className="space-y-2"
       >
         <div>
-          <h2 className="text-xl font-semibold mb-1">AI-profil</h2>
-          <p className="text-sm text-muted-foreground mb-4">
+          <h2 className="text-lg font-semibold mb-1">AI-profil</h2>
+          <p className="text-sm text-muted-foreground mb-2">
             Fyll i alla obligatoriska fält för bästa AI-svar
           </p>
         </div>
         <AIProfileProgress />
-        <div className="space-y-5 mt-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="text-sm">Företagsnamn <span className="text-destructive">*</span></Label>
-              <Input
-                value={aiFormData.foretagsnamn}
-                onChange={(e) => setAiFormData(p => ({ ...p, foretagsnamn: e.target.value }))}
-                placeholder="t.ex. Solglimtar UF"
-                className="bg-muted/30 border-0"
-              />
-            </div>
-            <div className="space-y-2">
+        <div className="space-y-3 mt-3">
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
               <Label className="text-sm">Bransch <span className="text-destructive">*</span></Label>
               <Input
                 value={aiFormData.branch}
                 onChange={(e) => setAiFormData(p => ({ ...p, branch: e.target.value }))}
                 placeholder="t.ex. E-handel"
-                className="bg-muted/30 border-0"
+                className="bg-muted/30 border border-border"
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label className="text-sm">Stad <span className="text-destructive">*</span></Label>
               <Input
                 value={aiFormData.stad}
                 onChange={(e) => setAiFormData(p => ({ ...p, stad: e.target.value }))}
                 placeholder="t.ex. Stockholm"
-                className="bg-muted/30 border-0"
+                className="bg-muted/30 border border-border"
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label className="text-sm">Postnummer <span className="text-destructive">*</span></Label>
               <Input
                 value={aiFormData.postnummer}
                 onChange={(e) => setAiFormData(p => ({ ...p, postnummer: e.target.value }))}
                 placeholder="t.ex. 114 52"
-                className="bg-muted/30 border-0"
+                className="bg-muted/30 border border-border"
               />
             </div>
-            <div className="space-y-2">
-              <Label className="text-sm">Län</Label>
-              <Input
-                value={aiFormData.lan}
-                onChange={(e) => setAiFormData(p => ({ ...p, lan: e.target.value }))}
-                placeholder="t.ex. Stockholms län"
-                className="bg-muted/30 border-0"
-              />
-            </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label className="text-sm">Land</Label>
               <Input
                 value={aiFormData.land}
                 onChange={(e) => setAiFormData(p => ({ ...p, land: e.target.value }))}
                 placeholder="Sverige"
-                className="bg-muted/30 border-0"
+                className="bg-muted/30 border border-border"
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label className="text-sm">Målgrupp <span className="text-destructive">*</span></Label>
               <Input
                 value={aiFormData.malgrupp}
                 onChange={(e) => setAiFormData(p => ({ ...p, malgrupp: e.target.value }))}
                 placeholder="t.ex. 18-25 år"
-                className="bg-muted/30 border-0"
+                className="bg-muted/30 border border-border"
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label className="text-sm">Målsättning</Label>
               <Input
                 value={aiFormData.malsattning}
                 onChange={(e) => setAiFormData(p => ({ ...p, malsattning: e.target.value }))}
                 placeholder="t.ex. Öka synlighet"
-                className="bg-muted/30 border-0"
+                className="bg-muted/30 border border-border"
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label className="text-sm">Prisnivå</Label>
               <Input
                 value={aiFormData.prisniva}
                 onChange={(e) => setAiFormData(p => ({ ...p, prisniva: e.target.value }))}
                 placeholder="t.ex. Budget"
-                className="bg-muted/30 border-0"
+                className="bg-muted/30 border border-border"
               />
             </div>
-            <div className="space-y-2">
-              <Label className="text-sm">Tonalitet</Label>
+            <div className="space-y-1">
+              <Label className="text-sm">Vilken ton ska Promotely AI ha?</Label>
               <Input
                 value={aiFormData.tonalitet}
                 onChange={(e) => setAiFormData(p => ({ ...p, tonalitet: e.target.value }))}
                 placeholder="t.ex. Lekfull, professionell"
-                className="bg-muted/30 border-0"
+                className="bg-muted/30 border border-border"
               />
             </div>
-            <div className="space-y-2 col-span-2">
-              <Label className="text-sm">Nyckelord</Label>
+            <div className="space-y-1 col-span-2">
+              <Label className="text-sm">Era grundprinciper</Label>
               <Input
                 value={aiFormData.nyckelord}
                 onChange={(e) => setAiFormData(p => ({ ...p, nyckelord: e.target.value }))}
                 placeholder="hållbarhet, handgjort (separera med komma)"
-                className="bg-muted/30 border-0"
+                className="bg-muted/30 border border-border"
               />
             </div>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label className="text-sm">Företagsbeskrivning <span className="text-destructive">*</span></Label>
             <Textarea
               value={aiFormData.produkt_beskrivning}
               onChange={(e) => setAiFormData(p => ({ ...p, produkt_beskrivning: e.target.value }))}
               placeholder="Beskriv din produkt/tjänst..."
               rows={3}
-              className="bg-muted/30 border-0 resize-none"
+              className="bg-muted/30 border border-border resize-none"
             />
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label className="text-sm">Marknadsplan</Label>
             <Textarea
               value={aiFormData.marknadsplan}
               onChange={(e) => setAiFormData(p => ({ ...p, marknadsplan: e.target.value }))}
               placeholder="Nuvarande marknadsföringsstrategi..."
               rows={3}
-              className="bg-muted/30 border-0 resize-none"
+              className="bg-muted/30 border border-border resize-none"
             />
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label className="text-sm">Allmän information</Label>
             <Textarea
               value={aiFormData.allman_info}
               onChange={(e) => setAiFormData(p => ({ ...p, allman_info: e.target.value }))}
               placeholder="Berätta mer om ert företag – era värderingar, framtidsplaner, unika styrkor..."
-              rows={4}
-              className="bg-muted/30 border-0 resize-none"
+              rows={3}
+              className="bg-muted/30 border border-border resize-none"
             />
           </div>
           <Button 
@@ -539,15 +525,15 @@ const AccountContent = () => {
         variants={sectionVariants} 
         initial="hidden" 
         animate="visible"
-        className="space-y-3"
+        className="space-y-2"
       >
-        <h2 className="text-xl font-semibold mb-4">Navigering</h2>
-        <div className="flex flex-wrap gap-3">
-          <Button variant="outline" className="gap-2" onClick={() => navigate('/')}>
+        <h2 className="text-lg font-semibold mb-2">Navigering</h2>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => navigate('/')}>
             <Home className="w-4 h-4" />
             Till startsidan
           </Button>
-          <Button variant="outline" className="gap-2 text-destructive hover:text-destructive" onClick={async () => { await signOut(); navigate('/auth'); }}>
+          <Button variant="outline" size="sm" className="gap-2 text-destructive hover:text-destructive" onClick={async () => { await signOut(); navigate('/auth'); }}>
             <LogOut className="w-4 h-4" />
             Logga ut
           </Button>
@@ -560,7 +546,7 @@ const AccountContent = () => {
         variants={sectionVariants} 
         initial="hidden" 
         animate="visible"
-        className="pt-8 border-t border-destructive/20"
+        className="pt-4 border-t border-destructive/20"
       >
         <div className="flex items-center justify-between">
           <div>
@@ -632,7 +618,8 @@ const AccountContent = () => {
                   <SelectItem key={key} value={key}>
                     {plan.name} – {plan.credits} krediter/månad ({plan.price} kr)
                   </SelectItem>
-                ))}
+                ))
+                }
               </SelectContent>
             </Select>
           </div>
