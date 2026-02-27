@@ -631,10 +631,20 @@ ${items.map((k: any) => `### ${k.title}\nFULL INNEHÅLL:\n${k.content}`).join('\
       }
       console.log('🤖 Using AI model:', aiModel, 'for plan:', userData?.plan);
 
+      // Check if this is a tool-specific request with a custom system prompt
+      const toolSystemPrompt = meta?.toolSystemPrompt;
+
       const messages = [
         {
           role: 'system',
-          content: `Du är Promotely AI – en expert på marknadsföring för UF-företag (Ung Företagsamhet) och svenska startups.
+          content: toolSystemPrompt 
+            ? `${toolSystemPrompt}
+
+Användarens företagsprofil:
+${profileInfo || 'Ingen profil angiven.'}
+
+Svara ALLTID på svenska.`
+            : `Du är Promotely AI – en expert på marknadsföring för UF-företag (Ung Företagsamhet) och svenska startups.
 
 ## Din uppgift
 Analysera användarens fråga och ge personliga råd baserat på:
@@ -754,10 +764,10 @@ När användaren frågar om sina sociala medier-konton (följare, visningar, eng
 
 Kom ihåg: Du är här för att hjälpa UF-företagare att växa sina företag smart och snabbt. Hämta alltid faktisk data innan du svarar!`
         },
-        ...(history || []).map((msg: any) => ({
+        ...(toolSystemPrompt ? [] : (history || []).map((msg: any) => ({
           role: msg.role,
           content: msg.message
-        })),
+        }))),
         {
           role: 'user',
           content: message

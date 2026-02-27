@@ -22,42 +22,42 @@ const tools = [
     title: "Caption-generator",
     description: "Skapa engagerande captions för dina inlägg",
     color: "from-orange-500 to-red-500",
-    action: "Skriv en caption för mitt senaste inlägg"
+    route: "/ai/caption"
   },
   {
     icon: Hash,
     title: "Hashtag-förslag",
     description: "Få relevanta hashtags för ökad räckvidd",
     color: "from-blue-500 to-cyan-500",
-    action: "Föreslå hashtags för mitt företag"
+    route: "/ai/hashtags"
   },
   {
     icon: Image,
     title: "Content-idéer",
     description: "Brainstorma nya innehållsidéer",
     color: "from-purple-500 to-pink-500",
-    action: "Ge mig 5 content-idéer för denna vecka"
+    route: "/ai/content-ideas"
   },
   {
     icon: Calendar,
     title: "Veckoplanering",
     description: "Planera din innehållskalender",
     color: "from-green-500 to-emerald-500",
-    action: "Skapa en veckoplan för mina sociala medier"
+    route: "/ai/weekly-plan"
   },
   {
     icon: Target,
     title: "Kampanjstrategi",
     description: "Bygg en strategi för din nästa kampanj",
     color: "from-amber-500 to-orange-500",
-    action: "Hjälp mig planera en kampanj"
+    route: "/ai/campaign"
   },
   {
     icon: Lightbulb,
     title: "UF-tips",
     description: "Få råd specifikt för UF-företag",
     color: "from-indigo-500 to-purple-500",
-    action: "Ge mig tips för UF-tävlingarna"
+    route: "/ai/uf-tips"
   },
 ];
 
@@ -74,10 +74,8 @@ const AIToolsContent = () => {
   const isAIProfileComplete = filledFields >= 3;
   const isAIBlocked = !isAIProfileComplete && !aiProfileLoading;
 
-  const handleToolClick = (action: string) => {
-    // Navigate to chat tab with the action pre-filled
-    // This will be handled by setting a query param or state
-    navigate('/ai?tab=chat&action=' + encodeURIComponent(action));
+  const handleToolClick = (route: string) => {
+    navigate(route);
   };
 
   return (
@@ -96,7 +94,7 @@ const AIToolsContent = () => {
           <Card 
             key={tool.title} 
             className="group cursor-pointer liquid-glass-light hover:shadow-elegant transition-all duration-300 hover:scale-[1.02]"
-            onClick={() => handleToolClick(tool.action)}
+            onClick={() => handleToolClick(tool.route)}
           >
             <CardHeader className="pb-2">
               <div className={`w-10 h-10 rounded-xl bg-gradient-to-r ${tool.color} flex items-center justify-center mb-2`}>

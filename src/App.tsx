@@ -36,6 +36,12 @@ import NotFound from "./pages/NotFound";
 import Demo from "./pages/Demo";
 import RedeemPromotion from "./pages/RedeemPromotion";
 import Unsubscribe from "./pages/Unsubscribe";
+import CaptionGenerator from "./pages/ai/CaptionGenerator";
+import HashtagSuggestions from "./pages/ai/HashtagSuggestions";
+import ContentIdeas from "./pages/ai/ContentIdeas";
+import WeeklyPlanner from "./pages/ai/WeeklyPlanner";
+import CampaignStrategy from "./pages/ai/CampaignStrategy";
+import UFTips from "./pages/ai/UFTips";
 
 const queryClient = new QueryClient();
 
@@ -98,6 +104,13 @@ const App = () => (
                 </RequireVerifiedEmail>
               } 
             />
+            {/* AI Tool pages */}
+            <Route path="/ai/caption" element={<RequireVerifiedEmail><CaptionGenerator /></RequireVerifiedEmail>} />
+            <Route path="/ai/hashtags" element={<RequireVerifiedEmail><HashtagSuggestions /></RequireVerifiedEmail>} />
+            <Route path="/ai/content-ideas" element={<RequireVerifiedEmail><ContentIdeas /></RequireVerifiedEmail>} />
+            <Route path="/ai/weekly-plan" element={<RequireVerifiedEmail><WeeklyPlanner /></RequireVerifiedEmail>} />
+            <Route path="/ai/campaign" element={<RequireVerifiedEmail><CampaignStrategy /></RequireVerifiedEmail>} />
+            <Route path="/ai/uf-tips" element={<RequireVerifiedEmail><UFTips /></RequireVerifiedEmail>} />
             {/* Redirects for old routes */}
             <Route path="/ai-chat" element={<Navigate to="/ai" replace />} />
             <Route path="/ai-dashboard" element={<Navigate to="/ai" replace />} />
