@@ -1,76 +1,101 @@
 
 
-# Individuella verktygs-sidor for AI-assistenten
+# Omdesign av Promotely e-postmallar -- Varm, Visuell & Handgjord
 
-## Sammanfattning
-Istallet for att verktygen skickar anvandaren till chatten med ett forifyllt meddelande, skapas 6 dedikerade sidor -- en for varje verktyg. Varje sida har ett anpassat UI som guidar anvandaren genom verktygets syfte, samlar in relevant input, och visar AI-svaret pa ett strukturerat och anvandarvlanligt satt.
+## Problem
+Nuvarande mejl ar platta -- vit bakgrund, logga, rubrik, text, knapp, footer. Identisk struktur pa alla 6 mejl. Ser ut som varje annat SaaS-mejl. Ingen personlighet, ingen visuell identitet.
 
----
+## Design-koncept
 
-## Oversikt av de 6 verktygssidorna
+Inspirerat av er brand: varm, personlig, visuellt rik. Centrerad kortlayout mot en mjuk bakgrund. Varje mejl-typ far sin egen personlighet genom unika halsningar, ikoner/emojis och fargaccenter.
 
-| Verktyg | Route | Unik funktionalitet |
-|---------|-------|---------------------|
-| Caption-generator | `/ai/caption` | Valja plattform (Instagram/TikTok/Facebook), ton (rolig/proffsig/inspirerande), amne/beskrivning. Visar 3 caption-forslag med kopieringsknapp. |
-| Hashtag-forslag | `/ai/hashtags` | Ange amne eller inlagg-beskrivning, valja plattform. Visar hashtags i kopieringsbara taggar grupperade efter rackvidd (hog/medel/nisch). |
-| Content-ideer | `/ai/content-ideas` | Valja vecka/period, antal ideer, plattform. Visar ideer som kort med typ-ikon (Reel, Story, Carousel, etc). |
-| Veckoplanering | `/ai/weekly-plan` | Valja vecka, plattformar. Visar en visuell veckokalender med ett inlagg per dag inkl. typ och tid. |
-| Kampanjstrategi | `/ai/campaign` | Ange mal, budget (valfritt), tidsperiod. Visar en steg-for-steg-plan i en tidslinje-vy. |
-| UF-tips | `/ai/uf-tips` | Valja kategori (tavling, monter, pitch, sociala medier). Visar tips som expanderbara kort med konkreta atgarder. |
+```text
++------------------------------------------+
+|          ljus creme bakgrund (#FFF8F5)   |
+|                                          |
+|  +------------------------------------+  |
+|  |                                    |  |
+|  |  ┌──── gradient header-band ────┐  |  |
+|  |  │  🔥  PROMOTELY logo          │  |  |
+|  |  │  (gradient: coral → magenta) │  |  |
+|  |  └──────────────────────────────┘  |  |
+|  |                                    |  |
+|  |  Hej, [namn]! 👋                  |  |
+|  |                                    |  |
+|  |  Personlig text som kanns          |  |
+|  |  som ett meddelande fran en van.   |  |
+|  |  Kort, varmt, direkt.             |  |
+|  |                                    |  |
+|  |  ┌────────────────────────────┐   |  |
+|  |  │   [ Verifiera e-post ]     │   |  |
+|  |  │   (gradient-knapp, glow)   │   |  |
+|  |  └────────────────────────────┘   |  |
+|  |                                    |  |
+|  |  ── tunn linje ──                  |  |
+|  |                                    |  |
+|  |  📩 Promotely | Hjalp | Integritet|  |
+|  |  Gamlagatan, Stockholm             |  |
+|  |                                    |  |
+|  +------------------------------------+  |
+|                                          |
++------------------------------------------+
+```
 
----
+## Vad som andras
 
-## Sidornas gemensamma layout
+### 1. Yttre bakgrund
+Varm creme-ton (`#FFF8F5`) istallet for rent vitt. Ger mejlet "djup" -- kortet floats mot bakgrunden.
 
-Varje sida foljer samma struktur:
+### 2. Gradient header-band
+Varje mejl far en gradient-stripe hogst upp i kortet (coral → magenta, era brandfarger). Loggan sitter centrerad i header-bandet mot gradienten. Detta ger omedelbar visuell identitet.
 
-1. **Header** -- Verktygsnamn, ikon med gradient, kort beskrivning, tillbaka-knapp till `/ai?tab=verktyg`
-2. **Inputformular** -- Anpassade falt per verktyg (dropdowns, textfalt, knappar) i ett snyggt glassmorphism-kort
-3. **Generera-knapp** -- Skickar anropet till AI-assistenten via `ai-assistant` edge function med en verktygsspecifik systemprompt
-4. **Resultatvy** -- Strukturerad visning av AI-svaret (inte ratext), anpassad per verktyg (kopieringsbara captions, tagg-chips, kalender-grid, tidslinje, etc.)
-5. **Krediter-indikator** -- Visar antal kvarvarande krediter
+### 3. Kort-container med skugga
+Vit `#FFFFFF` bakgrund, `20px` border-radius, soft box-shadow. Kanns som ett fysiskt kort.
+
+### 4. Personlig copy
+- Signup: "Hej! Kul att du ar har." (inte "Valkommen till Promotely!")
+- Recovery: "Inga problem, det hander alla." (inte "Vi fick en forfragan")
+- Invite: "Nagon tycker du ar grym!" (inte "Du har blivit inbjuden")
+- Varje mejl far en unik emoji i rubriken
+
+### 5. Gradient-knapp med avrundning
+Knappen far en gradient (`#EE593D` → `#952A5E`) istallet for platt farg. Storre padding, mer rundad (`16px`).
+
+### 6. Informativ footer
+Separator-linje, sedan: logga (liten), lankar till Hjalp / Integritetspolicy / Kontakt, kort adress-rad. Allt i dampade farger.
+
+### 7. OTP-mejl (reauthentication) -- speciell stil
+Verifieringskoden visas i ett framhavt "code-card" med mjuk bakgrund och monospace-typsnitt, istallet for bara stor text.
+
+## Unik copy per mejl
+
+| Mejl | Rubrik | Ton |
+|------|--------|-----|
+| Signup | "Hej! Kul att du ar har 👋" | Valkomnande, personlig |
+| Recovery | "Inga problem! 🔑" | Lugnande, hjalpande |
+| Magic Link | "Din lank ar har ✨" | Snabb, enkel |
+| Invite | "Nagon tycker du ar grym! 🎉" | Uppmanande, positiv |
+| Email Change | "Ny adress pa gang 📬" | Informativ, saklig |
+| Reauth | "Din kod 🔒" | Kort, saker |
 
 ## Teknisk plan
 
-### Nya filer
+### Filer som andras (alla 6 templates)
+- `supabase/functions/_shared/email-templates/signup.tsx`
+- `supabase/functions/_shared/email-templates/recovery.tsx`
+- `supabase/functions/_shared/email-templates/magic-link.tsx`
+- `supabase/functions/_shared/email-templates/invite.tsx`
+- `supabase/functions/_shared/email-templates/email-change.tsx`
+- `supabase/functions/_shared/email-templates/reauthentication.tsx`
 
-| Fil | Beskrivning |
-|-----|-------------|
-| `src/pages/ai/CaptionGenerator.tsx` | Caption-verktygets sida |
-| `src/pages/ai/HashtagSuggestions.tsx` | Hashtag-verktygets sida |
-| `src/pages/ai/ContentIdeas.tsx` | Content-ideer-sida |
-| `src/pages/ai/WeeklyPlanner.tsx` | Veckoplanering-sida |
-| `src/pages/ai/CampaignStrategy.tsx` | Kampanjstrategi-sida |
-| `src/pages/ai/UFTips.tsx` | UF-tips-sida |
-| `src/components/ai/AIToolPageLayout.tsx` | Delad layout-komponent for alla verktygs-sidor (header, tillbaka-knapp, kreditvisning) |
-| `src/hooks/useAIToolRequest.ts` | Delad hook som skickar ett strukturerat meddelande till `ai-assistant` edge function och parser JSON-svar |
+### Delade stilar
+Alla templates delar en gemensam stiluppsattning med:
+- `Section` component for gradient header-band
+- `Hr` for separator
+- Card-container med skugga och rundade horn
+- Gradient-knapp
+- Informativ footer-sektion med lankar
 
-### Andringar i befintliga filer
-
-| Fil | Andring |
-|-----|---------|
-| `src/App.tsx` | Lagg till 6 nya routes under `/ai/caption`, `/ai/hashtags`, etc. med `RequireVerifiedEmail`-wrapping |
-| `src/components/ai/AIToolsContent.tsx` | Andra `handleToolClick` sa att den navigerar till respektive verktygs-route istallet for chatten |
-
-### AI-anrop
-
-Varje verktyg anropar `ai-assistant` edge function med:
-- En verktygsspecifik systemprompt som instruerar AI:n att svara i JSON-format
-- Anvandarens input-data som meddelandeinnehall
-- Samma kreditavdrag och autentisering som chatten anvander idag
-
-Hook `useAIToolRequest` hanterar:
-- Skicka request till edge function
-- Parsa JSON-svar fran AI:n
-- Hantera laddningstillstand och fel
-- Uppdatera kreditvisning via `creditUpdateEvent`
-
-### Resultat-rendering per verktyg
-
-- **Caption-generator**: Kort med caption-text, kopiera-knapp, ton-badge
-- **Hashtag-forslag**: Klickbara chips/badges, "kopiera alla"-knapp, grupperade i sektioner
-- **Content-ideer**: Grid av kort med ikon per format (Reel/Story/Post), beskrivning, foreslagen dag
-- **Veckoplanering**: 7-dagars grid/kalender-vy med typ, tid, och beskrivning per dag
-- **Kampanjstrategi**: Vertikal tidslinje med steg, deadlines, och atergarder
-- **UF-tips**: Accordion/expanderbara kort per tips med konkret atgardsforslag
+### Deployment
+Edge function `auth-email-hook` deployas efter andringar.
 
