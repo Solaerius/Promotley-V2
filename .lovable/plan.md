@@ -1,86 +1,49 @@
 
 
-# Omdesign av Promotely e-postmallar -- Varm, Visuell & Handgjord
+# Omdesign av e-postmallar + Admin-mejlutskick
 
-## Problem
-Nuvarande mejl ar platta -- vit bakgrund, logga, rubrik, text, knapp, footer. Identisk struktur pa alla 6 mejl. Ser ut som varje annat SaaS-mejl. Ingen personlighet, ingen visuell identitet.
+## Sammanfattning
 
-## Design-koncept
+Tre delar: (1) Uppdatera alla 6 e-postmallars design och copy, (2) Verifiera att knappar/länkar fungerar korrekt, (3) Skapa en admin-sida for att skicka reklamutskick till registrerade anvandare.
 
-Inspirerat av er brand: varm, personlig, visuellt rik. Centrerad kortlayout mot en mjuk bakgrund. Varje mejl-typ far sin egen personlighet genom unika halsningar, ikoner/emojis och fargaccenter.
+---
+
+## Del 1: Uppdatera alla 6 e-postmallar
+
+### Designandringar (alla mallar)
+
+**Header**: Byt fran gradient-band till vit bakgrund. Logga vänsterstälald bredvid texten "Promotely UF" i samma rad (flexbox/table-layout).
 
 ```text
-+------------------------------------------+
-|          ljus creme bakgrund (#FFF8F5)   |
-|                                          |
-|  +------------------------------------+  |
-|  |                                    |  |
-|  |  ┌──── gradient header-band ────┐  |  |
-|  |  │  🔥  PROMOTELY logo          │  |  |
-|  |  │  (gradient: coral → magenta) │  |  |
-|  |  └──────────────────────────────┘  |  |
-|  |                                    |  |
-|  |  Hej, [namn]! 👋                  |  |
-|  |                                    |  |
-|  |  Personlig text som kanns          |  |
-|  |  som ett meddelande fran en van.   |  |
-|  |  Kort, varmt, direkt.             |  |
-|  |                                    |  |
-|  |  ┌────────────────────────────┐   |  |
-|  |  │   [ Verifiera e-post ]     │   |  |
-|  |  │   (gradient-knapp, glow)   │   |  |
-|  |  └────────────────────────────┘   |  |
-|  |                                    |  |
-|  |  ── tunn linje ──                  |  |
-|  |                                    |  |
-|  |  📩 Promotely | Hjalp | Integritet|  |
-|  |  Gamlagatan, Stockholm             |  |
-|  |                                    |  |
-|  +------------------------------------+  |
-|                                          |
-+------------------------------------------+
++------------------------------------+
+|  [logo]  Promotely UF              |  ← vit bakgrund, vänsterställt
++------------------------------------+
+|                                    |
+|  Hej [namn]!                       |  ← inget emoji
+|  ...                               |
 ```
 
-## Vad som andras
+**Copy-andringar**:
+- Ta bort ALLA emojis (👋, 🚀, 🔑, ✨, 🎉, 📬, 🔒)
+- Rubrik: "Hej [namn]!" istallet for nuvarande rubriker
+- Fallback-text: "Knappen fungerar inte? Tryck pa lanken nedan:" folj av en klickbar `<Link>` till `confirmationUrl` istallet for ra URL-text
 
-### 1. Yttre bakgrund
-Varm creme-ton (`#FFF8F5`) istallet for rent vitt. Ger mejlet "djup" -- kortet floats mot bakgrunden.
+**Per mall**:
+| Mall | Ny rubrik | Knapptext |
+|------|-----------|-----------|
+| Signup | Hej {recipient}! | Bekräfta och kom igång |
+| Recovery | Hej! | Välj nytt lösenord |
+| Magic Link | Hej! | Logga in direkt |
+| Invite | Hej! | Acceptera och gå med |
+| Email Change | Hej {email}! | Bekräfta ny e-post |
+| Reauthentication | Hej! | (ingen knapp, bara kod) |
 
-### 2. Gradient header-band
-Varje mejl far en gradient-stripe hogst upp i kortet (coral → magenta, era brandfarger). Loggan sitter centrerad i header-bandet mot gradienten. Detta ger omedelbar visuell identitet.
+**Tekniska detaljer**:
+- `headerBand` andras till `backgroundColor: '#ffffff'`, ta bort gradient
+- Lagg till en table-row med logo (40px) + "Promotely UF" text (bold, brand color)
+- Fallback-sektionen: byt `<Text style={urlText}>{confirmationUrl}</Text>` till `<Link href={confirmationUrl} style={...}>Tryck här</Link>`
 
-### 3. Kort-container med skugga
-Vit `#FFFFFF` bakgrund, `20px` border-radius, soft box-shadow. Kanns som ett fysiskt kort.
-
-### 4. Personlig copy
-- Signup: "Hej! Kul att du ar har." (inte "Valkommen till Promotely!")
-- Recovery: "Inga problem, det hander alla." (inte "Vi fick en forfragan")
-- Invite: "Nagon tycker du ar grym!" (inte "Du har blivit inbjuden")
-- Varje mejl far en unik emoji i rubriken
-
-### 5. Gradient-knapp med avrundning
-Knappen far en gradient (`#EE593D` → `#952A5E`) istallet for platt farg. Storre padding, mer rundad (`16px`).
-
-### 6. Informativ footer
-Separator-linje, sedan: logga (liten), lankar till Hjalp / Integritetspolicy / Kontakt, kort adress-rad. Allt i dampade farger.
-
-### 7. OTP-mejl (reauthentication) -- speciell stil
-Verifieringskoden visas i ett framhavt "code-card" med mjuk bakgrund och monospace-typsnitt, istallet for bara stor text.
-
-## Unik copy per mejl
-
-| Mejl | Rubrik | Ton |
-|------|--------|-----|
-| Signup | "Hej! Kul att du ar har 👋" | Valkomnande, personlig |
-| Recovery | "Inga problem! 🔑" | Lugnande, hjalpande |
-| Magic Link | "Din lank ar har ✨" | Snabb, enkel |
-| Invite | "Nagon tycker du ar grym! 🎉" | Uppmanande, positiv |
-| Email Change | "Ny adress pa gang 📬" | Informativ, saklig |
-| Reauth | "Din kod 🔒" | Kort, saker |
-
-## Teknisk plan
-
-### Filer som andras (alla 6 templates)
+### Filer som andras
 - `supabase/functions/_shared/email-templates/signup.tsx`
 - `supabase/functions/_shared/email-templates/recovery.tsx`
 - `supabase/functions/_shared/email-templates/magic-link.tsx`
@@ -88,14 +51,46 @@ Verifieringskoden visas i ett framhavt "code-card" med mjuk bakgrund och monospa
 - `supabase/functions/_shared/email-templates/email-change.tsx`
 - `supabase/functions/_shared/email-templates/reauthentication.tsx`
 
-### Delade stilar
-Alla templates delar en gemensam stiluppsattning med:
-- `Section` component for gradient header-band
-- `Hr` for separator
-- Card-container med skugga och rundade horn
-- Gradient-knapp
-- Informativ footer-sektion med lankar
+---
 
-### Deployment
-Edge function `auth-email-hook` deployas efter andringar.
+## Del 2: Verifiera knapp-funktionalitet
+
+Knapparna anvander redan `confirmationUrl` fran auth-hookens payload (`payload.data.url`). Denna URL genereras av autentiseringssystemet och leder till ratt sida (e-postverifiering, losenordsaterstallning, etc.). Inga andringar behovs i edge function-logiken -- det fungerar redan korrekt. Fallback-lanken ska ocksa peka pa samma `confirmationUrl`.
+
+Deploy `auth-email-hook` efter mallandringarna.
+
+---
+
+## Del 3: Admin-sida for reklamutskick
+
+**Viktig begransning**: Lovable's inbyggda e-postsystem stodjer bara autentiseringsmejl. For reklamutskick anvands Resend API:t som redan ar konfigurerat (`RESEND_API_KEY` finns som secret).
+
+### Nya filer
+
+| Fil | Beskrivning |
+|-----|-------------|
+| `src/pages/AdminEmailBroadcast.tsx` | Admin-sida med redigerare for att skriva och skicka mejl |
+| `supabase/functions/send-broadcast-email/index.ts` | Edge function som hamtar alla registrerade e-postadresser fran `users`-tabellen och skickar mejlet via Resend |
+
+### Admin-sidans UI
+- Textfalt for amne (subject)
+- Textarea/rik-textredigerare for mejlinnehall
+- Valfritt: falt for att lagga till specifika e-postadresser manuellt
+- Forhandsvisning av mejlet
+- "Skicka till alla"-knapp med bekraftelsedialog
+- Visar antal mottagare fran databasen
+- Respekterar `email_newsletter`-flaggan i `users`-tabellen (bara skicka till de som accepterat)
+
+### Edge function-logik
+- Autentisera anroparen och verifiera admin-roll
+- Hamta alla anvandare dar `email_newsletter = true` och `deleted_at IS NULL`
+- Skicka mejl via Resend i batchar
+- Returnera antal skickade/misslyckade
+
+### Routing & Navigation
+- Ny route: `/admin/email` i `App.tsx` (wrappat med `AdminRoute`)
+- Lagg till i AdminDashboard snabbatkomst-grid med en Mail-ikon
+
+### Supabase config
+- Lagg till `[functions.send-broadcast-email]` med `verify_jwt = false` i `config.toml`
 
