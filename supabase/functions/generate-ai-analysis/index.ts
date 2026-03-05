@@ -1,48 +1,43 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.58.0';
-
-const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
-const supabaseUrl = Deno.env.get('SUPABASE_URL');
-const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// UF-regler som inkluderas i varje AI-prompt
-const UF_RULES = `
-# UF-REGLER OCH RIKTLINJER
+// AI Council model pools
+const MODEL_POOLS: Record<string, { defaultModel: string; pool: string[] }> = {
+  fast: { defaultModel: 'google/gemini-2.5-flash-lite', pool: ['google/gemini-2.5-flash-lite', 'openai/gpt-5-nano'] },
+  standard: { defaultModel: 'google/gemini-3-flash-preview', pool: ['google/gemini-3-flash-preview', 'google/gemini-2.5-flash', 'openai/gpt-5-mini'] },
+  premium: { defaultModel: 'google/gemini-2.5-pro', pool: ['google/gemini-2.5-pro', 'google/gemini-3-pro-preview', 'openai/gpt-5', 'openai/gpt-5.2'] },
+};
 
-## TÄVLINGSKRITERIER - UF-NÄSTET
-- Affärsidé och Marknadsföring (25%): Tydlig affärsidé, väl definierad målgrupp, konkret marknadsföringsstrategi
-- Ekonomi och Resultat (25%): Realistisk budget, god ekonomisk planering, lönsamt eller potential till lönsamhet
-- Genomförande och Aktivitet (25%): Aktiv försäljning, minst 5 säljtillfällen, regelbunden aktivitet
-- Entreprenöriellt lärande (25%): Reflektion, utveckling, hantering av motgångar
+const TIER_MULTIPLIERS: Record<string, number> = { fast: 0.5, standard: 1, premium: 2 };
 
-## FEM OBLIGATORISKA MOMENT
-1. Starta företaget korrekt (registrera hos UF, minst 3 delägare, styrelse)
-2. Hålla årsstämma (senast april)
-3. Skriva affärsplan
-4. Genomföra minst 5 säljtillfällen (minst 1 fysiskt)
-5. Upprätta årsredovisning
-
-## EKONOMIREGLER
-- Max 2000 kr startkapital
-- Alla kostnader måste dokumenteras
-- Budget ska innehålla: intäkter, kostnader, resultat, kassaflöde
-- Prissättning ska täcka alla kostnader
-
-## SÄLJTILLFÄLLEN
-- Minst 5 under året, minst 1 fysiskt
-- Dokumentera: datum, plats, intäkter, foto, lärdomar
-- Godkända: skolmarknad, pop-up, event, webshop-kampanj, sociala medier med försäljning
-
-## MARKNADSFÖRING
-- Tillåtet: sociala medier, hemsida, fysisk marknadsföring, samarbeten, events
-- Ej tillåtet: vilseledande marknadsföring, kopiera varumärken, spam
-`;
+async function routeModel(context: string, tier: string, apiKey: string): Promise<string> {
+  const config = MODEL_POOLS[tier] || MODEL_POOLS.standard;
+  if (config.pool.length <= 1) return config.pool[0];
+  try {
+    const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash-lite',
+        messages: [
+          { role: 'system', content: `Pick the best model for a deep business analysis task from: ${config.pool.join(', ')}. This needs strong reasoning. Respond with ONLY the model name.` },
+          { role: 'user', content: context.slice(0, 300) }
+        ],
+        temperature: 0, max_tokens: 50,
+      }),
+    });
+    if (!resp.ok) return config.defaultModel;
+    const data = await resp.json();
+    const rec = data.choices?.[0]?.message?.content?.trim();
+    if (rec && config.pool.includes(rec)) { console.log(`🧭 AI Council: ${rec}`); return rec; }
+    return config.defaultModel;
+  } catch { return config.defaultModel; }
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -53,331 +48,146 @@ serve(async (req) => {
     const authHeader = req.headers.get('authorization');
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'Missing authorization' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
-    const supabase = createClient(supabaseUrl!, supabaseServiceRoleKey!);
-    
-    // Verify user
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
+
+    if (!lovableApiKey) {
+      return new Response(JSON.stringify({ error: 'AI not configured' }), {
+        status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
-    // Check email verification
     if (!user.email_confirmed_at) {
-      console.error('Email not verified:', user.id);
-      return new Response(JSON.stringify({ 
-        error: 'email_not_verified',
-        message: 'Verifiera din e-post för att använda AI-analys'
-      }), {
-        status: 403,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      return new Response(JSON.stringify({ error: 'email_not_verified', message: 'Verifiera din e-post för att använda AI-analys' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
-
-    console.log('Generating AI analysis for user:', user.id);
 
     // Rate limiting
     const { data: rateLimitOk } = await supabase.rpc('check_rate_limit', {
-      _user_id: user.id,
-      _endpoint: 'generate-ai-analysis'
+      _user_id: user.id, _endpoint: 'generate-ai-analysis'
     });
     if (rateLimitOk === false) {
-      return new Response(
-        JSON.stringify({ error: 'Rate limit exceeded. Vänta en stund.' }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '60' } }
-      );
+      return new Response(JSON.stringify({ error: 'Rate limit exceeded. Vänta en stund.' }), {
+        status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
     }
 
-    // Parse request body for requestId and any override attempts
     const body = await req.json().catch(() => ({}));
     const requestId = body.requestId || crypto.randomUUID();
-    const clientModel = body.model; // Will be ignored if doesn't match policy
+    const modelTier = body.model_tier || 'standard';
 
-    // Fetch user plan and credits
+    // Fetch user data
     const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('plan, credits_left, max_credits, renewal_date')
-      .eq('id', user.id)
-      .single();
-
+      .from('users').select('plan, credits_left, max_credits, renewal_date').eq('id', user.id).single();
     if (userError) {
-      console.error('Error fetching user data:', userError);
       return new Response(JSON.stringify({ error: 'Could not fetch user plan' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
-    // Check if user has active plan
-    const validPlans = ['starter', 'growth', 'pro'];
-    if (!validPlans.includes(userData.plan)) {
-      return new Response(JSON.stringify({ 
-        error: 'NO_ACTIVE_PLAN',
-        message: 'Uppgradera för att låsa upp AI-analys',
-        upgrade_url: '/pricing'
-      }), {
-        status: 403,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-    }
+    // Credit cost based on tier (base 3 for analysis)
+    const baseCost = 3;
+    const estimatedCost = Math.max(1, Math.ceil(baseCost * (TIER_MULTIPLIERS[modelTier] || 1)));
 
-    // Determine tier and enforce model policy
-    // Model mapping: Starter → gpt-4o-mini, Growth → gpt-4.1-mini-2025-04-14, Pro → gpt-4o
-    let tier = 'starter';
-    let aiModel = 'gpt-4o-mini';
-    let estimatedCost = 2;
-    
-    switch (userData.plan) {
-      case 'starter':
-        tier = 'starter';
-        aiModel = 'gpt-4o-mini';
-        estimatedCost = 2;
-        break;
-      case 'growth':
-        tier = 'growth';
-        aiModel = 'gpt-4.1-mini-2025-04-14';
-        estimatedCost = 1;
-        break;
-      case 'pro':
-        tier = 'pro';
-        aiModel = 'gpt-4o'; // Pro deep analysis uses premium model (gpt-4o)
-        estimatedCost = 5;   // Premium cost for deep analysis
-        break;
-    }
-
-    // Enforce model policy - ignore client override
-    if (clientModel && clientModel !== aiModel) {
-      console.warn('POLICY_VIOLATION: Client attempted model override', {
-        userId: user.id,
-        tier,
-        requested: clientModel,
-        allowed: aiModel,
-        requestId
-      });
-    }
-
-    console.log(`Using AI model: ${aiModel} for tier: ${tier}`);
-
-    // Check credits
     if (userData.credits_left < estimatedCost) {
       return new Response(JSON.stringify({ 
-        error: 'INSUFFICIENT_CREDITS',
-        message: 'Fyll på krediter för att fortsätta',
-        credits_needed: estimatedCost,
-        credits_available: userData.credits_left
-      }), {
-        status: 402,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+        error: 'INSUFFICIENT_CREDITS', message: 'Fyll på krediter för att fortsätta',
+        credits_needed: estimatedCost, credits_available: userData.credits_left
+      }), { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    // Deduct credits (reservation)
+    // Reserve credits
     const creditsBefore = userData.credits_left;
-    const { error: deductError } = await supabase
-      .from('users')
-      .update({ credits_left: userData.credits_left - estimatedCost })
-      .eq('id', user.id);
+    await supabase.from('users').update({ credits_left: userData.credits_left - estimatedCost }).eq('id', user.id);
 
-    if (deductError) {
-      console.error('Error reserving credits:', deductError);
-      return new Response(JSON.stringify({ error: 'Could not reserve credits' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-    }
+    // Fetch all context
+    const { data: aiProfile } = await supabase.from('ai_profiles').select('*').eq('user_id', user.id).single();
+    const { data: socialStats } = await supabase.from('social_stats').select('*').eq('user_id', user.id);
+    const { data: analyticsData } = await supabase.from('analytics').select('*').eq('user_id', user.id);
+    const { data: allKnowledge } = await supabase.from('ai_knowledge').select('title, content, category');
 
-    // Hämta AI-profil
-    const { data: aiProfile, error: profileError } = await supabase
-      .from('ai_profiles')
-      .select('*')
-      .eq('user_id', user.id)
-      .single();
-
-    if (profileError && profileError.code !== 'PGRST116') {
-      console.error('Error fetching AI profile:', profileError);
-    }
-
-    // Hämta social stats
-    const { data: socialStats, error: statsError } = await supabase
-      .from('social_stats')
-      .select('*')
-      .eq('user_id', user.id);
-
-    if (statsError) {
-      console.error('Error fetching social stats:', statsError);
-    }
-
-    // Hämta analytics data för ytterligare kontext
-    const { data: analytics, error: analyticsError } = await supabase
-      .from('analytics')
-      .select('*')
-      .eq('user_id', user.id);
-
-    if (analyticsError) {
-      console.error('Error fetching analytics:', analyticsError);
-    }
-
-    // Hämta ALL kunskap från databasen (inte bara specifika kategorier)
-    const { data: allKnowledge, error: knowledgeError } = await supabase
-      .from('ai_knowledge')
-      .select('title, content, category');
-
-    if (knowledgeError) {
-      console.error('Error fetching knowledge:', knowledgeError);
-    }
-
-    // Organize knowledge by category
-    let dynamicKnowledge = UF_RULES;
+    // Build knowledge context
+    let knowledgeContext = '';
     if (allKnowledge && allKnowledge.length > 0) {
-      const knowledgeByCategory: Record<string, any[]> = {};
+      const byCategory: Record<string, any[]> = {};
       allKnowledge.forEach(k => {
-        if (!knowledgeByCategory[k.category]) {
-          knowledgeByCategory[k.category] = [];
-        }
-        knowledgeByCategory[k.category].push(k);
+        if (!byCategory[k.category]) byCategory[k.category] = [];
+        byCategory[k.category].push(k);
       });
-      
-      dynamicKnowledge = Object.entries(knowledgeByCategory).map(([category, items]) => `
-## ${category.toUpperCase().replace(/_/g, ' ')}
-${items.map(k => `### ${k.title}\n\nFULL INNEHÅLL (CITERA EXAKT VID FRÅGOR):\n${k.content}`).join('\n\n')}
-`).join('\n\n');
+      knowledgeContext = Object.entries(byCategory).map(([cat, items]) =>
+        `## ${cat.toUpperCase().replace(/_/g, ' ')}\n${items.map(k => `### ${k.title}\n${k.content}`).join('\n\n')}`
+      ).join('\n\n');
     }
 
-    // Bygg system prompt
     const systemPrompt = `Du är Promotely UF:s AI-expert och marknadsföringsrådgivare.
 
 Du analyserar sociala medier, UF-regler, marknadsföring och entreprenörskap för svenska UF-företag.
-Du ger konkreta, smarta och handlingsbara förslag anpassade för unga entreprenörer.
-
-Du HÅLLER ALLTID dig till UF-reglerna och ger råd som hjälper företaget att:
-- Växa på sociala medier
-- Öka engagemang och försäljning
-- Kvalificera sig för UF-tävlingar
-- Följa alla UF-krav och deadlines
-- Bygga ett professionellt och hållbart företag
-
-Ton: professionell, energisk, modern, enkel att förstå, motiverande.
+Ge konkreta, smarta och handlingsbara förslag.
 
 KRITISK REGEL - EXAKT CITERING FRÅN KUNSKAPSBASEN:
-När användaren frågar om specifika UF-regler, tävlingskriterier, bedömningspunkter eller vill skriva texter för tävlingar:
-1) Citera ALLTID exakt och ordagrant från kunskapsbasen - förkorta eller sammanfatta ALDRIG
-2) Om kunskapsbasen innehåller en lista med t.ex. 5 punkter, inkludera ALLA 5 punkter i ditt svar
-3) Använd exakt samma formuleringar som finns i kunskapsbasen
-4) Om informationen finns i kunskapsbasen, skriv: "Enligt UF:s riktlinjer: [exakt citat]"
-5) När användaren vill skriva text för en tävling (t.ex. Årets Innovation), använd alla relevanta bedömningskriterier för att strukturera svaret
+Vid frågor om UF-regler, tävlingskriterier eller bedömningspunkter: citera ALLTID exakt och ordagrant.
 
-Exempel på frågor som kräver exakt citering:
-- "Vad bedömer juryn i Årets Innovation?" → Lista ALLA bedömningspunkter exakt som de står
-- "Vilka kriterier finns för SM i UF?" → Citera alla kriterier ordagrant
-- "Hjälp mig skriva för tävlingen" → Basera strukturen på ALLA officiella bedömningskriterier
+${knowledgeContext ? `\nKUNSKAPSBAS:\n${knowledgeContext}` : ''}
 
-TEXTFORMATERING - KRITISKT:
-- ENDAST ren text i alla fält
-- FÖRBJUDET: stjärnor, understreck, hashtag-rubriker, backticks, större-än-tecken, bindestreck-listor, punkt-listor, hakparenteser, HTML-taggar, emojis
-- Använd numrerade listor: 1) punkt, 2) punkt, 3) punkt
-- Rubriker: skriv som vanlig text
-- Maximalt 2-3 meningar per stycke
-- Tydliga avsnitt separerade med en tom rad
+TEXTFORMATERING:
+- ENDAST ren text
+- Numrerade listor: 1) punkt, 2) punkt
+- Tydliga avsnitt separerade med tom rad
+- Ge KONKRETA exempel och actionable advice
+- Svara alltid på svenska`;
 
-Svara alltid i tydliga punkter och sektioner med ren text.
-Ge KONKRETA exempel och actionable advice.`;
-
-    // Bygg user prompt
-    const userPrompt = `
-${aiProfile ? `## FÖRETAGSPROFIL
+    const userPrompt = `${aiProfile ? `## FÖRETAGSPROFIL
 Bransch: ${aiProfile.branch || 'Ej specificerad'}
 Målgrupp: ${aiProfile.malgrupp || 'Ej specificerad'}
 Produkt/Tjänst: ${aiProfile.produkt_beskrivning || 'Ej specificerad'}
 Prisnivå: ${aiProfile.prisniva || 'Ej specificerad'}
-Nuvarande marknadsplan: ${aiProfile.marknadsplan || 'Ej specificerad'}
+Marknadsplan: ${aiProfile.marknadsplan || 'Ej specificerad'}
 Målsättning: ${aiProfile.malsattning || 'Ej specificerad'}
-Tonalitet: ${aiProfile.tonalitet || 'Professionell och ungdomlig'}
-` : '## FÖRETAGSPROFIL\nIngen företagsprofil inlagd än.\n'}
+Tonalitet: ${aiProfile.tonalitet || 'Professionell'}
+Stad: ${aiProfile.stad || 'Ej angiven'}
+` : '## FÖRETAGSPROFIL\nIngen företagsprofil inlagd.\n'}
 
-${socialStats && socialStats.length > 0 ? `## SOCIALA MEDIER STATISTIK
-${socialStats.map(stat => `
-**${stat.platform.toUpperCase()}**
-- Följare: ${stat.followers || 0}
-- Räckvidd: ${stat.reach || 0}
-- Visningar: ${stat.impressions || 0}
-- Likes: ${stat.likes || 0}
-- Kommentarer: ${stat.comments || 0}
-- Delningar: ${stat.shares || 0}
-- Profilvisningar: ${stat.profile_views || 0}
-`).join('\n')}
-` : '## SOCIALA MEDIER STATISTIK\nInga sociala medier anslutna än.\n'}
+${socialStats && socialStats.length > 0 ? `## SOCIALA MEDIER
+${socialStats.map(s => `${s.platform}: ${s.followers || 0} följare, ${s.reach || 0} räckvidd, ${s.likes || 0} likes, ${s.comments || 0} kommentarer`).join('\n')}
+` : 'Inga sociala medier anslutna.\n'}
 
-${analytics && analytics.length > 0 ? `## YTTERLIGARE ANALYTICS
-${analytics.map(a => `
-**${a.platform.toUpperCase()}**
-- Följare: ${a.followers || 0}
-- Engagemang: ${a.engagement || 0}%
-- Räckvidd: ${a.reach || 0}
-- Visningar: ${a.views || 0}
-`).join('\n')}
+${analyticsData && analyticsData.length > 0 ? `## ANALYTICS
+${analyticsData.map(a => `${a.platform}: ${a.followers || 0} följare, ${a.engagement || 0}% engagemang`).join('\n')}
 ` : ''}
 
-## KUNSKAPSBAS OCH REGLER
-${dynamicKnowledge}
-
----
-
-Baserat på ovanstående information, generera en komplett analys och handlingsplan.
-
-Strukturera ditt svar enligt följande JSON-format:
+Generera en komplett analys i JSON:
 {
-  "sammanfattning": "En kort sammanfattning av företagets nuvarande situation (2-3 meningar)",
-  "social_medier_analys": "Detaljerad analys av deras sociala medier med styrkor, svagheter och möjligheter",
-  "7_dagars_plan": [
-    {
-      "dag": "Dag 1",
-      "aktivitet": "Konkret aktivitet",
-      "beskrivning": "Detaljerad beskrivning",
-      "plattform": "instagram/tiktok/facebook"
-    }
-  ],
-  "uf_tavlingsstrategi": "Strategi för att kvalificera sig för UF-tävlingar och vinna",
-  "content_forslag": [
-    {
-      "titel": "Content-idé",
-      "beskrivning": "Beskrivning av innehållet",
-      "plattform": "instagram/tiktok/facebook",
-      "format": "reel/story/post/video"
-    }
-  ],
-  "rekommendationer": [
-    {
-      "kategori": "Marknadsföring/Ekonomi/Försäljning/UF-krav",
-      "prioritet": "Hög/Medel/Låg",
-      "titel": "Rekommendation",
-      "beskrivning": "Detaljerad beskrivning",
-      "deadline": "När detta bör göras"
-    }
-  ]
-}
+  "sammanfattning": "Kort sammanfattning (2-3 meningar)",
+  "social_medier_analys": "Detaljerad analys med styrkor, svagheter, möjligheter",
+  "7_dagars_plan": [{"dag": "Dag 1", "aktivitet": "...", "beskrivning": "...", "plattform": "..."}],
+  "uf_tavlingsstrategi": "Strategi för UF-tävlingar",
+  "content_forslag": [{"titel": "...", "beskrivning": "...", "plattform": "...", "format": "..."}],
+  "rekommendationer": [{"kategori": "...", "prioritet": "...", "titel": "...", "beskrivning": "...", "deadline": "..."}]
+}`;
 
-Ge konkreta, actionable råd som företaget kan börja implementera IDAG.
-Fokusera på snabba vinster och långsiktig tillväxt.
-Håll dig alltid till UF-reglerna och deadlines.`;
+    // AI Council routing
+    const aiModel = await routeModel(userPrompt, modelTier, lovableApiKey);
+    console.log(`🤖 Analysis using model: ${aiModel} (tier: ${modelTier})`);
 
-    console.log('Calling OpenAI API...');
-
-    // Anropa OpenAI API
-    const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openaiApiKey}`,
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Authorization': `Bearer ${lovableApiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: aiModel,
         messages: [
@@ -385,124 +195,46 @@ Håll dig alltid till UF-reglerna och deadlines.`;
           { role: 'user', content: userPrompt }
         ],
         temperature: 0.4,
-        response_format: { type: "json_object" }
       }),
     });
 
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
-      console.error('OpenAI API error:', aiResponse.status, errorText);
+      console.error('AI Gateway error:', aiResponse.status, errorText);
+      if (aiResponse.status === 429) {
+        return new Response(JSON.stringify({ error: 'Rate limit exceeded' }), {
+          status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
       throw new Error(`AI API error: ${aiResponse.status}`);
     }
 
     const aiData = await aiResponse.json();
-    const aiOutput = JSON.parse(aiData.choices[0].message.content);
+    let resultText = aiData.choices[0].message.content.trim();
+    resultText = resultText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const aiOutput = JSON.parse(resultText);
 
-    console.log('AI analysis generated successfully');
-
-    // Get actual usage from OpenAI response
-    const actualTokens = aiData.usage?.total_tokens || 0;
-    const actualCost = Math.ceil(actualTokens / 1000); // Simplified cost calculation
-    
-    // Settlement: adjust credits based on actual vs reserved
-    const settlement = actualCost - estimatedCost;
-    const creditsAfter = creditsBefore - actualCost;
-
-    if (settlement !== 0) {
-      await supabase
-        .from('users')
-        .update({ credits_left: creditsAfter })
-        .eq('id', user.id);
-    }
-
-    // Save analysis to history
-    const { error: saveError } = await supabase
-      .from('ai_analysis_history')
-      .insert({
-        user_id: user.id,
-        input_data: {
-          aiProfile,
-          socialStats,
-          analytics,
-          plan: userData.plan,
-          tier,
-          model_used: aiModel,
-          request_id: requestId
-        },
-        ai_output: aiOutput
-      });
-
-    if (saveError) {
-      console.error('Error saving analysis history:', saveError);
-    }
-
-    // Log usage (just console for now)
-    console.log('AI usage:', {
+    // Save analysis
+    await supabase.from('ai_analysis_history').insert({
       user_id: user.id,
-      request_id: requestId,
-      model: aiModel,
-      tier,
-      credits_actual: actualCost,
-      tokens_used: actualTokens
+      input_data: { aiProfile, socialStats, analytics: analyticsData, plan: userData.plan, tier: modelTier, model_used: aiModel, request_id: requestId },
+      ai_output: aiOutput
     });
 
     return new Response(
       JSON.stringify({ 
-        success: true, 
-        analysis: aiOutput,
-        credits: {
-          before: creditsBefore,
-          reserved: estimatedCost,
-          actual: actualCost,
-          after: creditsAfter
-        },
-        usage: {
-          tokens: actualTokens,
-          model: aiModel
-        },
-        requestId
+        success: true, analysis: aiOutput,
+        credits: { before: creditsBefore, cost: estimatedCost, after: creditsBefore - estimatedCost },
+        usage: { model: aiModel }, requestId
       }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
     console.error('Error in generate-ai-analysis:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    
-    // Rollback credits on error if they were reserved
-    try {
-      const body = await req.json().catch(() => ({}));
-      const requestId = body.requestId;
-      
-      if (requestId) {
-        // Check if credits were reserved
-        const authHeader = req.headers.get('authorization');
-        if (authHeader) {
-          const token = authHeader.replace('Bearer ', '');
-          const supabase = createClient(supabaseUrl!, supabaseServiceRoleKey!);
-          const { data: { user } } = await supabase.auth.getUser(token);
-          
-          if (user) {
-            console.log('Rolling back reserved credits for requestId:', requestId);
-            // Note: In production, implement proper rollback logic
-          }
-        }
-      }
-    } catch (rollbackError) {
-      console.error('Error during rollback:', rollbackError);
-    }
-    
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: errorMessage 
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
+      JSON.stringify({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
