@@ -1,85 +1,54 @@
 
 
-# AI Council — Intelligent modellrouting
+# Dev Auto-Login for Browser Testing
 
-## Tillgängliga modeller
+## Problem
+When Lovable's browser automation tests protected dashboard pages, it gets stuck at the login screen. The preview iframe session must be authenticated first.
 
-Lovable AI Gateway ger **INTE** tillgång till Anthropic (Claude). Däremot finns ett brett utbud:
+## Solution
+Create a **development-only auto-login route** (`/dev/auto-login`) that:
+1. Only renders in non-production builds (checks `window.location.hostname` for preview/localhost)
+2. Automatically signs in using a dedicated test account via real authentication
+3. Redirects to `/dashboard` after successful login
+4. Is completely excluded from production builds
 
-**Google Gemini**: gemini-2.5-pro, gemini-3-pro-preview, gemini-3-flash-preview, gemini-2.5-flash, gemini-2.5-flash-lite
-**OpenAI**: gpt-5, gpt-5-mini, gpt-5-nano, gpt-5.2
+This lets browser automation navigate to `/dev/auto-login` before testing any protected page.
 
-Det är 10 modeller — mer än tillräckligt för intelligent routing.
+## Implementation
 
----
+### 1. Create `src/pages/DevAutoLogin.tsx`
+- Check if running on preview/localhost domain — if not, redirect to `/`
+- Call `supabase.auth.signInWithPassword()` with test credentials from environment or hardcoded dev account
+- Show a loading spinner during auth, then redirect to `/dashboard`
+- Display clear "DEV ONLY" warning banner
 
-## Koncept: AI Council
+### 2. Create test account edge function `supabase/functions/dev-setup/index.ts`
+- Creates a test user account if it doesn't exist (e.g. `test@promotely.dev`)
+- Only works when called from preview/localhost origins
+- Returns the test credentials
 
-Istället för att användaren manuellt väljer modell, analyserar en snabb "router-modell" varje förfrågan och väljer optimal modell baserat på:
+### 3. Add route to `src/App.tsx`
+- Add `/dev/auto-login` route with the DevAutoLogin component
+- No `ProtectedRoute` wrapper (it IS the login mechanism)
+- Only rendered in development mode via `import.meta.env.DEV` check
 
-1. **Komplexitet** — enkel fråga vs djup strategi
-2. **Användarens valda nivå** (Snabb/Standard/Premium) — sätter taket
-3. **Typ av uppgift** — chatt, analys, marknadsplan, kalender etc.
-4. **Företagsprofil** — mer data = bättre routing
-
-### Routinglogik (server-side i ai-assistant)
-
+### 4. Usage in browser testing
 ```text
-Användaren väljer nivå → sätter "modellpool"
-
-Snabb (⚡):  gemini-2.5-flash-lite, gpt-5-nano
-Standard (✨): gemini-3-flash-preview, gemini-2.5-flash, gpt-5-mini
-Premium (🧠):  gemini-2.5-pro, gemini-3-pro-preview, gpt-5, gpt-5.2
+1. navigate_to_sandbox → /dev/auto-login
+2. Wait for auto-redirect to /dashboard
+3. Proceed with testing any protected page
 ```
 
-En snabb classifier (gemini-2.5-flash-lite, ~0 extra kostnad) analyserar meddelandet och returnerar:
-- `complexity`: low / medium / high
-- `task_type`: chat / analysis / strategy / creative / data
-- `recommended_model`: bästa modellen från poolen
+## Security
+- Route only exists when `import.meta.env.DEV` is true (Vite strips it from production builds)
+- Additional hostname check as fallback
+- Test account has minimal permissions (no admin)
+- No hardcoded production credentials
 
-### Exempel
-
-| Förfrågan | Nivå | Router väljer |
-|-----------|------|--------------|
-| "Vad är CTR?" | Snabb | gemini-2.5-flash-lite |
-| "Ge mig 5 content-idéer" | Standard | gemini-3-flash-preview |
-| "Skapa en 30-dagars marknadsplan" | Standard | gemini-2.5-flash (mer context) |
-| "Djupanalys av min konkurrent" | Premium | gpt-5.2 (bäst resonering) |
-| "Skriv en kreativ caption" | Premium | gemini-3-pro-preview |
-
----
-
-## Implementering
-
-### 1. Uppdatera `src/lib/modelTiers.ts`
-- Byt från en fast modell per nivå till en **modellpool** per nivå
-- Exportera poolkonfigurationen
-
-### 2. Uppdatera `supabase/functions/ai-assistant/index.ts`
-- Lägg till en `routeRequest()`-funktion som:
-  1. Skickar meddelandet + kontextmetadata till `gemini-2.5-flash-lite` med en kort prompt: "Klassificera detta meddelande..."
-  2. Tar emot strukturerat svar (complexity + recommended_model)
-  3. Använder den rekommenderade modellen för huvudanropet
-- Fallback: om routern misslyckas, använd standardmodellen för nivån
-- Logga vald modell för debugging
-
-### 3. Uppdatera `src/components/ai/ModelTierSelector.tsx`
-- Ändra labels till att kommunicera "nivå" snarare än specifik modell
-- Lägg till tooltip: "AI:n väljer automatiskt bästa modellen för din förfrågan"
-
-### 4. Kreditberäkning
-- Behåll samma multiplikatorer (0.5x / 1x / 2x) baserat på vald nivå
-- Routinganropet kostar inget extra (flash-lite är försumbart billigt)
-
----
-
-## Sammanfattning
-
-| Fil | Ändring |
-|-----|---------|
-| `src/lib/modelTiers.ts` | Modellpooler istället för enskild modell |
-| `supabase/functions/ai-assistant/index.ts` | `routeRequest()` classifier + dynamiskt modellval |
-| `src/components/ai/ModelTierSelector.tsx` | Uppdaterade labels/tooltips |
-
-Ingen DB-migration krävs. Routern lägger till ~200ms latens men ger signifikant bättre svar genom att matcha rätt modell till rätt uppgift.
+## Files Changed
+| File | Change |
+|------|--------|
+| `src/pages/DevAutoLogin.tsx` | New — auto-login component |
+| `src/App.tsx` | Add dev route |
+| `supabase/functions/dev-setup/index.ts` | New — test account provisioning |
 
