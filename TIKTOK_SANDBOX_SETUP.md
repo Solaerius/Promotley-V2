@@ -68,7 +68,7 @@ Den här guiden hjälper dig att integrera TikTok i sandbox-läge så att ni kan
    ```
    ELLER
    ```
-   https://fmvbzhlqzzwzciqgbzgp.supabase.co/functions/v1/oauth-callback
+   https://YOUR_PROJECT_REF.supabase.co/functions/v1/oauth-callback
    ```
 
 3. **Spara inställningarna**
