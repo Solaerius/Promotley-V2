@@ -21,6 +21,11 @@ const DevAutoLogin = () => {
       return;
     }
 
+    if (!DEV_EMAIL || !DEV_PASSWORD) {
+      setStatus("Saknar VITE_DEV_EMAIL / VITE_DEV_PASSWORD i .env");
+      return;
+    }
+
     const autoLogin = async () => {
       try {
         // First, ensure the test account exists via edge function
