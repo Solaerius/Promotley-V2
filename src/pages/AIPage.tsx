@@ -18,6 +18,7 @@ const AIPage = () => {
     return searchParams.get('tab') || localStorage.getItem('promotely_ai_tab') || 'verktyg';
   });
   const [prefillAction, setPrefillAction] = useState<string | null>(null);
+  const [showSpotlight, setShowSpotlight] = useState<string | null>(null);
 
   // Read URL params on mount and when they change
   useEffect(() => {
