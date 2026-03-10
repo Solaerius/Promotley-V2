@@ -2,427 +2,227 @@ import { useEffect, useState } from "react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { MessageCircle, AlertCircle, Bell, Users, CheckCircle, XCircle, BookOpen, Loader2, Shield, CreditCard, Gift, Mail } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { MessageCircle, Bell, Users, CheckCircle, XCircle, BookOpen, Loader2, Shield, CreditCard, Gift, Mail, BarChart3, Sparkles, Activity, Settings } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
-  const [stats, setStats] = useState({
-    activeSessions: 0,
-    unreadMessages: 0,
-    totalMessages: 0,
-  });
-  const [notificationStatus, setNotificationStatus] = useState({
-    discord: false,
-    email: false,
-    sms: false,
-  });
   const [loading, setLoading] = useState(true);
   const [importingDocs, setImportingDocs] = useState(false);
-  const [importResults, setImportResults] = useState<{
-    summary?: { imported: number; updated: number; errors: number; skipped: number };
-    results?: { file: string; status: string; category?: string }[];
-  } | null>(null);
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    activeToday: 0,
+    pendingOrders: 0,
+    totalRevenue: 0,
+    totalAIRequests: 0,
+    unreadMessages: 0,
+  });
+  const [notificationStatus, setNotificationStatus] = useState({ discord: false, email: false, sms: false });
+  const [recentEvents, setRecentEvents] = useState<any[]>([]);
 
   useEffect(() => {
-    loadDashboardData();
-
-    // Subscribe to live updates
-    const channel = supabase
-      .channel("admin_dashboard")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "live_chat_messages",
-        },
-        () => {
-          loadDashboardData();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    loadAll();
   }, []);
 
-  const loadDashboardData = async () => {
+  const loadAll = async () => {
     try {
-      // Get chat statistics
-      const { data: messages } = await supabase
-        .from("live_chat_messages")
-        .select("session_id, sender_type, read");
+      const [usersRes, ordersRes, msgsRes, settingsRes, eventsRes, aiRes] = await Promise.all([
+        supabase.from("users").select("id, created_at", { count: "exact" }),
+        supabase.from("swish_orders").select("status, amount"),
+        supabase.from("live_chat_messages").select("sender_type, read"),
+        supabase.from("notification_settings").select("*").maybeSingle(),
+        supabase.from("security_events").select("*").order("created_at", { ascending: false }).limit(10),
+        supabase.from("ai_chat_messages").select("id", { count: "exact", head: true }),
+      ]);
 
-      if (messages) {
-        const uniqueSessions = new Set(messages.map((m) => m.session_id)).size;
-        const unread = messages.filter(
-          (m) => m.sender_type === "user" && !m.read
-        ).length;
+      const users = usersRes.data || [];
+      const orders = ordersRes.data || [];
+      const msgs = msgsRes.data || [];
+      const today = new Date().toISOString().split("T")[0];
 
-        setStats({
-          activeSessions: uniqueSessions,
-          unreadMessages: unread,
-          totalMessages: messages.length,
-        });
-      }
+      setStats({
+        totalUsers: usersRes.count || users.length,
+        activeToday: users.filter((u: any) => u.created_at?.startsWith(today)).length,
+        pendingOrders: orders.filter((o: any) => o.status === "pending").length,
+        totalRevenue: orders.filter((o: any) => o.status === "approved").reduce((s: number, o: any) => s + (o.amount || 0), 0),
+        totalAIRequests: aiRes.count || 0,
+        unreadMessages: msgs.filter((m: any) => m.sender_type === "user" && !m.read).length,
+      });
 
-      // Get notification settings
-      const { data: settings } = await supabase
-        .from("notification_settings")
-        .select("*")
-        .maybeSingle();
-
-      if (settings) {
+      if (settingsRes.data) {
+        const s = settingsRes.data;
         setNotificationStatus({
-          discord: !!settings.discord_webhook_url,
-          email: !!settings.notification_email,
-          sms: !!(settings.twilio_account_sid && settings.twilio_auth_token),
+          discord: !!s.discord_webhook_url,
+          email: !!s.notification_email,
+          sms: !!(s.twilio_account_sid && s.twilio_auth_token),
         });
       }
-    } catch (error) {
-      console.error("Error loading dashboard data:", error);
+
+      setRecentEvents(eventsRes.data || []);
+    } catch (err) {
+      console.error("Error:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-  };
-
   const handleImportKnowledge = async () => {
     setImportingDocs(true);
-    setImportResults(null);
-    
     try {
       const { data: session } = await supabase.auth.getSession();
-      if (!session?.session?.access_token) {
-        toast.error("Du måste vara inloggad");
-        return;
-      }
-
-      const { data, error } = await supabase.functions.invoke('parse-knowledge-docs', {
-        headers: {
-          Authorization: `Bearer ${session.session.access_token}`
-        }
+      if (!session?.session?.access_token) { toast.error("Ej inloggad"); return; }
+      const { data, error } = await supabase.functions.invoke("parse-knowledge-docs", {
+        headers: { Authorization: `Bearer ${session.session.access_token}` },
       });
-
-      if (error) {
-        toast.error("Import misslyckades: " + error.message);
-        return;
-      }
-
-      setImportResults(data);
+      if (error) { toast.error("Import misslyckades"); return; }
       toast.success(`Import klar! ${data.summary.imported} nya, ${data.summary.updated} uppdaterade`);
-    } catch (err) {
-      console.error("Import error:", err);
-      toast.error("Något gick fel vid import");
-    } finally {
-      setImportingDocs(false);
-    }
+    } catch { toast.error("Något gick fel"); } finally { setImportingDocs(false); }
   };
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 max-w-7xl mx-auto">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
-          <p className="text-muted-foreground mt-1">
-            Översikt över live-chattar och notifikationer
-          </p>
+          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+          <p className="text-sm text-muted-foreground">Överblick och snabbåtkomst till alla verktyg</p>
         </div>
 
-        {/* Statistics Cards */}
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Aktiva Chattar</CardTitle>
-              <MessageCircle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.activeSessions}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Unika sessioner
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Olästa Meddelanden</CardTitle>
-              <AlertCircle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.unreadMessages}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Väntar på svar
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Totala Meddelanden</CardTitle>
-              <MessageCircle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalMessages}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Alla konversationer
-              </p>
-            </CardContent>
-          </Card>
+        {/* Metrics Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          {[
+            { label: "Användare", value: stats.totalUsers, icon: Users, color: "text-blue-500" },
+            { label: "Olästa meddelanden", value: stats.unreadMessages, icon: MessageCircle, color: "text-amber-500" },
+            { label: "Väntande ordrar", value: stats.pendingOrders, icon: CreditCard, color: "text-orange-500" },
+            { label: "Intäkter (kr)", value: stats.totalRevenue, icon: BarChart3, color: "text-emerald-500" },
+            { label: "AI-anrop", value: stats.totalAIRequests, icon: Sparkles, color: "text-purple-500" },
+            { label: "Nya idag", value: stats.activeToday, icon: Activity, color: "text-pink-500" },
+          ].map((m) => (
+            <Card key={m.label} className="p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <m.icon className={`w-4 h-4 ${m.color}`} />
+                <span className="text-xs text-muted-foreground">{m.label}</span>
+              </div>
+              <p className="text-2xl font-bold">{m.value}</p>
+            </Card>
+          ))}
         </div>
 
-        {/* Notification Status */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Bell className="w-5 h-5" />
-              Notifikationsstatus
-            </CardTitle>
-            <CardDescription>
-              Vilka notifikationskanaler är konfigurerade
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Discord Webhook</span>
-                {notificationStatus.discord ? (
-                  <Badge variant="default" className="gap-1">
-                    <CheckCircle className="w-3 h-3" />
-                    Aktiverad
-                  </Badge>
-                ) : (
-                  <Badge variant="secondary" className="gap-1">
-                    <XCircle className="w-3 h-3" />
-                    Inte konfigurerad
-                  </Badge>
-                )}
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">E-post</span>
-                {notificationStatus.email ? (
-                  <Badge variant="default" className="gap-1">
-                    <CheckCircle className="w-3 h-3" />
-                    Aktiverad
-                  </Badge>
-                ) : (
-                  <Badge variant="secondary" className="gap-1">
-                    <XCircle className="w-3 h-3" />
-                    Inte konfigurerad
-                  </Badge>
-                )}
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">SMS (Twilio)</span>
-                {notificationStatus.sms ? (
-                  <Badge variant="default" className="gap-1">
-                    <CheckCircle className="w-3 h-3" />
-                    Aktiverad
-                  </Badge>
-                ) : (
-                  <Badge variant="secondary" className="gap-1">
-                    <XCircle className="w-3 h-3" />
-                    Inte konfigurerad
-                  </Badge>
-                )}
-              </div>
-            </div>
-            <Link to="/admin/settings/notifications">
-              <Button className="w-full mt-4" variant="outline">
-                Hantera Notifikationer
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+        {/* Quick Actions + Notification Status */}
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* Quick Actions */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Snabbåtkomst</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 gap-2">
+              {[
+                { href: "/admin/chat", icon: MessageCircle, label: "Chattar", variant: "default" as const },
+                { href: "/admin/swish", icon: CreditCard, label: "Swish-ordrar", variant: "default" as const },
+                { href: "/admin/users", icon: Users, label: "Användare", variant: "outline" as const },
+                { href: "/admin/bans", icon: Shield, label: "Bannlysning", variant: "outline" as const },
+                { href: "/admin/promotions", icon: Gift, label: "Kampanjer", variant: "outline" as const },
+                { href: "/admin/email", icon: Mail, label: "E-postutskick", variant: "outline" as const },
+                { href: "/admin/email-automation", icon: Settings, label: "E-postautomation", variant: "outline" as const },
+                { href: "/admin/settings/notifications", icon: Bell, label: "Notiser", variant: "outline" as const },
+              ].map((a) => (
+                <Link key={a.href} to={a.href}>
+                  <Button variant={a.variant} className="w-full justify-start text-sm h-9" size="sm">
+                    <a.icon className="w-3.5 h-3.5 mr-2" />
+                    {a.label}
+                  </Button>
+                </Link>
+              ))}
+            </CardContent>
+          </Card>
 
-        {/* AI Knowledge Import */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="w-5 h-5" />
-              AI Kunskapsbas
-            </CardTitle>
-            <CardDescription>
-              Importera dokument från storage till AI:ns kunskapsbas
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Läser .txt, .md och .pdf filer från <code className="bg-muted px-1 rounded">promotley_knowledgebase</code> bucket och sparar innehållet i ai_knowledge tabellen.
-            </p>
-            
-            <Button 
-              onClick={handleImportKnowledge} 
-              disabled={importingDocs}
-              className="w-full"
-            >
-              {importingDocs ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Importerar...
-                </>
-              ) : (
-                <>
-                  <BookOpen className="w-4 h-4 mr-2" />
-                  Importera Dokument
-                </>
-              )}
-            </Button>
-
-            {importResults && (
-              <div className="space-y-3 mt-4">
-                <div className="grid grid-cols-4 gap-2 text-center">
-                  <div className="bg-green-500/10 p-2 rounded">
-                    <div className="text-lg font-bold text-green-600">{importResults.summary?.imported}</div>
-                    <div className="text-xs text-muted-foreground">Nya</div>
-                  </div>
-                  <div className="bg-blue-500/10 p-2 rounded">
-                    <div className="text-lg font-bold text-blue-600">{importResults.summary?.updated}</div>
-                    <div className="text-xs text-muted-foreground">Uppdaterade</div>
-                  </div>
-                  <div className="bg-red-500/10 p-2 rounded">
-                    <div className="text-lg font-bold text-red-600">{importResults.summary?.errors}</div>
-                    <div className="text-xs text-muted-foreground">Fel</div>
-                  </div>
-                  <div className="bg-muted p-2 rounded">
-                    <div className="text-lg font-bold">{importResults.summary?.skipped}</div>
-                    <div className="text-xs text-muted-foreground">Hoppade</div>
-                  </div>
+          {/* Notification Status */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Bell className="w-4 h-4" /> Notifikationskanaler
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {[
+                { label: "Discord", active: notificationStatus.discord },
+                { label: "E-post", active: notificationStatus.email },
+                { label: "SMS (Twilio)", active: notificationStatus.sms },
+              ].map((ch) => (
+                <div key={ch.label} className="flex items-center justify-between">
+                  <span className="text-sm">{ch.label}</span>
+                  <Badge variant={ch.active ? "default" : "secondary"} className="gap-1 text-xs">
+                    {ch.active ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                    {ch.active ? "Aktiv" : "Av"}
+                  </Badge>
                 </div>
-                
-                {importResults.results && importResults.results.length > 0 && (
-                  <div className="max-h-40 overflow-y-auto text-xs space-y-1 bg-muted p-2 rounded">
-                    {importResults.results.map((r, i) => (
-                      <div key={i} className="flex justify-between">
-                        <span className="truncate flex-1">{r.file}</span>
-                        <Badge variant={r.status.includes('error') ? 'destructive' : r.status === 'skipped' ? 'secondary' : 'default'} className="ml-2 text-xs">
-                          {r.status}
-                        </Badge>
+              ))}
+              <Link to="/admin/settings/notifications">
+                <Button variant="outline" size="sm" className="w-full mt-2">Hantera</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* AI Knowledge + Activity Log */}
+        <div className="grid md:grid-cols-2 gap-4">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <BookOpen className="w-4 h-4" /> AI Kunskapsbas
+              </CardTitle>
+              <CardDescription className="text-xs">Importera dokument till AI:ns kunskapsbas</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button onClick={handleImportKnowledge} disabled={importingDocs} className="w-full" size="sm">
+                {importingDocs ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Importerar...</> : <><BookOpen className="w-4 h-4 mr-2" />Importera Dokument</>}
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Activity className="w-4 h-4" /> Senaste aktivitet
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[150px]">
+                {recentEvents.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-4">Ingen aktivitet</p>
+                ) : (
+                  <div className="space-y-2">
+                    {recentEvents.map((ev: any) => (
+                      <div key={ev.id} className="flex items-center justify-between text-xs border-b border-border/50 pb-1.5 last:border-0">
+                        <span className="font-medium truncate max-w-[60%]">{ev.event_type}</span>
+                        <span className="text-muted-foreground">{new Date(ev.created_at).toLocaleString("sv-SE")}</span>
                       </div>
                     ))}
                   </div>
                 )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </div>
 
-        {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Snabbåtkomst</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-2 md:grid-cols-6 gap-3">
-            <Link to="/admin/chat">
-              <Button className="w-full">
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Chattar
-              </Button>
-            </Link>
-            <Link to="/admin/swish">
-              <Button variant="default" className="w-full bg-green-600 hover:bg-green-700">
-                <CreditCard className="w-4 h-4 mr-2" />
-                Swish
-              </Button>
-            </Link>
-            <Link to="/admin/users">
-              <Button variant="outline" className="w-full">
-                <Users className="w-4 h-4 mr-2" />
-                Användare
-              </Button>
-            </Link>
-            <Link to="/admin/bans">
-              <Button variant="outline" className="w-full">
-                <Shield className="w-4 h-4 mr-2" />
-                Bannlysning
-              </Button>
-            </Link>
-            <Link to="/admin/settings/notifications">
-              <Button variant="outline" className="w-full">
-                <Bell className="w-4 h-4 mr-2" />
-                Notiser
-              </Button>
-            </Link>
-            <Link to="/admin/promotions">
-              <Button variant="outline" className="w-full">
-                <Gift className="w-4 h-4 mr-2" />
-                Kampanjer
-              </Button>
-            </Link>
-            <Link to="/admin/email">
-              <Button variant="outline" className="w-full">
-                <Mail className="w-4 h-4 mr-2" />
-                E-postutskick
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-
-        {/* Admin Setup Instructions */}
-        <Alert>
-          <Users className="h-4 w-4" />
-          <AlertTitle>Lägg till Användare som Admin</AlertTitle>
-          <AlertDescription>
-            <div className="space-y-3 mt-2">
-              <p className="text-sm">
-                För att ge någon administratörsrättigheter måste du lägga till deras användar-ID i databasen:
-              </p>
-              
-              <div className="bg-muted p-3 rounded-md space-y-2">
-                <p className="text-xs font-semibold">Steg 1: Hitta användar-ID</p>
-                <p className="text-xs">
-                  Din användar-ID: <code className="bg-background px-2 py-1 rounded text-xs">{user?.id}</code>
-                </p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => copyToClipboard(user?.id || "")}
-                  className="text-xs h-7"
-                >
-                  Kopiera ID
-                </Button>
-              </div>
-
-              <div className="bg-muted p-3 rounded-md space-y-2">
-                <p className="text-xs font-semibold">Steg 2: Öppna Backend</p>
-                <p className="text-xs">
-                  1. Klicka på "Cloud" i övre menyn<br/>
-                  2. Gå till "Database" → "Tables"<br/>
-                  3. Välj tabellen <code className="bg-background px-1 rounded">user_roles</code>
-                </p>
-              </div>
-
-              <div className="bg-muted p-3 rounded-md space-y-2">
-                <p className="text-xs font-semibold">Steg 3: Lägg till admin-roll</p>
-                <p className="text-xs">Klicka "Insert" och fyll i:</p>
-                <div className="text-xs space-y-1 mt-2">
-                  <div>• <strong>user_id:</strong> <code className="bg-background px-1 rounded">{user?.id}</code></div>
-                  <div>• <strong>role:</strong> <code className="bg-background px-1 rounded">admin</code></div>
-                </div>
-                <p className="text-xs mt-2">
-                  Klicka "Save" → Ladda om sidan → Du har nu admin-åtkomst!
-                </p>
-              </div>
-
-              <Alert className="border-orange-500/50">
-                <AlertCircle className="h-4 w-4 text-orange-500" />
-                <AlertDescription className="text-xs">
-                  <strong>OBS!</strong> Ge endast admin-åtkomst till personer du litar på. Admins kan se alla chattar och ändra notifikationsinställningar.
-                </AlertDescription>
-              </Alert>
-            </div>
-          </AlertDescription>
-        </Alert>
+        {/* Admin note */}
+        <p className="text-xs text-muted-foreground">
+          Admin-ID: <code className="bg-muted px-1 rounded">{user?.id?.slice(0, 8)}...</code> — Lägg till fler admins via user_roles-tabellen i backend.
+        </p>
       </div>
     </DashboardLayout>
   );
