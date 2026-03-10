@@ -39,7 +39,7 @@ serve(async (req) => {
     const providedSecret = req.headers.get("x-internal-secret");
     
     // If internal secret is configured, require it
-    if (internalSecret && providedSecret !== internalSecret) {
+    if (!internalSecret || providedSecret !== internalSecret) {
       console.error("Unauthorized: Invalid or missing internal secret");
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
