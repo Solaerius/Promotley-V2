@@ -23,7 +23,7 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
         return;
       }
 
-      console.log('AdminRoute: Checking admin status for user:', user.id, user.email);
+      
       
       const { data, error } = await supabase
         .from("user_roles")
