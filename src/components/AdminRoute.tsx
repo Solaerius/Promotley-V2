@@ -12,7 +12,7 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
     const checkAdminStatus = async () => {
       // Vänta tills auth är klar
       if (loading) {
-        console.log('AdminRoute: Auth loading, waiting...');
+        
         return;
       }
       
