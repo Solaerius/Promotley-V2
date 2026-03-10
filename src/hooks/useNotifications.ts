@@ -8,6 +8,8 @@ interface Notification {
   message: string;
   read: boolean;
   created_at: string;
+  action_url?: string | null;
+  action_type?: string | null;
 }
 
 export const useNotifications = () => {
