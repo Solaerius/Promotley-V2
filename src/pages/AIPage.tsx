@@ -4,6 +4,7 @@ import { MessageSquare, Wand2, BarChart3, Radar } from "lucide-react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
+import SpotlightHighlight from "@/components/SpotlightHighlight";
 
 // Import content components
 import AIChatContent from "@/components/ai/AIChatContent";
