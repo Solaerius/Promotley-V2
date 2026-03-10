@@ -32,7 +32,7 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
         .eq("role", "admin")
         .maybeSingle();
 
-      console.log('AdminRoute: Query result:', { data, error });
+      
       
       setIsAdmin(!!data && !error);
       setChecking(false);
