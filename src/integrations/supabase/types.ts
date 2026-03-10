@@ -585,6 +585,78 @@ export type Database = {
         }
         Relationships: []
       }
+      email_automation_logs: {
+        Row: {
+          email_type: string
+          id: string
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          email_type: string
+          id?: string
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          email_type?: string
+          id?: string
+          sent_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      email_automation_settings: {
+        Row: {
+          delay_days: number
+          email_type: string
+          enabled: boolean
+          id: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          delay_days?: number
+          email_type: string
+          enabled?: boolean
+          id?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          delay_days?: number
+          email_type?: string
+          enabled?: boolean
+          id?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      free_tier_usage: {
+        Row: {
+          id: string
+          period_start: string
+          usage_type: string
+          used_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          period_start?: string
+          usage_type: string
+          used_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          period_start?: string
+          usage_type?: string
+          used_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       live_chat_messages: {
         Row: {
           created_at: string | null
@@ -728,6 +800,8 @@ export type Database = {
       }
       notifications: {
         Row: {
+          action_type: string | null
+          action_url: string | null
           created_at: string | null
           id: string
           message: string
@@ -736,6 +810,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          action_type?: string | null
+          action_url?: string | null
           created_at?: string | null
           id?: string
           message: string
@@ -744,6 +820,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          action_type?: string | null
+          action_url?: string | null
           created_at?: string | null
           id?: string
           message?: string
