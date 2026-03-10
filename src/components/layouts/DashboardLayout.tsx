@@ -1,13 +1,12 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useOrganization } from "@/hooks/useOrganization";
 import { useNavbarPosition } from "@/hooks/useNavbarPosition";
-import { useAIProfile } from "@/hooks/useAIProfile";
 import { EmailVerificationBanner } from "@/components/EmailVerificationBanner";
 import { DashboardNavbar } from "@/components/DashboardNavbar";
 import { DashboardFooter } from "@/components/DashboardFooter";
-import OnboardingTutorial from "@/components/OnboardingTutorial";
+import CreditWarningBanner from "@/components/CreditWarningBanner";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
