@@ -67,6 +67,7 @@ const AIAnalysisContent = () => {
         <div className="flex items-center gap-3 flex-wrap">
           <ModelTierSelector value={modelTier} onChange={setModelTier} compact />
           <Button
+            data-spotlight="ai-analysis-btn"
             variant="gradient"
             onClick={async () => {
               try {
