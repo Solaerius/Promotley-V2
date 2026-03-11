@@ -1,54 +1,137 @@
 
 
-# Dev Auto-Login for Browser Testing
+# Total Dashboard & App Redesign -- Linear/Vercel-stil
 
-## Problem
-When Lovable's browser automation tests protected dashboard pages, it gets stuck at the login screen. The preview iframe session must be authenticated first.
+## Design System
 
-## Solution
-Create a **development-only auto-login route** (`/dev/auto-login`) that:
-1. Only renders in non-production builds (checks `window.location.hostname` for preview/localhost)
-2. Automatically signs in using a dedicated test account via real authentication
-3. Redirects to `/dashboard` after successful login
-4. Is completely excluded from production builds
+- **Stil**: Linear/Vercel -- extremt clean, svartvitt, minimal färg
+- **Kort**: Inga borders, mjuka skuggor (`shadow-sm` / `shadow-md`)
+- **Typografi**: Kompakt, tight, Inter-vikt
+- **Bakgrund**: Ren vit (light) / ren svart-grå (dark), ingen gradient, inga orbs
+- **Färg**: Primärfärg bara för accenter (knappar, badges), allt annat neutral
+- **Animationer**: Enkel opacity-fade, inget staggerat
 
-This lets browser automation navigate to `/dev/auto-login` before testing any protected page.
+---
 
-## Implementation
+## 1. Sidebar (`AppSidebar.tsx`) -- Rework
 
-### 1. Create `src/pages/DevAutoLogin.tsx`
-- Check if running on preview/localhost domain — if not, redirect to `/`
-- Call `supabase.auth.signInWithPassword()` with test credentials from environment or hardcoded dev account
-- Show a loading spinner during auth, then redirect to `/dashboard`
-- Display clear "DEV ONLY" warning banner
+**Aktiv markering**: Solid bakgrundsfärg + `shadow-sm` på aktiv knapp (tydlig kontrast)
 
-### 2. Create test account edge function `supabase/functions/dev-setup/index.ts`
-- Creates a test user account if it doesn't exist (e.g. `test@promotely.dev`)
-- Only works when called from preview/localhost origins
-- Returns the test credentials
+**Dark mode toggle**: Egen knapp i sidebar (alltid synlig), ej i dropdown
 
-### 3. Add route to `src/App.tsx`
-- Add `/dev/auto-login` route with the DevAutoLogin component
-- No `ProtectedRoute` wrapper (it IS the login mechanism)
-- Only rendered in development mode via `import.meta.env.DEV` check
+**Footer**: Avatar + namn + snabbknappar (Inställningar, Logga ut) direkt synliga
 
-### 4. Usage in browser testing
+**Logo**: Byt från `<img>` till SVG/text som renderas direkt (fixar flicker)
+
+**Krediter**: Behåll i profil-dropdown (tunn bar)
+
+**Ta bort**: "Flytta navbar"-knappen (den ger inget värde med sidebar)
+
+---
+
+## 2. DashboardLayout (`DashboardLayout.tsx`) -- Cleanup
+
+- Ta bort gradient-bakgrund, byt till `bg-background` (ren vit/svart)
+- Behåll content header med notis-klocka + SidebarTrigger
+- Ta bort `motion` wrapper runt main (onödig re-render vid navigering, orsakar flicker)
+
+---
+
+## 3. Dashboard (`Dashboard.tsx`) -- Feed/Aktivitet-fokus
+
+Ny layout:
 ```text
-1. navigate_to_sandbox → /dev/auto-login
-2. Wait for auto-redirect to /dashboard
-3. Proceed with testing any protected page
+┌─────────────────────────────────────┐
+│ Välkommen tillbaka, [namn]          │
+│ Kompakt rad med nyckeltal           │
+├─────────────────────────────────────┤
+│ Aktivitets-feed:                    │
+│  - Senaste AI-användning            │
+│  - Planerade inlägg (närmaste)      │
+│  - Kontostatus (TikTok ansluten)    │
+│  - Tips/AI-insikter                 │
+├─────────────────────────────────────┤
+│ Plattformar (alla, med status)      │
+│  TikTok ✓  Instagram [snart]  ...   │
+├─────────────────────────────────────┤
+│ Genvägar (3 kompakta knappar)       │
+│ Subtil uppgraderings-banner         │
+└─────────────────────────────────────┘
 ```
 
-## Security
-- Route only exists when `import.meta.env.DEV` is true (Vite strips it from production builds)
-- Additional hostname check as fallback
-- Test account has minimal permissions (no admin)
-- No hardcoded production credentials
+- Nyckeltal: 4 siffror utan kort-border, bara text + ikon + mjuk skugga
+- Connections: Alla plattformar visas, "Kommer snart" badge på de som ej funkar, TikTok-klick -> `/account?tab=app`
+- Feed-sektion: Visa senaste 5 händelser (planerade inlägg, AI-användning, anslutningar)
 
-## Files Changed
-| File | Change |
-|------|--------|
-| `src/pages/DevAutoLogin.tsx` | New — auto-login component |
-| `src/App.tsx` | Add dev route |
-| `supabase/functions/dev-setup/index.ts` | New — test account provisioning |
+---
+
+## 4. AI-sidan (`AIPage.tsx`) -- Verktygs-grid
+
+- Ta bort tab-systemet
+- Visa alla verktyg i ett rent grid (2x3 eller 3x2)
+- Varje verktyg: ikon + titel + kort beskrivning, klick -> dedikerad sida
+- Chat-knapp separat (redan i sidebar)
+- AI-analys och Säljradar som egna kort i gridet
+- Renare header utan `dashboard-heading-dark` klasser
+
+---
+
+## 5. Statistik (`Analytics.tsx`) -- Minimalistisk rework
+
+- Kompakta nyckeltal överst (följare, views, likes, engagemang) utan tunga kort
+- Plattforms-breakdown under, rena siffror utan stora `Card`-wrappers
+- Diagram: enklare, mindre, neutral färgpalett
+- Ta bort den stora "AI-analys"-bannern (den hör hemma på AI-sidan)
+- Om inga konton: minimal empty state, direkt-länk till `Konto > App`
+
+---
+
+## 6. Konto & Inställningar (`AccountPage.tsx`) -- Sidebar + innehåll
+
+Byt från tabs till sidebar-layout:
+```text
+┌──────────┬──────────────────────────┐
+│ Profil   │ [Profilinnehåll]         │
+│ AI-profil│                          │
+│ Krediter │                          │
+│ ─────── │                          │
+│ Org.     │                          │
+│ ─────── │                          │
+│ Kopplingar│                         │
+│ Tema     │                          │
+│ ─────── │                          │
+│ Radera   │                          │
+└──────────┴──────────────────────────┘
+```
+
+- Vänster-meny med sektioner
+- Innehåll till höger renderas baserat på vald sektion
+- Varje sektion renare: mindre padding, inga tunga kort, mjuka skuggor
+- Sociala kopplingar: TikTok fungerar, övriga "Kommer snart"
+- På mobil: meny kollapsar till dropdown eller horisontella tabs
+
+---
+
+## 7. Kalender (`Calendar.tsx`) -- Cleanup
+
+- Ta bort `liquid-glass-light` klasser
+- Renare kalender-grid med mjuka skuggor
+- Kompaktare header
+
+---
+
+## 8. CSS cleanup (`index.css`)
+
+- Ta bort/deprecera `liquid-glass`, `dashboard-heading-dark`, `dashboard-subheading-dark`, `bg-gradient-hero`, `bg-gradient-primary` klasser
+- Standardisera alla sidor till samma neutral stil
+
+---
+
+## Implementationsordning (3 faser)
+
+**Fas 1**: Sidebar rework + DashboardLayout cleanup + Logo fix + Dashboard ny layout
+**Fas 2**: AI-sidan grid + Statistik rework + Kalender cleanup
+**Fas 3**: Konto sidebar-layout + CSS cleanup
+
+Varje fas ändrar 3-4 filer. Totalt ~10 filer berörs.
 
