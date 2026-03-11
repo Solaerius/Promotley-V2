@@ -216,14 +216,25 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
               <DropdownMenuContent side={position === 'left' ? 'right' : 'left'} className="w-72">
                 <div className="px-3 py-2 border-b flex items-center justify-between">
                   <h3 className="font-semibold text-sm">Notiser</h3>
-                  {unreadCount > 0 && (
-                    <button
-                      onClick={(e) => { e.preventDefault(); markAllAsRead(); }}
-                      className="text-[10px] text-primary hover:underline"
-                    >
-                      Markera alla som lästa
-                    </button>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {unreadCount > 0 && (
+                      <button
+                        onClick={(e) => { e.preventDefault(); markAllAsRead(); }}
+                        className="text-[10px] text-primary hover:underline"
+                      >
+                        Markera alla som lästa
+                      </button>
+                    )}
+                    {notifications.length > 0 && (
+                      <button
+                        onClick={(e) => { e.preventDefault(); clearAll(); }}
+                        className="text-[10px] text-destructive hover:underline flex items-center gap-0.5"
+                      >
+                        <Trash2 className="h-2.5 w-2.5" />
+                        Rensa alla
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <ScrollArea className="h-[250px]">
                   {notifications.length === 0 ? (
