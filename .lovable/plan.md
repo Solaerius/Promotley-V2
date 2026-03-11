@@ -1,92 +1,137 @@
 
 
-# Total omskrivning -- Linear/Vercel-stil
+# Total Dashboard & App Redesign -- Linear/Vercel-stil
 
-Problemet: Förra omgångarna ändrade bara wrappers och routing, men de faktiska komponenterna (AIChat, AnalyticsContent, AccountContent, OrganizationContent, AppSettingsContent, TikTokProfileSection, Calendar) är helt orörda och fulla av `liquid-glass`, `bg-gradient-primary`, `shadow-elegant`, `shadow-glow`, `motion.section`, `dashboard-heading-dark`, `variant="gradient"` och emojis.
+## Design System
 
-**Denna gång skrivs varje komponent om från scratch** -- inte "ta bort klass X", utan ny JSX med ny struktur.
-
----
-
-## Vad som ska skrivas om (12 filer)
-
-### 1. `AIChat.tsx` (500 rader) -- Skrivs om helt
-- Ta bort: `Card`/`CardContent` wrapper, `shadow-elegant`, alla `bg-gradient-primary`, `animate-fade-in-up`, `animate-fade-in-scale`, `shadow-soft`, `shadow-glow`, gradient quick commands
-- Ny struktur: Ren `div` med `bg-background`, user-bubblor i `bg-primary text-primary-foreground rounded-xl`, AI-bubblor i `bg-muted rounded-xl`, inga gradienter
-- Quick commands: `bg-muted` ikon-rutor, ingen gradient-bakgrund
-- Input: Enkel `bg-muted` textarea, `bg-primary` send-knapp (ej gradient)
-- Scroll-knapp: `bg-primary rounded-full`
-- `variant="gradient"` -> `variant="default"` överallt
-
-### 2. `AnalyticsContent.tsx` (233 rader) -- Skrivs om helt
-- Ta bort: `liquid-glass-light`, `liquid-glass`, `dashboard-heading-dark`, `dashboard-subheading-dark`, `bg-gradient-primary`, `bg-white/10 backdrop-blur-sm border border-white/10`, `variant="gradient"`
-- Nya stats-kort: `bg-card shadow-sm rounded-xl` med neutral ikon i `bg-muted`
-- Diagram: Behåll recharts men med neutral färger, enklare containers (`div` istället för `Card`)
-- Platform tabs: `bg-muted` TabsList, `data-[state=active]:bg-background` (ej `bg-white/20`)
-- Empty state: Minimal text + länk, inga stora ikoner
-
-### 3. `AnalyticsPage.tsx` -- Rensa header
-- `text-3xl md:text-4xl font-bold dashboard-heading-dark` -> `text-xl font-semibold text-foreground`
-- `dashboard-subheading-dark` -> `text-sm text-muted-foreground`
-
-### 4. `AccountContent.tsx` (647 rader) -- Skrivs om helt
-- Ta bort: Alla `motion.section` + `sectionVariants`, `motion` import
-- Ta bort: `bg-muted/30 rounded-2xl` -> `bg-card shadow-sm rounded-xl`
-- Kompaktare sektions-headers: `text-base font-medium` (ej `text-lg font-semibold`)
-- Inputs: `bg-background border-border` (ej `bg-muted/30`)
-- Ta bort "Navigering"-sektionen (redan i sidebar)
-- Ta bort emoji (om några finns)
-
-### 5. `OrganizationContent.tsx` (339 rader) -- Skrivs om
-- Ta bort: `motion` import, `motion.section`
-- Byt `Tabs` med centrerad `TabsList` mot enklare sektionsindelning eller renare tabs med `bg-muted` styling
-- `bg-muted/30 rounded-2xl` -> `bg-card shadow-sm rounded-xl`
-- Badges och knappar: standard variant, inga gradienter
-
-### 6. `AppSettingsContent.tsx` -- Skrivs om
-- Ta bort `Card` imports
-- `bg-gradient-to-r from-purple-500 to-pink-500` på plattforms-ikoner -> `bg-muted` med neutral ikon
-- Instagram: Behåll men markera "Kommer snart"
-- TikTok: Enda aktiva
-
-### 7. `TikTokProfileSection.tsx` (300 rader) -- Skrivs om
-- Ta bort: `bg-white/10 backdrop-blur-sm border border-white/10`, `dashboard-heading-dark`, `dashboard-subheading-dark`, `text-white/60`
-- Ny stil: `bg-card shadow-sm rounded-xl`, `text-foreground`, `text-muted-foreground`
-
-### 8. `Calendar.tsx` (508 rader) -- Cleanup
-- `variant="gradient"` -> `variant="default"` på AI-knappen
-- Dialogs: Rena, inga tunga Card-wrappers
-- Renare kalender-grid
-
-### 9. `Dashboard.tsx` -- Ta bort emoji
-- Rad 128: `👋` tas bort
-
-### 10. `App.tsx` -- Routing fix
-- `/analytics` route: Ändra så den pekar korrekt (importera `Analytics` som AnalyticsPage eller uppdatera AnalyticsPage att använda de nya stilarna)
-
-### 11. `CreditsDisplay.tsx` -- Kontrollera för gradienter
-### 12. `index.css` -- Ta bort legacy klasser
+- **Stil**: Linear/Vercel -- extremt clean, svartvitt, minimal färg
+- **Kort**: Inga borders, mjuka skuggor (`shadow-sm` / `shadow-md`)
+- **Typografi**: Kompakt, tight, Inter-vikt
+- **Bakgrund**: Ren vit (light) / ren svart-grå (dark), ingen gradient, inga orbs
+- **Färg**: Primärfärg bara för accenter (knappar, badges), allt annat neutral
+- **Animationer**: Enkel opacity-fade, inget staggerat
 
 ---
 
-## Designsystem som appliceras överallt
+## 1. Sidebar (`AppSidebar.tsx`) -- Rework
 
-| Element | Gammal stil | Ny stil |
-|---------|-----------|---------|
-| Kort | `liquid-glass-light`, `Card` med tunga borders | `bg-card shadow-sm rounded-xl` |
-| Rubriker | `dashboard-heading-dark text-3xl` | `text-foreground text-base font-medium` |
-| Undertext | `dashboard-subheading-dark` | `text-muted-foreground text-sm` |
-| Knappar | `variant="gradient"` | `variant="default"` |
-| Ikoner bakgrund | `bg-gradient-primary`, `bg-gradient-to-r` | `bg-muted` |
-| Bubblor (chat) | `bg-gradient-primary text-white` | `bg-primary text-primary-foreground` |
-| Animationer | `motion.section`, `animate-fade-in-up` | Ingen, eller `opacity` transition |
-| Input-fält | `bg-muted/30 border border-border` | `bg-background border-border` |
+**Aktiv markering**: Solid bakgrundsfärg + `shadow-sm` på aktiv knapp (tydlig kontrast)
 
-## Fas-ordning
+**Dark mode toggle**: Egen knapp i sidebar (alltid synlig), ej i dropdown
 
-**Fas 1** (viktigast): AIChat + AnalyticsContent + AnalyticsPage + TikTokProfileSection + Dashboard emoji-fix + App.tsx routing
-**Fas 2**: AccountContent + OrganizationContent + AppSettingsContent + Calendar
-**Fas 3**: CSS cleanup (ta bort oanvända klasser)
+**Footer**: Avatar + namn + snabbknappar (Inställningar, Logga ut) direkt synliga
 
-Totalt ~12 filer skrivs om. All funktionalitet bevaras, bara utseendet byts ut från grunden.
+**Logo**: Byt från `<img>` till SVG/text som renderas direkt (fixar flicker)
+
+**Krediter**: Behåll i profil-dropdown (tunn bar)
+
+**Ta bort**: "Flytta navbar"-knappen (den ger inget värde med sidebar)
+
+---
+
+## 2. DashboardLayout (`DashboardLayout.tsx`) -- Cleanup
+
+- Ta bort gradient-bakgrund, byt till `bg-background` (ren vit/svart)
+- Behåll content header med notis-klocka + SidebarTrigger
+- Ta bort `motion` wrapper runt main (onödig re-render vid navigering, orsakar flicker)
+
+---
+
+## 3. Dashboard (`Dashboard.tsx`) -- Feed/Aktivitet-fokus
+
+Ny layout:
+```text
+┌─────────────────────────────────────┐
+│ Välkommen tillbaka, [namn]          │
+│ Kompakt rad med nyckeltal           │
+├─────────────────────────────────────┤
+│ Aktivitets-feed:                    │
+│  - Senaste AI-användning            │
+│  - Planerade inlägg (närmaste)      │
+│  - Kontostatus (TikTok ansluten)    │
+│  - Tips/AI-insikter                 │
+├─────────────────────────────────────┤
+│ Plattformar (alla, med status)      │
+│  TikTok ✓  Instagram [snart]  ...   │
+├─────────────────────────────────────┤
+│ Genvägar (3 kompakta knappar)       │
+│ Subtil uppgraderings-banner         │
+└─────────────────────────────────────┘
+```
+
+- Nyckeltal: 4 siffror utan kort-border, bara text + ikon + mjuk skugga
+- Connections: Alla plattformar visas, "Kommer snart" badge på de som ej funkar, TikTok-klick -> `/account?tab=app`
+- Feed-sektion: Visa senaste 5 händelser (planerade inlägg, AI-användning, anslutningar)
+
+---
+
+## 4. AI-sidan (`AIPage.tsx`) -- Verktygs-grid
+
+- Ta bort tab-systemet
+- Visa alla verktyg i ett rent grid (2x3 eller 3x2)
+- Varje verktyg: ikon + titel + kort beskrivning, klick -> dedikerad sida
+- Chat-knapp separat (redan i sidebar)
+- AI-analys och Säljradar som egna kort i gridet
+- Renare header utan `dashboard-heading-dark` klasser
+
+---
+
+## 5. Statistik (`Analytics.tsx`) -- Minimalistisk rework
+
+- Kompakta nyckeltal överst (följare, views, likes, engagemang) utan tunga kort
+- Plattforms-breakdown under, rena siffror utan stora `Card`-wrappers
+- Diagram: enklare, mindre, neutral färgpalett
+- Ta bort den stora "AI-analys"-bannern (den hör hemma på AI-sidan)
+- Om inga konton: minimal empty state, direkt-länk till `Konto > App`
+
+---
+
+## 6. Konto & Inställningar (`AccountPage.tsx`) -- Sidebar + innehåll
+
+Byt från tabs till sidebar-layout:
+```text
+┌──────────┬──────────────────────────┐
+│ Profil   │ [Profilinnehåll]         │
+│ AI-profil│                          │
+│ Krediter │                          │
+│ ─────── │                          │
+│ Org.     │                          │
+│ ─────── │                          │
+│ Kopplingar│                         │
+│ Tema     │                          │
+│ ─────── │                          │
+│ Radera   │                          │
+└──────────┴──────────────────────────┘
+```
+
+- Vänster-meny med sektioner
+- Innehåll till höger renderas baserat på vald sektion
+- Varje sektion renare: mindre padding, inga tunga kort, mjuka skuggor
+- Sociala kopplingar: TikTok fungerar, övriga "Kommer snart"
+- På mobil: meny kollapsar till dropdown eller horisontella tabs
+
+---
+
+## 7. Kalender (`Calendar.tsx`) -- Cleanup
+
+- Ta bort `liquid-glass-light` klasser
+- Renare kalender-grid med mjuka skuggor
+- Kompaktare header
+
+---
+
+## 8. CSS cleanup (`index.css`)
+
+- Ta bort/deprecera `liquid-glass`, `dashboard-heading-dark`, `dashboard-subheading-dark`, `bg-gradient-hero`, `bg-gradient-primary` klasser
+- Standardisera alla sidor till samma neutral stil
+
+---
+
+## Implementationsordning (3 faser)
+
+**Fas 1**: Sidebar rework + DashboardLayout cleanup + Logo fix + Dashboard ny layout
+**Fas 2**: AI-sidan grid + Statistik rework + Kalender cleanup
+**Fas 3**: Konto sidebar-layout + CSS cleanup
+
+Varje fas ändrar 3-4 filer. Totalt ~10 filer berörs.
 
