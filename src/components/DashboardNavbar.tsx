@@ -233,13 +233,17 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                     notifications.map((notification) => (
                       <DropdownMenuItem
                         key={notification.id}
-                        className="flex flex-col items-start p-3 cursor-pointer"
-                        onClick={() => {
+                        className={cn(
+                          "flex flex-col items-start p-3 cursor-pointer",
+                          notification.action_url && "hover:bg-accent/80"
+                        )}
+                        onSelect={(e) => {
+                          e.preventDefault();
                           if (!notification.read) markAsRead(notification.id);
-                          if ((notification as any).action_url) {
-                            const url = (notification as any).action_type
-                              ? `${(notification as any).action_url}?spotlight=${(notification as any).action_type}`
-                              : (notification as any).action_url;
+                          if (notification.action_url) {
+                            const url = notification.action_type
+                              ? `${notification.action_url}?spotlight=${notification.action_type}`
+                              : notification.action_url;
                             navigate(url);
                           }
                         }}
@@ -252,9 +256,14 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                               {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true, locale: sv })}
                             </p>
                           </div>
-                          {!notification.read && (
-                            <div className="h-2 w-2 bg-primary rounded-full ml-2 mt-1 shrink-0" />
-                          )}
+                          <div className="flex items-center gap-1 ml-2 mt-1 shrink-0">
+                            {!notification.read && (
+                              <div className="h-2 w-2 bg-primary rounded-full" />
+                            )}
+                            {notification.action_url && (
+                              <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                            )}
+                          </div>
                         </div>
                       </DropdownMenuItem>
                     ))
