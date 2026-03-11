@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Trash2, User, Building, Zap, Save, CreditCard, XCircle, ArrowDown, Plus, Home, LogOut } from "lucide-react";
+import { Trash2, User, Building, Zap, Save, CreditCard, XCircle, ArrowDown, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useAIProfile } from "@/hooks/useAIProfile";
@@ -13,25 +13,14 @@ import { ProfileImageUpload } from "@/components/ProfileImageUpload";
 import { AIProfileProgress } from "@/components/AIProfileProgress";
 import CreditsDisplay from "@/components/CreditsDisplay";
 import PromoCodeInput from "@/components/PromoCodeInput";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { SWISH_PLANS, CREDIT_PACKAGES } from "@/lib/swishConfig";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 
 const AccountContent = () => {
@@ -55,31 +44,16 @@ const AccountContent = () => {
   const [companyLogoUrl, setCompanyLogoUrl] = useState<string | null>(null);
 
   const [aiFormData, setAiFormData] = useState({
-    foretagsnamn: "",
-    branch: "",
-    stad: "",
-    postnummer: "",
-    lan: "",
-    land: "",
-    malgrupp: "",
-    produkt_beskrivning: "",
-    prisniva: "",
-    marknadsplan: "",
-    malsattning: "",
-    tonalitet: "",
-    allman_info: "",
-    nyckelord: "",
+    foretagsnamn: "", branch: "", stad: "", postnummer: "", lan: "", land: "",
+    malgrupp: "", produkt_beskrivning: "", prisniva: "", marknadsplan: "",
+    malsattning: "", tonalitet: "", allman_info: "", nyckelord: "",
   });
   const [isSavingAIProfile, setIsSavingAIProfile] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (!user?.id) return;
-      const { data, error } = await supabase
-        .from('users')
-        .select('company_name, avatar_url, company_logo_url')
-        .eq('id', user.id)
-        .single();
+      const { data, error } = await supabase.from('users').select('company_name, avatar_url, company_logo_url').eq('id', user.id).single();
       if (!error && data) {
         setCompanyName(data.company_name || "");
         setOriginalCompanyName(data.company_name || "");
@@ -93,20 +67,13 @@ const AccountContent = () => {
   useEffect(() => {
     if (aiProfile) {
       setAiFormData({
-        foretagsnamn: aiProfile.foretagsnamn || "",
-        branch: aiProfile.branch || "",
-        stad: aiProfile.stad || "",
-        postnummer: aiProfile.postnummer || "",
-        lan: aiProfile.lan || "",
-        land: aiProfile.land || "",
-        malgrupp: aiProfile.malgrupp || "",
-        produkt_beskrivning: aiProfile.produkt_beskrivning || "",
-        prisniva: aiProfile.prisniva || "",
-        marknadsplan: aiProfile.marknadsplan || "",
-        malsattning: aiProfile.malsattning || "",
-        tonalitet: aiProfile.tonalitet || "",
-        allman_info: aiProfile.allman_info || "",
-        nyckelord: aiProfile.nyckelord?.join(", ") || "",
+        foretagsnamn: aiProfile.foretagsnamn || "", branch: aiProfile.branch || "",
+        stad: aiProfile.stad || "", postnummer: aiProfile.postnummer || "",
+        lan: aiProfile.lan || "", land: aiProfile.land || "",
+        malgrupp: aiProfile.malgrupp || "", produkt_beskrivning: aiProfile.produkt_beskrivning || "",
+        prisniva: aiProfile.prisniva || "", marknadsplan: aiProfile.marknadsplan || "",
+        malsattning: aiProfile.malsattning || "", tonalitet: aiProfile.tonalitet || "",
+        allman_info: aiProfile.allman_info || "", nyckelord: aiProfile.nyckelord?.join(", ") || "",
       });
     }
   }, [aiProfile]);
@@ -115,18 +82,12 @@ const AccountContent = () => {
     if (!user?.id || !companyName.trim()) return;
     setIsSavingCompanyName(true);
     try {
-      const { error } = await supabase
-        .from('users')
-        .update({ company_name: companyName.trim() })
-        .eq('id', user.id);
+      const { error } = await supabase.from('users').update({ company_name: companyName.trim() }).eq('id', user.id);
       if (error) throw error;
       setOriginalCompanyName(companyName);
       toast({ title: "Namn uppdaterat" });
-    } catch (error) {
-      toast({ title: "Fel", description: "Kunde inte uppdatera", variant: "destructive" });
-    } finally {
-      setIsSavingCompanyName(false);
-    }
+    } catch { toast({ title: "Fel", variant: "destructive" }); }
+    finally { setIsSavingCompanyName(false); }
   };
 
   const handleSaveAIProfile = async () => {
@@ -135,40 +96,25 @@ const AccountContent = () => {
       const { nyckelord, foretagsnamn, ...rest } = aiFormData;
       await updateAIProfile({
         ...rest,
-        // Sync company name from account info
         foretagsnamn: companyName.trim() || foretagsnamn,
         nyckelord: nyckelord ? nyckelord.split(",").map((k) => k.trim()).filter(Boolean) : undefined,
       });
       toast({ title: "AI-profil sparad" });
-    } catch (error) {
-      toast({ title: "Fel", variant: "destructive" });
-    } finally {
-      setIsSavingAIProfile(false);
-    }
+    } catch { toast({ title: "Fel", variant: "destructive" }); }
+    finally { setIsSavingAIProfile(false); }
   };
 
   const handleCancelSubscription = async () => {
     if (!user?.id) return;
     setIsCancelling(true);
     try {
-      const { error } = await supabase
-        .from('users')
-        .update({ 
-          plan: 'free_trial',
-          max_credits: 1,
-          credits_left: 0,
-          renewal_date: null
-        })
-        .eq('id', user.id);
+      const { error } = await supabase.from('users').update({ plan: 'free_trial', max_credits: 1, credits_left: 0, renewal_date: null }).eq('id', user.id);
       if (error) throw error;
-      toast({ title: "Prenumeration avslutad", description: "Din plan har återställts." });
+      toast({ title: "Prenumeration avslutad" });
       refetchCredits();
       setShowCancelDialog(false);
-    } catch (error) {
-      toast({ title: "Fel", description: "Kunde inte avsluta prenumerationen", variant: "destructive" });
-    } finally {
-      setIsCancelling(false);
-    }
+    } catch { toast({ title: "Fel", variant: "destructive" }); }
+    finally { setIsCancelling(false); }
   };
 
   const handleDowngrade = async () => {
@@ -176,24 +122,18 @@ const AccountContent = () => {
     setIsDowngrading(true);
     try {
       const plan = SWISH_PLANS[selectedDowngradePlan as keyof typeof SWISH_PLANS];
-      const { error } = await supabase
-        .from('users')
-        .update({ 
-          plan: selectedDowngradePlan as any,
-          max_credits: plan.credits,
-          credits_left: Math.min(credits?.credits_left || 0, plan.credits),
-        })
-        .eq('id', user.id);
+      const { error } = await supabase.from('users').update({
+        plan: selectedDowngradePlan as any,
+        max_credits: plan.credits,
+        credits_left: Math.min(credits?.credits_left || 0, plan.credits),
+      }).eq('id', user.id);
       if (error) throw error;
-      toast({ title: "Plan nedgraderad", description: `Du har nu ${plan.name}.` });
+      toast({ title: "Plan nedgraderad" });
       refetchCredits();
       setShowDowngradeDialog(false);
       setSelectedDowngradePlan(null);
-    } catch (error) {
-      toast({ title: "Fel", description: "Kunde inte nedgradera planen", variant: "destructive" });
-    } finally {
-      setIsDowngrading(false);
-    }
+    } catch { toast({ title: "Fel", variant: "destructive" }); }
+    finally { setIsDowngrading(false); }
   };
 
   const confirmDeleteAccount = async () => {
@@ -202,385 +142,185 @@ const AccountContent = () => {
     try {
       const { error } = await supabase.rpc('soft_delete_user_account', { _user_id: user.id });
       if (error) throw error;
-      toast({ title: "Konto raderat", description: "Du har 30 dagar att ångra dig." });
+      toast({ title: "Konto raderat", description: "Du har 30 dagar att angra dig." });
       await signOut();
-    } catch (error) {
+    } catch {
       toast({ title: "Fel", variant: "destructive" });
       setIsDeleting(false);
     }
   };
 
-  const sectionVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: { delay: i * 0.1, duration: 0.3 }
-    })
-  };
-
   const hasActivePlan = credits?.plan && !['free_trial'].includes(credits.plan);
   const currentTierLevel = credits?.plan ? getTierLevel(credits.plan) : 0;
-
-  const downgradeOptions = Object.entries(SWISH_PLANS).filter(([key]) => {
-    const planLevel = getTierLevel(key);
-    return planLevel < currentTierLevel;
-  });
+  const downgradeOptions = Object.entries(SWISH_PLANS).filter(([key]) => getTierLevel(key) < currentTierLevel);
 
   return (
-    <div className="space-y-4 max-w-4xl mx-auto">
-      {/* Credits & Plan */}
-      <motion.section 
-        custom={0} 
-        variants={sectionVariants} 
-        initial="hidden" 
-        animate="visible"
-        className="space-y-2"
-      >
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-8 h-8 rounded-lg bg-warning/10 flex items-center justify-center">
-            <Zap className="w-4 h-4 text-warning" />
+    <div className="space-y-6 max-w-4xl mx-auto">
+      {/* Plan & Credits */}
+      <section className="space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-muted flex items-center justify-center">
+            <Zap className="w-3.5 h-3.5 text-muted-foreground" />
           </div>
-          <h2 className="text-lg font-semibold">Plan & Krediter</h2>
+          <h2 className="text-base font-medium text-foreground">Plan & Krediter</h2>
         </div>
-        <div className="bg-muted/30 rounded-2xl p-3 space-y-3">
+        <div className="rounded-xl bg-card shadow-sm p-4 space-y-3">
           <CreditsDisplay variant="full" />
-          
-          {/* Credit top-up packages */}
-          <div className="pt-2 border-t border-border/50">
+
+          <div className="pt-3 border-t border-border">
             <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Fyll på krediter
+              <Plus className="w-3.5 h-3.5" /> Fyll pa krediter
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {Object.entries(CREDIT_PACKAGES).map(([key, pkg]) => (
-                <Button
-                  key={key}
-                  variant="outline"
-                  className="flex flex-col h-auto py-2 hover:bg-primary/5 hover:border-primary/50"
-                  onClick={() => navigate(`/swish-checkout?type=credits&package=${key}`)}
-                >
+                <Button key={key} variant="outline" className="flex flex-col h-auto py-2" onClick={() => navigate(`/swish-checkout?type=credits&package=${key}`)}>
                   <span className="text-base font-bold">{pkg.credits}</span>
-                  <span className="text-xs text-muted-foreground">krediter</span>
+                  <span className="text-[10px] text-muted-foreground">krediter</span>
                   <span className="text-sm font-semibold text-primary mt-0.5">{pkg.price} kr</span>
                 </Button>
               ))}
             </div>
           </div>
-          
-          {/* Plan actions */}
-          <div className="flex flex-wrap gap-2 pt-2 border-t border-border/50">
-            <Button 
-              onClick={() => navigate('/pricing')}
-              className="gap-2"
-              size="sm"
-            >
-              <CreditCard className="w-4 h-4" />
-              {hasActivePlan ? "Uppgradera plan" : "Välj plan"}
+
+          <div className="flex flex-wrap gap-2 pt-3 border-t border-border">
+            <Button onClick={() => navigate('/pricing')} size="sm">
+              <CreditCard className="w-4 h-4 mr-1.5" />
+              {hasActivePlan ? "Uppgradera plan" : "Valj plan"}
             </Button>
-            
             {hasActivePlan && downgradeOptions.length > 0 && (
-              <Button 
-                variant="outline"
-                size="sm"
-                onClick={() => setShowDowngradeDialog(true)}
-                className="gap-2"
-              >
-                <ArrowDown className="w-4 h-4" />
-                Nedgradera plan
+              <Button variant="outline" size="sm" onClick={() => setShowDowngradeDialog(true)}>
+                <ArrowDown className="w-4 h-4 mr-1.5" /> Nedgradera
               </Button>
             )}
-            
             {hasActivePlan && (
-              <Button 
-                variant="outline"
-                size="sm"
-                onClick={() => setShowCancelDialog(true)}
-                className="gap-2 text-destructive hover:text-destructive"
-              >
-                <XCircle className="w-4 h-4" />
-                Avsluta prenumeration
+              <Button variant="outline" size="sm" onClick={() => setShowCancelDialog(true)} className="text-destructive hover:text-destructive">
+                <XCircle className="w-4 h-4 mr-1.5" /> Avsluta
               </Button>
             )}
           </div>
 
-          {/* Promo code redemption */}
-          <div className="pt-2 border-t border-border/50">
+          <div className="pt-3 border-t border-border">
             <PromoCodeInput variant="inline" onSuccess={() => refetchCredits()} />
           </div>
         </div>
-      </motion.section>
+      </section>
 
       {/* Profile Images */}
-      <motion.section 
-        custom={1} 
-        variants={sectionVariants} 
-        initial="hidden" 
-        animate="visible"
-        className="space-y-2"
-      >
-        <h2 className="text-lg font-semibold mb-2">Profilbilder</h2>
+      <section className="space-y-3">
+        <h2 className="text-base font-medium text-foreground">Profilbilder</h2>
         <div className="grid grid-cols-2 gap-3">
-          <div className="flex flex-col items-center p-3 bg-muted/30 rounded-2xl">
+          <div className="flex flex-col items-center p-4 rounded-xl bg-card shadow-sm">
             <User className="h-4 w-4 mb-2 text-muted-foreground" />
             <p className="font-medium mb-2 text-sm">Profilbild</p>
-            {user?.id && (
-              <ProfileImageUpload
-                userId={user.id}
-                currentUrl={avatarUrl}
-                type="avatar"
-                onUploadComplete={(url) => setAvatarUrl(url || null)}
-                size="lg"
-              />
-            )}
+            {user?.id && <ProfileImageUpload userId={user.id} currentUrl={avatarUrl} type="avatar" onUploadComplete={(url) => setAvatarUrl(url || null)} size="lg" />}
           </div>
-          <div className="flex flex-col items-center p-3 bg-muted/30 rounded-2xl">
+          <div className="flex flex-col items-center p-4 rounded-xl bg-card shadow-sm">
             <Building className="h-4 w-4 mb-2 text-muted-foreground" />
-            <p className="font-medium mb-2 text-sm">Företagslogga</p>
-            {user?.id && (
-              <ProfileImageUpload
-                userId={user.id}
-                currentUrl={companyLogoUrl}
-                type="company_logo"
-                onUploadComplete={(url) => setCompanyLogoUrl(url || null)}
-                size="lg"
-              />
-            )}
+            <p className="font-medium mb-2 text-sm">Foretagslogga</p>
+            {user?.id && <ProfileImageUpload userId={user.id} currentUrl={companyLogoUrl} type="company_logo" onUploadComplete={(url) => setCompanyLogoUrl(url || null)} size="lg" />}
           </div>
         </div>
-      </motion.section>
+      </section>
 
       {/* Account Info */}
-      <motion.section 
-        custom={2} 
-        variants={sectionVariants} 
-        initial="hidden" 
-        animate="visible"
-        className="space-y-2"
-      >
-        <h2 className="text-lg font-semibold mb-2">Kontoinformation</h2>
+      <section className="space-y-3">
+        <h2 className="text-base font-medium text-foreground">Kontoinformation</h2>
         <div className="space-y-3">
           <div>
             <Label className="text-sm text-muted-foreground">E-post</Label>
-            <p className="font-medium mt-1">{user?.email}</p>
+            <p className="font-medium mt-1 text-sm">{user?.email}</p>
           </div>
           <div className="space-y-1">
-            <Label className="text-sm text-muted-foreground">Företagsnamn</Label>
+            <Label className="text-sm text-muted-foreground">Foretagsnamn</Label>
             <div className="flex gap-2">
-              <Input
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                placeholder="Mitt UF-företag"
-                className="bg-muted/30 border border-border"
-              />
-              <Button 
-                onClick={handleSaveCompanyName}
-                disabled={isSavingCompanyName || companyName === originalCompanyName}
-                size="icon"
-                variant="secondary"
-              >
+              <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Mitt UF-foretag" className="bg-background border-border" />
+              <Button onClick={handleSaveCompanyName} disabled={isSavingCompanyName || companyName === originalCompanyName} size="icon" variant="secondary">
                 <Save className="w-4 h-4" />
               </Button>
             </div>
           </div>
         </div>
-      </motion.section>
+      </section>
 
       {/* AI Profile */}
-      <motion.section 
-        custom={3} 
-        variants={sectionVariants} 
-        initial="hidden" 
-        animate="visible"
-        className="space-y-2"
-      >
+      <section className="space-y-3">
         <div>
-          <h2 className="text-lg font-semibold mb-1">AI-profil</h2>
-          <p className="text-sm text-muted-foreground mb-2">
-            Fyll i alla obligatoriska fält för bästa AI-svar
-          </p>
+          <h2 className="text-base font-medium text-foreground mb-0.5">AI-profil</h2>
+          <p className="text-sm text-muted-foreground">Fyll i alla obligatoriska falt for basta AI-svar</p>
         </div>
         <AIProfileProgress />
-        <div className="space-y-3 mt-3">
+        <div className="space-y-3 mt-2">
           <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-1">
-              <Label className="text-sm">Bransch <span className="text-destructive">*</span></Label>
-              <Input
-                value={aiFormData.branch}
-                onChange={(e) => setAiFormData(p => ({ ...p, branch: e.target.value }))}
-                placeholder="t.ex. E-handel"
-                className="bg-muted/30 border border-border"
-              />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-sm">Stad <span className="text-destructive">*</span></Label>
-              <Input
-                value={aiFormData.stad}
-                onChange={(e) => setAiFormData(p => ({ ...p, stad: e.target.value }))}
-                placeholder="t.ex. Stockholm"
-                className="bg-muted/30 border border-border"
-              />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-sm">Postnummer <span className="text-destructive">*</span></Label>
-              <Input
-                value={aiFormData.postnummer}
-                onChange={(e) => setAiFormData(p => ({ ...p, postnummer: e.target.value }))}
-                placeholder="t.ex. 114 52"
-                className="bg-muted/30 border border-border"
-              />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-sm">Land</Label>
-              <Input
-                value={aiFormData.land}
-                onChange={(e) => setAiFormData(p => ({ ...p, land: e.target.value }))}
-                placeholder="Sverige"
-                className="bg-muted/30 border border-border"
-              />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-sm">Målgrupp <span className="text-destructive">*</span></Label>
-              <Input
-                value={aiFormData.malgrupp}
-                onChange={(e) => setAiFormData(p => ({ ...p, malgrupp: e.target.value }))}
-                placeholder="t.ex. 18-25 år"
-                className="bg-muted/30 border border-border"
-              />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-sm">Målsättning</Label>
-              <Input
-                value={aiFormData.malsattning}
-                onChange={(e) => setAiFormData(p => ({ ...p, malsattning: e.target.value }))}
-                placeholder="t.ex. Öka synlighet"
-                className="bg-muted/30 border border-border"
-              />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-sm">Prisnivå</Label>
-              <Input
-                value={aiFormData.prisniva}
-                onChange={(e) => setAiFormData(p => ({ ...p, prisniva: e.target.value }))}
-                placeholder="t.ex. Budget"
-                className="bg-muted/30 border border-border"
-              />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-sm">Vilken ton ska Promotely AI ha?</Label>
-              <Input
-                value={aiFormData.tonalitet}
-                onChange={(e) => setAiFormData(p => ({ ...p, tonalitet: e.target.value }))}
-                placeholder="t.ex. Lekfull, professionell"
-                className="bg-muted/30 border border-border"
-              />
-            </div>
+            {[
+              { key: "branch", label: "Bransch", placeholder: "t.ex. E-handel", required: true },
+              { key: "stad", label: "Stad", placeholder: "t.ex. Stockholm", required: true },
+              { key: "postnummer", label: "Postnummer", placeholder: "t.ex. 114 52", required: true },
+              { key: "land", label: "Land", placeholder: "Sverige" },
+              { key: "malgrupp", label: "Malgrupp", placeholder: "t.ex. 18-25 ar", required: true },
+              { key: "malsattning", label: "Malsattning", placeholder: "t.ex. Oka synlighet" },
+              { key: "prisniva", label: "Prisniva", placeholder: "t.ex. Budget" },
+              { key: "tonalitet", label: "Ton", placeholder: "t.ex. Lekfull, professionell" },
+            ].map(({ key, label, placeholder, required }) => (
+              <div key={key} className="space-y-1">
+                <Label className="text-sm">{label} {required && <span className="text-destructive">*</span>}</Label>
+                <Input
+                  value={(aiFormData as any)[key]}
+                  onChange={(e) => setAiFormData(p => ({ ...p, [key]: e.target.value }))}
+                  placeholder={placeholder}
+                  className="bg-background border-border"
+                />
+              </div>
+            ))}
             <div className="space-y-1 col-span-2">
               <Label className="text-sm">Era grundprinciper</Label>
-              <Input
-                value={aiFormData.nyckelord}
-                onChange={(e) => setAiFormData(p => ({ ...p, nyckelord: e.target.value }))}
-                placeholder="hållbarhet, handgjort (separera med komma)"
-                className="bg-muted/30 border border-border"
-              />
+              <Input value={aiFormData.nyckelord} onChange={(e) => setAiFormData(p => ({ ...p, nyckelord: e.target.value }))} placeholder="hallbarhet, handgjort (separera med komma)" className="bg-background border-border" />
             </div>
           </div>
-          <div className="space-y-1">
-            <Label className="text-sm">Företagsbeskrivning <span className="text-destructive">*</span></Label>
-            <Textarea
-              value={aiFormData.produkt_beskrivning}
-              onChange={(e) => setAiFormData(p => ({ ...p, produkt_beskrivning: e.target.value }))}
-              placeholder="Beskriv din produkt/tjänst..."
-              rows={3}
-              className="bg-muted/30 border border-border resize-none"
-            />
-          </div>
-          <div className="space-y-1">
-            <Label className="text-sm">Marknadsplan</Label>
-            <Textarea
-              value={aiFormData.marknadsplan}
-              onChange={(e) => setAiFormData(p => ({ ...p, marknadsplan: e.target.value }))}
-              placeholder="Nuvarande marknadsföringsstrategi..."
-              rows={3}
-              className="bg-muted/30 border border-border resize-none"
-            />
-          </div>
-          <div className="space-y-1">
-            <Label className="text-sm">Allmän information</Label>
-            <Textarea
-              value={aiFormData.allman_info}
-              onChange={(e) => setAiFormData(p => ({ ...p, allman_info: e.target.value }))}
-              placeholder="Berätta mer om ert företag – era värderingar, framtidsplaner, unika styrkor..."
-              rows={3}
-              className="bg-muted/30 border border-border resize-none"
-            />
-          </div>
-          <Button 
-            onClick={handleSaveAIProfile} 
-            disabled={isSavingAIProfile}
-            className="w-full sm:w-auto"
-          >
+          {[
+            { key: "produkt_beskrivning", label: "Foretagsbeskrivning", placeholder: "Beskriv din produkt/tjanst...", required: true },
+            { key: "marknadsplan", label: "Marknadsplan", placeholder: "Nuvarande marknadsforingsstrategi..." },
+            { key: "allman_info", label: "Allman information", placeholder: "Beratta mer om ert foretag..." },
+          ].map(({ key, label, placeholder, required }) => (
+            <div key={key} className="space-y-1">
+              <Label className="text-sm">{label} {required && <span className="text-destructive">*</span>}</Label>
+              <Textarea
+                value={(aiFormData as any)[key]}
+                onChange={(e) => setAiFormData(p => ({ ...p, [key]: e.target.value }))}
+                placeholder={placeholder}
+                rows={3}
+                className="bg-background border-border resize-none"
+              />
+            </div>
+          ))}
+          <Button onClick={handleSaveAIProfile} disabled={isSavingAIProfile} className="w-full sm:w-auto">
             {isSavingAIProfile ? "Sparar..." : "Spara AI-profil"}
           </Button>
         </div>
-      </motion.section>
-
-      {/* Navigation */}
-      <motion.section 
-        custom={4} 
-        variants={sectionVariants} 
-        initial="hidden" 
-        animate="visible"
-        className="space-y-2"
-      >
-        <h2 className="text-lg font-semibold mb-2">Navigering</h2>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" className="gap-2" onClick={() => navigate('/')}>
-            <Home className="w-4 h-4" />
-            Till startsidan
-          </Button>
-          <Button variant="outline" size="sm" className="gap-2 text-destructive hover:text-destructive" onClick={async () => { await signOut(); navigate('/auth'); }}>
-            <LogOut className="w-4 h-4" />
-            Logga ut
-          </Button>
-        </div>
-      </motion.section>
+      </section>
 
       {/* Danger Zone */}
-      <motion.section 
-        custom={5} 
-        variants={sectionVariants} 
-        initial="hidden" 
-        animate="visible"
-        className="pt-4 border-t border-destructive/20"
-      >
+      <section className="pt-4 border-t border-destructive/20">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-semibold text-destructive">Radera konto</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Permanent radering av alla data
-            </p>
+            <h3 className="font-medium text-destructive text-sm">Radera konto</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">Permanent radering av alla data</p>
           </div>
           <Button variant="destructive" size="sm" onClick={() => setShowDeleteDialog(true)}>
-            <Trash2 className="w-4 h-4 mr-2" />
-            Radera
+            <Trash2 className="w-4 h-4 mr-1.5" /> Radera
           </Button>
         </div>
-      </motion.section>
+      </section>
 
+      {/* Dialogs */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Radera konto?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Ditt konto raderas om 30 dagar. Du kan ångra dig genom att logga in igen.
-            </AlertDialogDescription>
+            <AlertDialogDescription>Ditt konto raderas om 30 dagar. Du kan angra dig genom att logga in igen.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Avbryt</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDeleteAccount} disabled={isDeleting}>
-              {isDeleting ? "Raderar..." : "Radera"}
-            </AlertDialogAction>
+            <AlertDialogAction onClick={confirmDeleteAccount} disabled={isDeleting}>{isDeleting ? "Raderar..." : "Radera"}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -589,18 +329,12 @@ const AccountContent = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Avsluta prenumeration?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Din nuvarande plan ({credits ? getPlanLabel(credits.plan) : ''}) avslutas och du förlorar tillgång till dina krediter. Du kan alltid köpa en ny plan senare.
-            </AlertDialogDescription>
+            <AlertDialogDescription>Din plan ({credits ? getPlanLabel(credits.plan) : ''}) avslutas.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Behåll plan</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleCancelSubscription} 
-              disabled={isCancelling}
-              className="bg-destructive hover:bg-destructive/90"
-            >
-              {isCancelling ? "Avslutar..." : "Avsluta prenumeration"}
+            <AlertDialogCancel>Behall plan</AlertDialogCancel>
+            <AlertDialogAction onClick={handleCancelSubscription} disabled={isCancelling} className="bg-destructive hover:bg-destructive/90">
+              {isCancelling ? "Avslutar..." : "Avsluta"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -610,32 +344,22 @@ const AccountContent = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Nedgradera plan</AlertDialogTitle>
-            <AlertDialogDescription>
-              Välj vilken plan du vill nedgradera till. Dina befintliga krediter behålls upp till den nya planens gräns.
-            </AlertDialogDescription>
+            <AlertDialogDescription>Valj vilken plan du vill nedgradera till.</AlertDialogDescription>
           </AlertDialogHeader>
           <div className="py-4">
             <Select value={selectedDowngradePlan || ""} onValueChange={setSelectedDowngradePlan}>
-              <SelectTrigger>
-                <SelectValue placeholder="Välj plan" />
-              </SelectTrigger>
+              <SelectTrigger><SelectValue placeholder="Valj plan" /></SelectTrigger>
               <SelectContent>
                 {downgradeOptions.map(([key, plan]) => (
-                  <SelectItem key={key} value={key}>
-                    {plan.name} – {plan.credits} krediter/månad ({plan.price} kr)
-                  </SelectItem>
-                ))
-                }
+                  <SelectItem key={key} value={key}>{plan.name} - {plan.credits} krediter ({plan.price} kr)</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setSelectedDowngradePlan(null)}>Avbryt</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleDowngrade} 
-              disabled={isDowngrading || !selectedDowngradePlan}
-            >
-              {isDowngrading ? "Nedgraderar..." : "Bekräfta nedgradering"}
+            <AlertDialogAction onClick={handleDowngrade} disabled={isDowngrading || !selectedDowngradePlan}>
+              {isDowngrading ? "Nedgraderar..." : "Bekrafta"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

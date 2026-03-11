@@ -2,16 +2,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import {
-  TrendingUp,
-  Users,
-  Calendar,
-  Zap,
-  ArrowRight,
-  BarChart3,
-  MessageSquare,
-  CheckCircle2,
-  Clock,
-  Sparkles,
+  TrendingUp, Users, Calendar, Zap, ArrowRight, BarChart3,
+  MessageSquare, CheckCircle2, Sparkles,
 } from "lucide-react";
 import { useConnections } from "@/hooks/useConnections";
 import { useTikTokData } from "@/hooks/useTikTokData";
@@ -51,44 +43,21 @@ const Dashboard = () => {
 
   const upcomingPosts = posts?.filter((p) => new Date(p.date) >= new Date()).slice(0, 3) || [];
 
-  // Fetch recent activity
   useEffect(() => {
     if (!user?.id) return;
     const fetchActivity = async () => {
       const activities: any[] = [];
-
-      // Recent AI usage
       const { data: aiMessages } = await supabase
-        .from("ai_chat_messages")
-        .select("created_at, message")
-        .eq("role", "user")
-        .order("created_at", { ascending: false })
-        .limit(3);
-
+        .from("ai_chat_messages").select("created_at, message").eq("role", "user")
+        .order("created_at", { ascending: false }).limit(3);
       if (aiMessages) {
         aiMessages.forEach((msg) => {
-          activities.push({
-            type: "ai",
-            icon: Sparkles,
-            label: "AI-förfrågan",
-            detail: msg.message.substring(0, 50) + (msg.message.length > 50 ? "..." : ""),
-            time: msg.created_at,
-          });
+          activities.push({ type: "ai", icon: Sparkles, label: "AI-forfragan", detail: msg.message.substring(0, 50) + (msg.message.length > 50 ? "..." : ""), time: msg.created_at });
         });
       }
-
-      // Upcoming posts
       upcomingPosts.forEach((post) => {
-        activities.push({
-          type: "post",
-          icon: Calendar,
-          label: "Planerat inlägg",
-          detail: post.title,
-          time: post.date,
-        });
+        activities.push({ type: "post", icon: Calendar, label: "Planerat inlagg", detail: post.title, time: post.date });
       });
-
-      // Sort by time, most recent first
       activities.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
       setRecentActivity(activities.slice(0, 5));
     };
@@ -96,8 +65,8 @@ const Dashboard = () => {
   }, [user?.id, posts]);
 
   const statsCards = [
-    { title: "Följare", value: formatNumber(totalFollowers), icon: Users },
-    { title: "Planerade inlägg", value: (upcomingPosts.length).toString(), icon: Calendar },
+    { title: "Foljare", value: formatNumber(totalFollowers), icon: Users },
+    { title: "Planerade inlagg", value: (upcomingPosts.length).toString(), icon: Calendar },
     { title: "AI-krediter", value: (credits?.credits_left || 0).toString(), icon: Zap },
     { title: "Anslutna konton", value: connections.length.toString(), icon: TrendingUp },
   ];
@@ -105,10 +74,9 @@ const Dashboard = () => {
   const quickLinks = [
     { title: "Statistik", description: "Se dina siffror", href: "/analytics", icon: BarChart3 },
     { title: "AI-Chat", description: "Prata med AI", href: "/ai/chat", icon: MessageSquare },
-    { title: "Kalender", description: "Planera innehåll", href: "/calendar", icon: Calendar },
+    { title: "Kalender", description: "Planera innehall", href: "/calendar", icon: Calendar },
   ];
 
-  // All platforms with status
   const platforms = [
     { key: "tiktok", label: "TikTok", icon: TikTokIcon, connected: isConnected("tiktok"), available: true },
     { key: "meta_ig", label: "Instagram", icon: Instagram, connected: isConnected("meta_ig"), available: false },
@@ -123,21 +91,17 @@ const Dashboard = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6 max-w-4xl mx-auto">
-        {/* Greeting */}
         <div>
-          <h1 className="text-xl font-semibold text-foreground">Välkommen tillbaka, {firstName} 👋</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Här är en snabb överblick.</p>
+          <h1 className="text-xl font-semibold text-foreground">Valkommen tillbaka, {firstName}</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Har ar en snabb overblick.</p>
         </div>
 
-        {/* Stats Row - no border, soft shadow */}
+        {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {statsCards.map((stat) => {
             const Icon = stat.icon;
             return (
-              <div
-                key={stat.title}
-                className="rounded-xl bg-card p-4 shadow-sm hover:shadow-md transition-shadow"
-              >
+              <div key={stat.title} className="rounded-xl bg-card p-4 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-muted">
                     <Icon className="w-4 h-4 text-muted-foreground" />
@@ -156,7 +120,7 @@ const Dashboard = () => {
         <div className="rounded-xl bg-card p-5 shadow-sm">
           <h2 className="text-sm font-medium text-foreground mb-3">Senaste aktivitet</h2>
           {recentActivity.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-4 text-center">Ingen aktivitet ännu. Börja med att använda AI eller planera ett inlägg!</p>
+            <p className="text-sm text-muted-foreground py-4 text-center">Ingen aktivitet annu.</p>
           ) : (
             <div className="space-y-3">
               {recentActivity.map((activity, i) => {
@@ -180,7 +144,7 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* Connections - all platforms with status */}
+        {/* Platforms */}
         <div className="rounded-xl bg-card p-5 shadow-sm">
           <h2 className="text-sm font-medium text-foreground mb-3">Plattformar</h2>
           <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
@@ -190,24 +154,14 @@ const Dashboard = () => {
                 <Link
                   key={p.key}
                   to={p.available ? "/account?tab=app" : "#"}
-                  className={`relative flex flex-col items-center gap-1.5 p-3 rounded-lg transition-colors ${
-                    p.available ? "hover:bg-muted/50 cursor-pointer" : "opacity-50 cursor-default"
-                  }`}
+                  className={`relative flex flex-col items-center gap-1.5 p-3 rounded-lg transition-colors ${p.available ? "hover:bg-muted/50 cursor-pointer" : "opacity-50 cursor-default"}`}
                 >
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    p.connected
-                      ? "bg-green-500/10"
-                      : "bg-muted"
-                  }`}>
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${p.connected ? "bg-green-500/10" : "bg-muted"}`}>
                     <Icon className={`w-5 h-5 ${p.connected ? "text-foreground" : "text-muted-foreground"}`} />
                   </div>
-                  {p.connected && (
-                    <CheckCircle2 className="absolute top-1.5 right-1.5 w-3.5 h-3.5 text-green-500" />
-                  )}
+                  {p.connected && <CheckCircle2 className="absolute top-1.5 right-1.5 w-3.5 h-3.5 text-green-500" />}
                   <span className="text-[10px] text-muted-foreground">{p.label}</span>
-                  {!p.available && (
-                    <span className="text-[8px] text-muted-foreground/60 bg-muted px-1.5 py-0.5 rounded-full">Snart</span>
-                  )}
+                  {!p.available && <span className="text-[8px] text-muted-foreground/60 bg-muted px-1.5 py-0.5 rounded-full">Snart</span>}
                 </Link>
               );
             })}
@@ -235,7 +189,7 @@ const Dashboard = () => {
           })}
         </div>
 
-        {/* Subtle upgrade banner */}
+        {/* Upgrade banner */}
         {credits && (credits.plan === "free_trial" || credits.plan === "starter") && (
           <div className="rounded-xl bg-primary/5 p-4 flex items-center justify-between gap-4">
             <div>
@@ -243,10 +197,7 @@ const Dashboard = () => {
               <p className="text-xs text-muted-foreground">Fler krediter och avancerad analys</p>
             </div>
             <Button variant="outline" size="sm" asChild>
-              <Link to="/pricing">
-                Se planer
-                <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-              </Link>
+              <Link to="/pricing">Se planer <ArrowRight className="w-3.5 h-3.5 ml-1.5" /></Link>
             </Button>
           </div>
         )}

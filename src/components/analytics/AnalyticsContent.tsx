@@ -1,7 +1,3 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   LineChart,
   Line,
@@ -19,8 +15,9 @@ import {
   MessageCircle,
   Instagram,
   Music2,
-  
 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { useMetaData } from "@/hooks/useMetaData";
 import { useTikTokData } from "@/hooks/useTikTokData";
 import { useConnections } from "@/hooks/useConnections";
@@ -38,7 +35,6 @@ const AnalyticsContent = () => {
 
   const hasConnections = connections.length > 0;
 
-  // Calculate totals
   const connectedStats = {
     totalFollowers: 0,
     totalViews: 0,
@@ -57,60 +53,43 @@ const AnalyticsContent = () => {
   }
 
   const stats = [];
-  if (connectedStats.totalFollowers > 0) {
-    stats.push({ title: "Totala följare", value: connectedStats.totalFollowers.toLocaleString(), icon: Users });
-  }
-  if (connectedStats.totalViews > 0) {
-    stats.push({ title: "Visningar", value: connectedStats.totalViews.toLocaleString(), icon: Eye });
-  }
-  if (connectedStats.totalLikes > 0) {
-    stats.push({ title: "Likes", value: connectedStats.totalLikes.toLocaleString(), icon: Heart });
-  }
-  if (connectedStats.totalComments > 0) {
-    stats.push({ title: "Kommentarer", value: connectedStats.totalComments.toLocaleString(), icon: MessageCircle });
-  }
-
-  const getHistoryData = (platform: string) => {
-    const platformData = analyticsData.find(a => a.platform === platform);
-    return platformData?.history as any[] || null;
-  };
+  if (connectedStats.totalFollowers > 0) stats.push({ title: "Totala foljare", value: connectedStats.totalFollowers.toLocaleString(), icon: Users });
+  if (connectedStats.totalViews > 0) stats.push({ title: "Visningar", value: connectedStats.totalViews.toLocaleString(), icon: Eye });
+  if (connectedStats.totalLikes > 0) stats.push({ title: "Likes", value: connectedStats.totalLikes.toLocaleString(), icon: Heart });
+  if (connectedStats.totalComments > 0) stats.push({ title: "Kommentarer", value: connectedStats.totalComments.toLocaleString(), icon: MessageCircle });
 
   if (!hasConnections) {
     return (
-      <Card className="border-2 border-dashed liquid-glass-light">
-        <CardContent className="p-12 text-center">
-          <Users className="w-16 h-16 mx-auto mb-4 text-white/60" />
-          <h3 className="text-xl font-semibold mb-2 dashboard-heading-dark">Inga konton kopplade</h3>
-          <p className="dashboard-subheading-dark mb-6">
-            Koppla dina sociala medier-konton för att se statistik
-          </p>
-          <Link to="/account">
-            <Button variant="gradient">Gå till konto</Button>
-          </Link>
-        </CardContent>
-      </Card>
+      <div className="rounded-xl bg-card shadow-sm p-12 text-center">
+        <Users className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+        <h3 className="text-base font-medium text-foreground mb-1">Inga konton kopplade</h3>
+        <p className="text-sm text-muted-foreground mb-4">Koppla dina sociala medier for att se statistik</p>
+        <Link to="/account">
+          <Button size="sm">Ga till konto</Button>
+        </Link>
+      </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      {/* Stats Cards */}
+      {/* Stats */}
       {stats.length > 0 && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
-              <Card key={index} className="liquid-glass-light hover:shadow-elegant transition-all duration-300">
-                <CardContent className="p-2">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="w-6 h-6 rounded-lg bg-gradient-primary flex items-center justify-center">
-                      <Icon className="w-3 h-3 text-white" />
-                    </div>
+              <div key={index} className="rounded-xl bg-card shadow-sm p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+                    <Icon className="w-4 h-4 text-muted-foreground" />
                   </div>
-                  <p className="text-xs dashboard-subheading-dark mb-0.5">{stat.title}</p>
-                  <p className="text-lg font-bold dashboard-heading-dark">{stat.value}</p>
-                </CardContent>
-              </Card>
+                  <div>
+                    <p className="text-[11px] text-muted-foreground">{stat.title}</p>
+                    <p className="text-lg font-semibold text-foreground">{stat.value}</p>
+                  </div>
+                </div>
+              </div>
             );
           })}
         </div>
@@ -118,116 +97,94 @@ const AnalyticsContent = () => {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="liquid-glass-light">
-          <CardHeader>
-            <CardTitle className="dashboard-heading-dark">Följartillväxt</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {hasGrowthData ? (
-              <ResponsiveContainer width="100%" height={160}>
-                <LineChart data={growthData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 10 }} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 10 }} />
-                  <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} />
-                  <Legend />
-                  <Line type="monotone" dataKey="followers" stroke="hsl(var(--primary))" strokeWidth={2} name="Följare" dot={false} />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-[160px] flex items-center justify-center">
-                <div className="text-center">
-                  <Users className="w-8 h-8 mx-auto mb-2 text-white/40" />
-                  <p className="text-sm dashboard-subheading-dark">Följartillväxt visas efter ett par dagars data</p>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <div className="rounded-xl bg-card shadow-sm p-5">
+          <h3 className="text-sm font-medium text-foreground mb-3">Foljartillvaxt</h3>
+          {hasGrowthData ? (
+            <ResponsiveContainer width="100%" height={160}>
+              <LineChart data={growthData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 10 }} />
+                <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 10 }} />
+                <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} />
+                <Legend />
+                <Line type="monotone" dataKey="followers" stroke="hsl(var(--primary))" strokeWidth={2} name="Foljare" dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[160px] flex items-center justify-center">
+              <p className="text-sm text-muted-foreground">Foljartillvaxt visas efter ett par dagars data</p>
+            </div>
+          )}
+        </div>
 
-        <Card className="liquid-glass-light">
-          <CardHeader>
-            <CardTitle className="dashboard-heading-dark">Engagemang</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {hasGrowthData ? (
-              <ResponsiveContainer width="100%" height={160}>
-                <LineChart data={growthData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 10 }} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 10 }} />
-                  <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} />
-                  <Legend />
-                  <Line type="monotone" dataKey="likes" stroke="#f472b6" strokeWidth={2} name="Likes" dot={false} />
-                  <Line type="monotone" dataKey="views" stroke="#60a5fa" strokeWidth={2} name="Visningar" dot={false} />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-[160px] flex items-center justify-center">
-                <div className="text-center">
-                  <Heart className="w-8 h-8 mx-auto mb-2 text-white/40" />
-                  <p className="text-sm dashboard-subheading-dark">Engagemang visas efter ett par dagars data</p>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <div className="rounded-xl bg-card shadow-sm p-5">
+          <h3 className="text-sm font-medium text-foreground mb-3">Engagemang</h3>
+          {hasGrowthData ? (
+            <ResponsiveContainer width="100%" height={160}>
+              <LineChart data={growthData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 10 }} />
+                <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 10 }} />
+                <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} />
+                <Legend />
+                <Line type="monotone" dataKey="likes" stroke="hsl(var(--primary))" strokeWidth={2} name="Likes" dot={false} />
+                <Line type="monotone" dataKey="views" stroke="hsl(var(--muted-foreground))" strokeWidth={2} name="Visningar" dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[160px] flex items-center justify-center">
+              <p className="text-sm text-muted-foreground">Engagemang visas efter ett par dagars data</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Platform Breakdown */}
-      <Card className="liquid-glass-light">
-        <CardHeader>
-          <CardTitle className="dashboard-heading-dark">Plattformsöversikt</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue={isConnected('meta_ig') ? 'instagram' : 'tiktok'} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full p-1">
-              <TabsTrigger value="instagram" className={`rounded-full text-white/70 data-[state=active]:bg-white/20 data-[state=active]:text-white ${!isConnected('meta_ig') ? 'opacity-50' : ''}`}>
-                <Instagram className="w-4 h-4 mr-2" />
-                Instagram
-              </TabsTrigger>
-              <TabsTrigger value="tiktok" className={`rounded-full text-white/70 data-[state=active]:bg-white/20 data-[state=active]:text-white ${!isConnected('tiktok') ? 'opacity-50' : ''}`}>
-                <Music2 className="w-4 h-4 mr-2" />
-                TikTok
-              </TabsTrigger>
-            </TabsList>
+      <div className="rounded-xl bg-card shadow-sm p-5">
+        <h3 className="text-sm font-medium text-foreground mb-4">Plattformsoversikt</h3>
+        <Tabs defaultValue={isConnected('meta_ig') ? 'instagram' : 'tiktok'} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 bg-muted rounded-lg p-1">
+            <TabsTrigger value="instagram" className={`rounded-md text-sm ${!isConnected('meta_ig') ? 'opacity-50' : ''}`}>
+              <Instagram className="w-4 h-4 mr-2" />
+              Instagram
+            </TabsTrigger>
+            <TabsTrigger value="tiktok" className={`rounded-md text-sm ${!isConnected('tiktok') ? 'opacity-50' : ''}`}>
+              <Music2 className="w-4 h-4 mr-2" />
+              TikTok
+            </TabsTrigger>
+          </TabsList>
 
-            <TabsContent value="instagram" className="pt-4">
-              {isConnected('meta_ig') && metaData.instagram ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10">
-                    <p className="text-sm dashboard-subheading-dark mb-1">Följare</p>
-                    <p className="text-2xl font-bold dashboard-heading-dark">{metaData.instagram.followers_count?.toLocaleString()}</p>
+          <TabsContent value="instagram" className="pt-4">
+            {isConnected('meta_ig') && metaData.instagram ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  { label: "Foljare", value: metaData.instagram.followers_count },
+                  { label: "Foljer", value: metaData.instagram.follows_count },
+                  { label: "Inlagg", value: metaData.instagram.media_count },
+                  { label: "Namn", value: metaData.instagram.name },
+                ].map((item, i) => (
+                  <div key={i} className="p-3 rounded-lg bg-muted">
+                    <p className="text-[11px] text-muted-foreground mb-0.5">{item.label}</p>
+                    <p className="text-base font-semibold text-foreground">
+                      {typeof item.value === 'number' ? item.value.toLocaleString() : item.value}
+                    </p>
                   </div>
-                  <div className="p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10">
-                    <p className="text-sm dashboard-subheading-dark mb-1">Följer</p>
-                    <p className="text-2xl font-bold dashboard-heading-dark">{metaData.instagram.follows_count?.toLocaleString()}</p>
-                  </div>
-                  <div className="p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10">
-                    <p className="text-sm dashboard-subheading-dark mb-1">Inlägg</p>
-                    <p className="text-2xl font-bold dashboard-heading-dark">{metaData.instagram.media_count?.toLocaleString()}</p>
-                  </div>
-                  <div className="p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10">
-                    <p className="text-sm dashboard-subheading-dark mb-1">Namn</p>
-                    <p className="text-xl font-bold dashboard-heading-dark">{metaData.instagram.name}</p>
-                  </div>
-                </div>
-              ) : (
-                <p className="dashboard-subheading-dark">Anslut Instagram för att se statistik</p>
-              )}
-            </TabsContent>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">Anslut Instagram for att se statistik</p>
+            )}
+          </TabsContent>
 
-            <TabsContent value="tiktok" className="pt-4">
-              {isConnected('tiktok') ? (
-                <TikTokProfileSection />
-              ) : (
-                <p className="dashboard-subheading-dark">Anslut TikTok för att se statistik</p>
-              )}
-            </TabsContent>
-
-          </Tabs>
-        </CardContent>
-      </Card>
+          <TabsContent value="tiktok" className="pt-4">
+            {isConnected('tiktok') ? (
+              <TikTokProfileSection />
+            ) : (
+              <p className="text-sm text-muted-foreground">Anslut TikTok for att se statistik</p>
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };
