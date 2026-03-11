@@ -2,13 +2,26 @@ import { ReactNode, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useOrganization } from "@/hooks/useOrganization";
-import { useNavbarPosition } from "@/hooks/useNavbarPosition";
+import { useNotifications } from "@/hooks/useNotifications";
 import { EmailVerificationBanner } from "@/components/EmailVerificationBanner";
-import { DashboardNavbar } from "@/components/DashboardNavbar";
-import { DashboardFooter } from "@/components/DashboardFooter";
+import { AppSidebar } from "@/components/AppSidebar";
 import CreditWarningBanner from "@/components/CreditWarningBanner";
-import { motion, AnimatePresence } from "framer-motion";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Bell, Trash2, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { formatDistanceToNow } from "date-fns";
+import { sv } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -17,147 +30,142 @@ interface DashboardLayoutProps {
   hideFooter?: boolean;
 }
 
-const pageVariants = {
-  initial: {
-    opacity: 0,
-    y: 8,
-  },
-  enter: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.3,
-      ease: "easeOut" as const,
-    },
-  },
-  exit: {
-    opacity: 0,
-    y: -8,
-    transition: {
-      duration: 0.2,
-      ease: "easeIn" as const,
-    },
-  },
-};
-
-const DashboardLayout = ({ children, showBackButton, pageTitle, hideFooter }: DashboardLayoutProps) => {
+const DashboardLayout = ({ children, pageTitle, hideFooter }: DashboardLayoutProps) => {
   const { user } = useAuth();
   const { needsOnboarding, loading: orgLoading } = useOrganization();
-  const { position } = useNavbarPosition();
+  const { notifications, unreadCount, markAsRead, markAllAsRead, clearAll } = useNotifications();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    if (!orgLoading && needsOnboarding && !location.pathname.startsWith('/organization')) {
-      navigate('/organization/onboarding');
+    if (!orgLoading && needsOnboarding && !location.pathname.startsWith("/organization")) {
+      navigate("/organization/onboarding");
     }
   }, [needsOnboarding, orgLoading, navigate, location.pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden">
-      {/* Gradient Background - Light mode: clean white / Dark mode: darker slate */}
-      <div className="fixed inset-0 z-0 bg-gradient-to-br from-slate-100 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950" />
-      
-      {/* Animated blur orbs for liquid glass effect - more subtle */}
-      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <motion.div 
-          className="absolute w-[600px] h-[600px] rounded-full opacity-20 dark:opacity-15"
-          style={{
-            background: 'radial-gradient(circle, hsl(9 70% 45% / 0.3) 0%, transparent 70%)',
-            filter: 'blur(100px)',
-            top: '10%',
-            right: '-10%',
-          }}
-          animate={{
-            x: [0, 30, 0],
-            y: [0, -20, 0],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div 
-          className="absolute w-[500px] h-[500px] rounded-full opacity-15 dark:opacity-10"
-          style={{
-            background: 'radial-gradient(circle, hsl(331 50% 35% / 0.3) 0%, transparent 70%)',
-            filter: 'blur(100px)',
-            bottom: '10%',
-            left: '-10%',
-          }}
-          animate={{
-            x: [0, -25, 0],
-            y: [0, 25, 0],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div 
-          className="absolute w-[400px] h-[400px] rounded-full opacity-15 dark:opacity-10"
-          style={{
-            background: 'radial-gradient(circle, hsl(344 40% 25% / 0.3) 0%, transparent 70%)',
-            filter: 'blur(80px)',
-            top: '50%',
-            left: '30%',
-          }}
-          animate={{
-            scale: [1, 1.1, 1],
-            opacity: [0.1, 0.15, 0.1],
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-      </div>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
 
-      {/* Email Verification Banner */}
-      <div className={cn("relative z-10", position === 'top' && "mt-[72px]")}>
-        <EmailVerificationBanner />
-      </div>
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Subtle gradient background */}
+          <div className="fixed inset-0 z-0 bg-gradient-to-br from-slate-50 via-white to-slate-100/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950" />
 
-      {/* Dashboard Navbar */}
-      <DashboardNavbar 
-        showBackButton={showBackButton}
-        title={pageTitle}
-      />
+          {/* Content header */}
+          <header className="sticky top-0 z-20 h-12 flex items-center justify-between gap-2 px-4 border-b border-border/50 backdrop-blur-sm bg-background/80">
+            <div className="flex items-center gap-2">
+              <SidebarTrigger className="h-8 w-8" />
+              {pageTitle && (
+                <h1 className="text-sm font-medium text-foreground">{pageTitle}</h1>
+              )}
+            </div>
 
-      {/* Main content with page transition animation */}
-      <AnimatePresence mode="wait">
-        <motion.main 
-          key={location.pathname}
-          className={cn(
-            "flex-1 relative z-10",
-            // Base padding
-            "p-4 md:p-6 lg:p-8",
-            // Padding based on navbar position - ensures content isn't hidden behind the bar
-            position === 'left' && "pl-[72px] md:pl-24 lg:pl-28",
-            position === 'right' && "pr-[72px] md:pr-24 lg:pr-28",
-            position === 'top' && "pt-[72px] md:pt-24",
-            position === 'bottom' && "pb-[72px] md:pb-24"
+            {/* Notifications */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative h-8 w-8">
+                  <Bell className="h-4 w-4" />
+                  {unreadCount > 0 && (
+                    <Badge
+                      variant="destructive"
+                      className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]"
+                    >
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </Badge>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-72">
+                <div className="px-3 py-2 border-b flex items-center justify-between">
+                  <h3 className="font-semibold text-sm">Notiser</h3>
+                  <div className="flex items-center gap-2">
+                    {unreadCount > 0 && (
+                      <button
+                        onClick={(e) => { e.preventDefault(); markAllAsRead(); }}
+                        className="text-[10px] text-primary hover:underline"
+                      >
+                        Markera alla som lästa
+                      </button>
+                    )}
+                    {notifications.length > 0 && (
+                      <button
+                        onClick={(e) => { e.preventDefault(); clearAll(); }}
+                        className="text-[10px] text-destructive hover:underline flex items-center gap-0.5"
+                      >
+                        <Trash2 className="h-2.5 w-2.5" />
+                        Rensa
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <ScrollArea className="h-[250px]">
+                  {notifications.length === 0 ? (
+                    <div className="p-4 text-center text-muted-foreground text-sm">Inga notiser</div>
+                  ) : (
+                    notifications.map((n) => (
+                      <DropdownMenuItem
+                        key={n.id}
+                        className="flex flex-col items-start p-3 cursor-pointer"
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          if (!n.read) markAsRead(n.id);
+                          if (n.action_url) {
+                            const url = n.action_type ? `${n.action_url}?spotlight=${n.action_type}` : n.action_url;
+                            navigate(url);
+                          }
+                        }}
+                      >
+                        <div className="flex items-start justify-between w-full">
+                          <div className="flex-1">
+                            <p className="font-medium text-xs">{n.title}</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">{n.message}</p>
+                            <p className="text-[9px] text-muted-foreground/60 mt-1">
+                              {formatDistanceToNow(new Date(n.created_at), { addSuffix: true, locale: sv })}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-1 ml-2 mt-1 shrink-0">
+                            {!n.read && <div className="h-2 w-2 bg-primary rounded-full" />}
+                            {n.action_url && <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+                          </div>
+                        </div>
+                      </DropdownMenuItem>
+                    ))
+                  )}
+                </ScrollArea>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </header>
+
+          {/* Email verification */}
+          <EmailVerificationBanner />
+
+          {/* Main content */}
+          <motion.main
+            key={location.pathname}
+            className="flex-1 relative z-10 p-4 md:p-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
+          >
+            <CreditWarningBanner />
+            {children}
+          </motion.main>
+
+          {/* Minimal footer */}
+          {!hideFooter && (
+            <footer className="relative z-10 py-4 px-4 text-center text-xs text-muted-foreground border-t border-border/30">
+              <p>
+                © {new Date().getFullYear()} Promotley UF ·{" "}
+                <Link to="/privacy-policy" className="hover:text-foreground transition-colors">Integritetspolicy</Link>
+                {" · "}
+                <Link to="/terms-of-service" className="hover:text-foreground transition-colors">Villkor</Link>
+              </p>
+            </footer>
           )}
-          variants={pageVariants}
-          initial="initial"
-          animate="enter"
-          exit="exit"
-        >
-          <CreditWarningBanner />
-          {children}
-        </motion.main>
-      </AnimatePresence>
-
-      {/* Footer */}
-      {!hideFooter && (
-        <div className="relative z-10">
-          <DashboardFooter />
         </div>
-      )}
-    </div>
+      </div>
+    </SidebarProvider>
   );
 };
 

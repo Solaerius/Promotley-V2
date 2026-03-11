@@ -1,8 +1,8 @@
 import { Coins, Sparkles } from 'lucide-react';
 import { useUserCredits } from '@/hooks/useUserCredits';
-import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
 interface CreditsDisplayProps {
   variant?: 'compact' | 'full';
@@ -28,15 +28,15 @@ const CreditsDisplay = ({ variant = 'compact', showUpgrade = true }: CreditsDisp
     ? (credits.credits_left / credits.max_credits) * 100 
     : 0;
 
+  const barColor = percentage > 50 ? 'bg-green-500' : percentage > 20 ? 'bg-yellow-500' : 'bg-destructive';
   const isLow = credits.credits_left <= 5;
 
   if (variant === 'compact') {
     return (
-      <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-        isLow
-          ? 'bg-destructive/10 text-destructive' 
-          : 'bg-primary/10 text-primary'
-      }`}>
+      <div className={cn(
+        "flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors",
+        isLow ? 'bg-destructive/10 text-destructive' : 'bg-primary/10 text-primary'
+      )}>
         <Sparkles className="w-4 h-4" />
         <span>{credits.credits_left} krediter</span>
       </div>
@@ -47,30 +47,34 @@ const CreditsDisplay = ({ variant = 'compact', showUpgrade = true }: CreditsDisp
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+          <div className={cn(
+            "w-8 h-8 rounded-lg flex items-center justify-center",
             isLow ? 'bg-destructive/10' : 'bg-primary/10'
-          }`}>
-            <Coins className={`w-4 h-4 ${isLow ? 'text-destructive' : 'text-primary'}`} />
+          )}>
+            <Coins className={cn("w-4 h-4", isLow ? 'text-destructive' : 'text-primary')} />
           </div>
           <div>
-            <p className="font-medium">AI-krediter</p>
+            <p className="font-medium text-sm">AI-krediter</p>
             <p className="text-xs text-muted-foreground">
               {credits.plan === 'free_trial' ? 'Gratis' : getPlanLabel(credits.plan)}
             </p>
           </div>
         </div>
         <div className="text-right">
-          <p className={`text-lg font-bold ${isLow ? 'text-destructive' : ''}`}>
+          <p className={cn("text-lg font-bold", isLow && 'text-destructive')}>
             {credits.credits_left}
           </p>
           <p className="text-xs text-muted-foreground">av {credits.max_credits}</p>
         </div>
       </div>
 
-      <Progress 
-        value={percentage} 
-        className={`h-2 ${isLow ? '[&>div]:bg-destructive' : ''}`}
-      />
+      {/* Color-coded progress bar */}
+      <div className="relative h-2 w-full overflow-hidden rounded-full bg-secondary">
+        <div
+          className={cn("h-full transition-all rounded-full", barColor)}
+          style={{ width: `${Math.min(percentage, 100)}%` }}
+        />
+      </div>
 
       {isLow && showUpgrade && (
         <Button 
