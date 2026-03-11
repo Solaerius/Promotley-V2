@@ -1,14 +1,19 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2, Link as LinkIcon, RefreshCw, Instagram } from "lucide-react";
+import { CheckCircle2, Link as LinkIcon, RefreshCw, Instagram, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import TikTokIcon from "@/components/icons/TikTokIcon";
 import LinkedInIcon from "@/components/icons/LinkedInIcon";
 import TwitterIcon from "@/components/icons/TwitterIcon";
 import FacebookIcon from "@/components/icons/FacebookIcon";
 import YouTubeIcon from "@/components/icons/YouTubeIcon";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface Connection {
   id: string;
@@ -50,23 +55,12 @@ export const ConnectionManager = () => {
     }
   };
 
-  const connectInstagram = async () => {
-    setConnectingProvider('meta_ig');
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { toast({ title: "Inte inloggad", description: "Du måste vara inloggad", variant: "destructive" }); setConnectingProvider(null); return; }
-      const { data, error } = await supabase.functions.invoke('init-meta-oauth', { headers: { Authorization: `Bearer ${session.access_token}` }, body: { provider: 'meta_ig' } });
-      if (error || !data?.url) { toast({ title: "Säkerhetsfel", description: "Kunde inte initiera säker anslutning.", variant: "destructive" }); setConnectingProvider(null); return; }
-      window.location.href = data.url;
-    } catch { toast({ title: "Fel vid anslutning", description: "Kunde inte ansluta till Instagram", variant: "destructive" }); setConnectingProvider(null); }
-  };
-
   const connectTikTok = async () => {
     setConnectingProvider('tiktok');
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { toast({ title: "Inte inloggad", description: "Du måste vara inloggad", variant: "destructive" }); return; }
-      if (isConnected('tiktok')) { toast({ title: "Redan ansluten", description: "TikTok är redan anslutet.", variant: "destructive" }); setConnectingProvider(null); return; }
+      if (!session) { toast({ title: "Inte inloggad", variant: "destructive" }); return; }
+      if (isConnected('tiktok')) { toast({ title: "Redan ansluten", variant: "destructive" }); setConnectingProvider(null); return; }
       const { data, error } = await supabase.functions.invoke('init-tiktok-oauth', { headers: { Authorization: `Bearer ${session.access_token}` } });
       if (error || !data?.url) throw new Error('Could not initialize TikTok OAuth');
       window.location.href = data.url;
@@ -100,92 +94,155 @@ export const ConnectionManager = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { toast({ title: "Inte inloggad", variant: "destructive" }); setConnectingProvider(null); return; }
       await supabase.from('tokens').delete().eq('user_id', session.user.id).eq('provider', 'tiktok');
-      toast({ title: "Återansluter...", description: "Godkänn behörigheterna på TikTok", duration: 3000 });
       const { data, error } = await supabase.functions.invoke('init-tiktok-oauth', { headers: { Authorization: `Bearer ${session.access_token}` } });
       if (error || !data?.url) throw new Error('Could not initialize TikTok OAuth');
       window.location.href = data.url;
-    } catch { toast({ title: "Fel vid anslutning", description: "Kunde inte starta TikTok reconnect", variant: "destructive" }); setConnectingProvider(null); }
+    } catch { toast({ title: "Fel vid anslutning", variant: "destructive" }); setConnectingProvider(null); }
   };
 
   const isConnected = (provider: string) => connections.some(c => c.provider === provider);
   const getConnection = (provider: string) => connections.find(c => c.provider === provider);
 
-  const comingSoonPlatforms = [
-    { name: "Instagram", icon: Instagram, gradient: "from-purple-600 via-pink-500 to-orange-400" },
-    { name: "LinkedIn", icon: LinkedInIcon, gradient: "from-blue-700 to-blue-500" },
-    { name: "X (Twitter)", icon: TwitterIcon, gradient: "from-gray-900 to-gray-700" },
-    { name: "Facebook", icon: FacebookIcon, gradient: "from-blue-600 to-blue-400" },
-    { name: "YouTube", icon: YouTubeIcon, gradient: "from-red-600 to-red-500" },
+  const platforms = [
+    {
+      key: "tiktok",
+      name: "TikTok",
+      icon: TikTokIcon,
+      gradient: "from-black via-gray-800 to-cyan-500",
+      available: true,
+      onConnect: connectTikTok,
+      onReconnect: reconnectTikTok,
+    },
+    {
+      key: "meta_ig",
+      name: "Instagram",
+      icon: Instagram,
+      gradient: "from-purple-600 via-pink-500 to-orange-400",
+      available: false,
+    },
+    {
+      key: "linkedin",
+      name: "LinkedIn",
+      icon: LinkedInIcon,
+      gradient: "from-blue-700 to-blue-500",
+      available: false,
+    },
+    {
+      key: "twitter",
+      name: "X",
+      icon: TwitterIcon,
+      gradient: "from-gray-900 to-gray-700",
+      available: false,
+    },
+    {
+      key: "meta_fb",
+      name: "Facebook",
+      icon: FacebookIcon,
+      gradient: "from-blue-600 to-blue-400",
+      available: false,
+    },
+    {
+      key: "youtube",
+      name: "YouTube",
+      icon: YouTubeIcon,
+      gradient: "from-red-600 to-red-500",
+      available: false,
+    },
   ];
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <LinkIcon className="h-5 w-5" />
+    <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <LinkIcon className="h-4 w-4 text-muted-foreground" />
           Anslutna konton
         </CardTitle>
-        <CardDescription>
-          Anslut dina sociala medier-konton för att få personliga AI-insikter
-        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {/* TikTok */}
-        <div className="flex items-center justify-between p-4 border rounded-lg">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-black via-gray-800 to-cyan-500 flex items-center justify-center">
-              <TikTokIcon className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="font-medium">TikTok</p>
-              {isConnected('tiktok') ? (
-                <p className="text-sm text-accent flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" />
-                  Connected as {getConnection('tiktok')?.username || 'Okänd'}
-                </p>
-              ) : (
-                <p className="text-sm text-muted-foreground">Koppla ditt konto för personliga insikter</p>
-              )}
-            </div>
-          </div>
-          {isConnected('tiktok') ? (
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-accent" />
-              <Button variant="outline" size="sm" onClick={reconnectTikTok} disabled={connectingProvider !== null}>
-                <RefreshCw className="w-4 h-4 mr-2" />
-                {connectingProvider === 'tiktok' ? 'Kopplar...' : 'Återanslut'}
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => disconnectProvider('tiktok')} disabled={connectingProvider !== null}>
-                Koppla från
-              </Button>
-            </div>
-          ) : (
-            <Button variant="gradient" size="sm" onClick={connectTikTok} disabled={connectingProvider !== null}>
-              {connectingProvider === 'tiktok' ? "Kopplar..." : "Anslut konto"}
-            </Button>
-          )}
-        </div>
+      <CardContent>
+        <div className="flex flex-wrap gap-3">
+          {platforms.map((platform) => {
+            const Icon = platform.icon;
+            const connected = isConnected(platform.key);
+            const connection = getConnection(platform.key);
 
-        {/* Coming Soon Platforms */}
-        {comingSoonPlatforms.map((platform) => {
-          const Icon = platform.icon;
-          return (
-            <div key={platform.name} className="flex items-center justify-between p-4 border rounded-lg opacity-70">
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${platform.gradient} flex items-center justify-center`}>
-                  <Icon className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <p className="font-medium">{platform.name}</p>
-                  <p className="text-sm text-muted-foreground">Koppla ditt konto för personliga insikter</p>
-                </div>
-              </div>
-              <Button variant="outline" size="sm" disabled>
-                Kommer snart
-              </Button>
-            </div>
-          );
-        })}
+            return (
+              <Popover key={platform.key}>
+                <PopoverTrigger asChild>
+                  <button
+                    className="relative flex flex-col items-center gap-1.5 group focus:outline-none"
+                    disabled={!platform.available && !connected}
+                  >
+                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center border transition-all ${
+                      connected
+                        ? "border-green-500/30 bg-green-500/10 shadow-sm"
+                        : platform.available
+                        ? "border-border bg-muted/50 hover:border-primary/30 hover:bg-primary/5"
+                        : "border-border/50 bg-muted/30 opacity-50"
+                    }`}>
+                      <Icon className={`w-5 h-5 ${connected ? "text-foreground" : "text-muted-foreground"}`} />
+                    </div>
+                    {connected && (
+                      <CheckCircle2 className="absolute -top-1 -right-1 w-4 h-4 text-green-500 bg-background rounded-full" />
+                    )}
+                    <span className="text-[10px] text-muted-foreground">{platform.name}</span>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-48 p-3" align="center">
+                  {connected ? (
+                    <div className="space-y-2">
+                      <p className="text-xs font-medium">{platform.name}</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        @{connection?.username || "ansluten"}
+                      </p>
+                      <div className="flex gap-1.5">
+                        {platform.onReconnect && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-[10px] flex-1"
+                            onClick={platform.onReconnect}
+                            disabled={connectingProvider !== null}
+                          >
+                            <RefreshCw className="w-3 h-3 mr-1" />
+                            Återanslut
+                          </Button>
+                        )}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-[10px] text-destructive hover:text-destructive flex-1"
+                          onClick={() => disconnectProvider(platform.key)}
+                          disabled={connectingProvider !== null}
+                        >
+                          Koppla från
+                        </Button>
+                      </div>
+                    </div>
+                  ) : platform.available ? (
+                    <div className="space-y-2">
+                      <p className="text-xs font-medium">{platform.name}</p>
+                      <p className="text-[10px] text-muted-foreground">Ej ansluten</p>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="h-7 text-[10px] w-full"
+                        onClick={platform.onConnect}
+                        disabled={connectingProvider !== null}
+                      >
+                        {connectingProvider === platform.key ? "Kopplar..." : "Anslut"}
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium">{platform.name}</p>
+                      <p className="text-[10px] text-muted-foreground">Kommer snart</p>
+                    </div>
+                  )}
+                </PopoverContent>
+              </Popover>
+            );
+          })}
+        </div>
       </CardContent>
     </Card>
   );
