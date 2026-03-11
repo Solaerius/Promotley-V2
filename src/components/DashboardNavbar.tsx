@@ -65,7 +65,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { activeOrganization } = useOrganization();
-  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  const { notifications, unreadCount, markAsRead, markAllAsRead, clearAll } = useNotifications();
   const { position, cyclePosition, getPositionLabel } = useNavbarPosition();
   const [userAvatarUrl, setUserAvatarUrl] = useState<string | null>(null);
 
