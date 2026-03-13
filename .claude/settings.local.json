@@ -7,7 +7,8 @@
       "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npm install 2>&1 | tail -5)",
       "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npm run build 2>&1 | tail -10)",
       "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npx supabase db push 2>&1)",
-      "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npx supabase link --project-ref wfsnljtwddcrskjcvwdw 2>&1)"
+      "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npx supabase link --project-ref wfsnljtwddcrskjcvwdw 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npx supabase functions deploy init-tiktok-oauth 2>&1)"
     ]
   }
 }

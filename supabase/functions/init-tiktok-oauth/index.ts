@@ -41,17 +41,10 @@ serve(async (req) => {
       );
     }
 
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
-    if (!supabaseAnonKey) {
-      throw new Error('Missing SUPABASE_ANON_KEY');
-    }
-
-    // Use anon key client with user's auth header (recommended Supabase edge function pattern)
-    const authClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
-    const { data: { user }, error: userError } = await authClient.auth.getUser();
+    // Use service role client to validate the user token (same pattern as init-meta-oauth)
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
 
     if (userError || !user) {
       console.error('User authentication failed:', JSON.stringify(userError));
@@ -63,9 +56,6 @@ serve(async (req) => {
         }
       );
     }
-
-    // Use service role client for DB operations
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Rate limiting
     const { data: rateLimitOk } = await supabase.rpc('check_rate_limit', {
