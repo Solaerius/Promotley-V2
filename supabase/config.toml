@@ -20,7 +20,9 @@ project_id = "fmvbzhlqzzwzciqgbzgp"
   [functions.fetch-meta-data]
     verify_jwt = true
   [functions.fetch-tiktok-data]
-    verify_jwt = true
+    verify_jwt = false
+  [functions.fetch-tiktok-videos]
+    verify_jwt = false
   [functions.generate-ai-analysis]
     verify_jwt = true
   [functions.generate-suggestion]
@@ -44,7 +46,7 @@ project_id = "fmvbzhlqzzwzciqgbzgp"
   [functions.redeem-promotion]
     verify_jwt = true
   [functions.refresh-tiktok-token]
-    verify_jwt = true
+    verify_jwt = false
   [functions.send-chat-notification]
     verify_jwt = false
   [functions.send-org-invite]

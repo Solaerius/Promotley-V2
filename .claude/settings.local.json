@@ -11,7 +11,9 @@
       "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npx supabase functions deploy init-tiktok-oauth 2>&1)",
       "mcp__plugin_context7_context7__resolve-library-id",
       "mcp__plugin_context7_context7__query-docs",
-      "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npx supabase functions deploy init-tiktok-oauth --no-verify-jwt 2>&1)"
+      "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npx supabase functions deploy init-tiktok-oauth --no-verify-jwt 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npx supabase functions deploy oauth-callback --no-verify-jwt 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npx supabase functions deploy fetch-tiktok-data --no-verify-jwt 2>&1 && npx supabase functions deploy refresh-tiktok-token --no-verify-jwt 2>&1 && npx supabase functions deploy fetch-tiktok-videos --no-verify-jwt 2>&1)"
     ]
   }
 }
