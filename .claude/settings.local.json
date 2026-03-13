@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find \"C:\\\\Users\\\\24eder\\\\Documents\\\\Claude\\\\promotley-93f7ced5\" -maxdepth 2 -name \".env*\" -o -name \"*.env*\" 2>/dev/null | head -10)"
+      "Bash(find \"C:\\\\Users\\\\24eder\\\\Documents\\\\Claude\\\\promotley-93f7ced5\" -maxdepth 2 -name \".env*\" -o -name \"*.env*\" 2>/dev/null | head -10)",
+      "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npm run build 2>&1 | tail -30)",
+      "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npx supabase secrets list 2>&1)"
     ]
   }
 }
