@@ -1,7 +1,6 @@
 project_id = "fmvbzhlqzzwzciqgbzgp"
 
 [functions]
-  enabled = true
   [functions.ai-assistant]
     verify_jwt = false
   [functions.analytics]
