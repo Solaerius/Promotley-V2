@@ -55,22 +55,8 @@ const plans = [
 const Pricing = () => {
   return (
     <section id="pricing" className="relative py-24 md:py-32 px-4 overflow-hidden font-poppins">
-      {/* Dark crimson background */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: 'radial-gradient(ellipse 80% 60% at 50% -10%, hsl(344 60% 18%) 0%, hsl(344 50% 6%) 50%, hsl(222 47% 4%) 100%)',
-        }}
-      />
-
-      {/* Subtle grid texture */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: 'linear-gradient(hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
-        }}
-      />
+      {/* Section accent glow */}
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 40%, hsl(344 60% 14% / 0.65) 0%, transparent 70%)' }} />
 
       <div className="container mx-auto relative z-10">
         {/* Section header */}

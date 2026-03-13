@@ -19,14 +19,6 @@ const FinalCTA = () => {
         }}
       />
 
-      {/* Subtle grid texture */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: 'linear-gradient(hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
-        }}
-      />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         {/* Gradient border ring around content */}

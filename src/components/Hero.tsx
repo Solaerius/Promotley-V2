@@ -40,17 +40,6 @@ const Hero = () => {
         }}
       />
 
-      {/* Subtle grid texture */}
-      <div
-        className="absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage: `
-            linear-gradient(hsl(0 0% 100%) 1px, transparent 1px),
-            linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)
-          `,
-          backgroundSize: '60px 60px',
-        }}
-      />
 
       {/* Glow orbs */}
       <div
@@ -530,7 +519,7 @@ const Hero = () => {
       <div
         className="absolute bottom-0 left-0 right-0 h-40 pointer-events-none z-10"
         style={{
-          background: 'linear-gradient(to top, hsl(var(--background)) 0%, transparent 100%)',
+          background: 'linear-gradient(to top, hsl(222 47% 4%) 0%, transparent 100%)',
         }}
       />
     </section>
