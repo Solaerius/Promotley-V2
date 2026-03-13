@@ -30,7 +30,6 @@ import { useUserCredits } from "@/hooks/useUserCredits";
 import { useAIProfile } from "@/hooks/useAIProfile";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import MarketingPlanCard from "@/components/MarketingPlanCard";
-import CreditsDisplay from "@/components/CreditsDisplay";
 import { useNavigate } from "react-router-dom";
 
 interface Message {
@@ -185,7 +184,6 @@ const AIChat = () => {
             <h1 className="text-2xl font-bold text-foreground">AI-Assistent</h1>
             <p className="text-xs text-muted-foreground mt-0.5">Chatta med Promotleys AI för personliga råd</p>
           </div>
-          <CreditsDisplay variant="compact" />
         </div>
 
         {/* AI Profile Warning */}

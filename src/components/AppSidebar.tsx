@@ -172,7 +172,7 @@ export function AppSidebar() {
           <div className="px-1 pb-2">
             <div className="flex items-center justify-between mb-1">
               <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">Krediter</span>
-              <span className="text-[10px] font-semibold text-foreground">{Math.round(creditPct)}%</span>
+              <span className="text-[10px] font-semibold text-foreground">{credits.credits_left} kvar</span>
             </div>
             <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
               <div
