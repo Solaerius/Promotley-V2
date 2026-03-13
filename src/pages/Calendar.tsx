@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -6,7 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { Calendar as CalendarIcon, Plus, Sparkles, Trash2, Edit, Loader2, AlertCircle } from "lucide-react";
+import {
+  Plus, Sparkles, Trash2, Edit, Loader2, AlertCircle,
+  PenLine, Store, CalendarDays, Flag, LayoutGrid,
+  ChevronLeft, ChevronRight, Instagram, Facebook, Music2,
+} from "lucide-react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useToast } from "@/hooks/use-toast";
 import { useCalendar } from "@/hooks/useCalendar";
@@ -17,20 +22,57 @@ import CalendarSkeleton from "@/components/CalendarSkeleton";
 import CalendarErrorState from "@/components/CalendarErrorState";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 type EventType = "inlagg" | "uf_marknad" | "event" | "deadline" | "ovrigt";
+type SocialPlatform = "instagram" | "tiktok" | "facebook" | "";
 
 const eventTypeLabels: Record<EventType, string> = {
-  inlagg: "Inlägg", uf_marknad: "UF-marknad", event: "Event/aktivitet", deadline: "Deadline", ovrigt: "Övrigt",
+  inlagg: "Inlägg",
+  uf_marknad: "UF-marknad",
+  event: "Event/aktivitet",
+  deadline: "Deadline",
+  ovrigt: "Övrigt",
 };
 
-const eventTypeColors: Record<EventType, string> = {
-  inlagg: "bg-pink-500", uf_marknad: "bg-green-500", event: "bg-blue-500", deadline: "bg-orange-500", ovrigt: "bg-gray-500",
+const eventTypeColors: Record<EventType, { bg: string; text: string; border: string; dot: string }> = {
+  inlagg:    { bg: "bg-pink-500/15",   text: "text-pink-400",   border: "border-pink-500/30",   dot: "bg-pink-500"   },
+  uf_marknad:{ bg: "bg-emerald-500/15",text: "text-emerald-400",border: "border-emerald-500/30",dot: "bg-emerald-500"},
+  event:     { bg: "bg-violet-500/15", text: "text-violet-400", border: "border-violet-500/30", dot: "bg-violet-500" },
+  deadline:  { bg: "bg-amber-500/15",  text: "text-amber-400",  border: "border-amber-500/30",  dot: "bg-amber-500"  },
+  ovrigt:    { bg: "bg-slate-500/15",  text: "text-slate-400",  border: "border-slate-500/30",  dot: "bg-slate-500"  },
 };
+
+const eventTypeIcons: Record<EventType, React.ComponentType<{ className?: string }>> = {
+  inlagg:     PenLine,
+  uf_marknad: Store,
+  event:      CalendarDays,
+  deadline:   Flag,
+  ovrigt:     LayoutGrid,
+};
+
+const platformIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+  instagram: Instagram,
+  tiktok:    Music2,
+  facebook:  Facebook,
+};
+
+const monthNames = ["Januari", "Februari", "Mars", "April", "Maj", "Juni", "Juli", "Augusti", "September", "Oktober", "November", "December"];
+const weekDays = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"];
+
+type FormData = {
+  date: string;
+  event_type: EventType;
+  title: string;
+  description: string;
+  platform: SocialPlatform;
+};
+
+const defaultForm: FormData = { date: "", event_type: "inlagg", title: "", description: "", platform: "" };
 
 const Calendar = () => {
   const { toast } = useToast();
-  const { posts, loading, error, createPost, updatePost, deletePost, fetchPosts } = useCalendar();
+  const { posts, loading, error, createPost, updatePost, deletePost, fetchPosts, fetchContext } = useCalendar();
   const { profile: aiProfile } = useAIProfile();
   const { createConversation } = useConversations();
 
@@ -38,12 +80,29 @@ const Calendar = () => {
   const isAIProfileComplete = aiProfileFields.filter(f => f && String(f).trim() !== "").length >= 3;
 
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [direction, setDirection] = useState<1 | -1>(1);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [editingPost, setEditingPost] = useState<any | null>(null);
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
-  const [formData, setFormData] = useState({ date: "", platform: "inlagg", title: "", description: "" });
+  const [formData, setFormData] = useState<FormData>(defaultForm);
+
+  const calendarKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
+
+  const goToPrevMonth = () => {
+    setDirection(-1);
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
+  };
+  const goToNextMonth = () => {
+    setDirection(1);
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
+  };
+  const goToToday = () => {
+    const now = new Date();
+    setDirection(currentDate > now ? -1 : 1);
+    setCurrentDate(now);
+  };
 
   const getDaysInMonth = () => {
     const year = currentDate.getFullYear();
@@ -58,45 +117,83 @@ const Calendar = () => {
   };
 
   const handleSavePost = async () => {
-    if (!formData.date || !formData.platform || !formData.title) {
+    if (!formData.date || !formData.event_type || !formData.title) {
       toast({ title: "Fyll i alla obligatoriska fält", variant: "destructive" });
       return;
     }
     setIsSaving(true);
     try {
-      if (editingPost) await updatePost(editingPost.id, formData);
-      else await createPost(formData);
+      if (editingPost) {
+        await updatePost(editingPost.id, {
+          title: formData.title,
+          description: formData.description,
+          event_type: formData.event_type,
+          platform: formData.platform || null,
+          date: formData.date,
+        });
+      } else {
+        await createPost({
+          title: formData.title,
+          description: formData.description,
+          event_type: formData.event_type,
+          platform: formData.platform || null,
+          date: formData.date,
+        });
+      }
       setIsDialogOpen(false);
       setEditingPost(null);
-      setFormData({ date: "", platform: "inlagg", title: "", description: "" });
-    } catch (err) { console.error(err); }
-    finally { setIsSaving(false); }
+      setFormData(defaultForm);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleEditPost = (post: any) => { setEditingPost(post); setFormData(post); setIsDialogOpen(true); };
+  const handleEditPost = (post: any) => {
+    setEditingPost(post);
+    setFormData({
+      date: post.date,
+      event_type: (post.event_type as EventType) || "inlagg",
+      title: post.title,
+      description: post.description || "",
+      platform: (post.platform as SocialPlatform) || "",
+    });
+    setIsDialogOpen(true);
+  };
 
   const handleGenerateContentPlan = async () => {
     if (isGeneratingPlan) return;
     setIsGeneratingPlan(true);
     setGenerationProgress(10);
     try {
-      const convId = await createConversation("Marknadsforingsplan");
+      const convId = await createConversation("Marknadsföringsplan");
       if (!convId) throw new Error("Kunde inte skapa konversation");
       const progressInterval = setInterval(() => setGenerationProgress(prev => Math.min(prev + 8, 85)), 800);
-      const planMessage = "Skapa en marknadsforingsplan for kommande 4 veckor. Svara ENBART med en plan i JSON-format.";
+      const planMessage = "Skapa en marknadsföringsplan för kommande 4 veckor. Svara ENBART med en plan i JSON-format.";
       await supabase.from('ai_chat_messages').insert({ conversation_id: convId, role: 'user', message: planMessage });
-      const { data: contextData } = await supabase.functions.invoke('calendar/context');
+      const contextData = await fetchContext();
       const { data: result, error: invokeError } = await supabase.functions.invoke('ai-assistant/chat', {
         method: 'POST',
-        body: { message: planMessage, history: [], calendarContextDigest: contextData?.digest || [], meta: { action: 'create_marketing_plan', timeframe: { preset: 'next_4_weeks' }, targets: ['reach', 'engagement'], requestId: crypto.randomUUID() }, conversationId: convId }
+        body: {
+          message: planMessage,
+          history: [],
+          calendarContextDigest: contextData?.digest || [],
+          meta: { action: 'create_marketing_plan', timeframe: { preset: 'next_4_weeks' }, targets: ['reach', 'engagement'], requestId: crypto.randomUUID() },
+          conversationId: convId
+        }
       });
       if (invokeError) throw invokeError;
       await supabase.from('ai_chat_messages').insert({ conversation_id: convId, role: 'assistant', message: result.response, plan: result.plan || null });
       clearInterval(progressInterval);
       setGenerationProgress(100);
-      toast({ title: "Plan skapad!", description: "Kolla AI-chatten for detaljer." });
+      toast({ title: "Plan skapad!", description: "Kolla AI-chatten för detaljer." });
     } catch (err: any) {
-      toast({ title: "Fel", description: err?.message?.includes('NO_ACTIVE_PLAN') ? "Du behover ett aktivt paket." : "Kunde inte generera plan.", variant: "destructive" });
+      toast({
+        title: "Fel",
+        description: err?.message?.includes('NO_ACTIVE_PLAN') ? "Du behöver ett aktivt paket." : "Kunde inte generera plan.",
+        variant: "destructive"
+      });
     } finally {
       setTimeout(() => { setIsGeneratingPlan(false); setGenerationProgress(0); }, 1500);
     }
@@ -107,8 +204,12 @@ const Calendar = () => {
     return posts.filter(p => p.date === dateStr);
   };
 
-  const monthNames = ["Januari", "Februari", "Mars", "April", "Maj", "Juni", "Juli", "Augusti", "September", "Oktober", "November", "December"];
-  const weekDays = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"];
+  const today = new Date();
+  const isCurrentMonth = currentDate.getMonth() === today.getMonth() && currentDate.getFullYear() === today.getFullYear();
+  const upcomingPosts = posts
+    .filter(p => new Date(p.date) >= new Date(today.toDateString()))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .slice(0, 6);
 
   if (loading) return <DashboardLayout><CalendarSkeleton /></DashboardLayout>;
   if (error) return (
@@ -125,48 +226,145 @@ const Calendar = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-4 max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        className="space-y-5 max-w-5xl mx-auto"
+      >
+        {/* ── Header ── */}
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Innehållskalender</h1>
+            <h1
+              className="text-2xl font-bold"
+              style={{ background: "var(--gradient-text)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
+            >
+              Innehållskalender
+            </h1>
             <p className="text-sm text-muted-foreground mt-0.5">Planera dina inlägg och håll koll på din content-strategi</p>
           </div>
-          <div className="flex flex-col gap-2">
+
+          <div className="flex flex-col gap-2 items-start lg:items-end">
             {!isAIProfileComplete && (
-              <Alert variant="default" className="border-warning/50 bg-warning/5">
-                <AlertCircle className="h-4 w-4 text-warning" />
-                <AlertDescription className="text-warning text-sm">
+              <Alert variant="default" className="border-warning/50 bg-warning/5 py-2 px-3">
+                <AlertCircle className="h-3.5 w-3.5 text-warning" />
+                <AlertDescription className="text-warning text-xs">
                   Fyll i din <Link to="/account" className="underline font-medium">AI-profil</Link> för att använda AI.
                 </AlertDescription>
               </Alert>
             )}
             <div className="flex gap-2">
-              <Button onClick={handleGenerateContentPlan} disabled={!isAIProfileComplete || isGeneratingPlan} size="sm">
-                {isGeneratingPlan ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1.5" />}
+              <Button
+                onClick={handleGenerateContentPlan}
+                disabled={!isAIProfileComplete || isGeneratingPlan}
+                size="sm"
+                className="gap-1.5"
+                style={{ background: "var(--gradient-primary)" }}
+              >
+                {isGeneratingPlan
+                  ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  : <Sparkles className="w-3.5 h-3.5" />}
                 {isGeneratingPlan ? "Genererar..." : "Skapa plan med AI"}
               </Button>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+
+              <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) { setEditingPost(null); setFormData(defaultForm); } }}>
                 <DialogTrigger asChild>
-                  <Button variant="secondary" size="sm" onClick={() => { setEditingPost(null); setFormData({ date: "", platform: "inlagg", title: "", description: "" }); }}>
-                    <Plus className="w-4 h-4 mr-1.5" /> Lägg till
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5 border-border/60"
+                    onClick={() => { setEditingPost(null); setFormData(defaultForm); }}
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Lägg till
                   </Button>
                 </DialogTrigger>
+
                 <DialogContent className="max-w-md">
-                  <DialogHeader><DialogTitle>{editingPost ? "Redigera händelse" : "Ny händelse"}</DialogTitle></DialogHeader>
-                  <div className="space-y-4">
-                    <div><Label>Datum</Label><Input type="date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} /></div>
-                    <div>
-                      <Label>Typ</Label>
-                      <Select value={formData.platform} onValueChange={(v) => setFormData({ ...formData, platform: v })}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>{Object.entries(eventTypeLabels).map(([k, l]) => <SelectItem key={k} value={k}>{l}</SelectItem>)}</SelectContent>
+                  <DialogHeader>
+                    <DialogTitle className="text-base font-semibold">
+                      {editingPost ? "Redigera händelse" : "Ny händelse"}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 pt-1">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Datum *</Label>
+                        <Input
+                          type="date"
+                          value={formData.date}
+                          onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                          className="text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Typ *</Label>
+                        <Select value={formData.event_type} onValueChange={(v) => setFormData({ ...formData, event_type: v as EventType })}>
+                          <SelectTrigger className="text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Object.entries(eventTypeLabels).map(([k, l]) => (
+                              <SelectItem key={k} value={k}>
+                                <span className="flex items-center gap-2">
+                                  {(() => { const Icon = eventTypeIcons[k as EventType]; return <Icon className="w-3.5 h-3.5" />; })()}
+                                  {l}
+                                </span>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Titel *</Label>
+                      <Input
+                        placeholder="Vad handlar detta om?"
+                        value={formData.title}
+                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        className="text-sm"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Beskrivning</Label>
+                      <Textarea
+                        placeholder="Beskriv innehållet (valfritt)"
+                        value={formData.description}
+                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        className="text-sm resize-none"
+                        rows={3}
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        Kanal <span className="normal-case text-muted-foreground/60">(valfritt)</span>
+                      </Label>
+                      <Select value={formData.platform || "__none__"} onValueChange={(v) => setFormData({ ...formData, platform: v === "__none__" ? "" : v as SocialPlatform })}>
+                        <SelectTrigger className="text-sm">
+                          <SelectValue placeholder="Ingen specifik kanal" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="__none__">Ingen specifik kanal</SelectItem>
+                          <SelectItem value="instagram">
+                            <span className="flex items-center gap-2"><Instagram className="w-3.5 h-3.5" /> Instagram</span>
+                          </SelectItem>
+                          <SelectItem value="tiktok">
+                            <span className="flex items-center gap-2"><Music2 className="w-3.5 h-3.5" /> TikTok</span>
+                          </SelectItem>
+                          <SelectItem value="facebook">
+                            <span className="flex items-center gap-2"><Facebook className="w-3.5 h-3.5" /> Facebook</span>
+                          </SelectItem>
+                        </SelectContent>
                       </Select>
                     </div>
-                    <div><Label>Titel</Label><Input placeholder="Titel" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} /></div>
-                    <div><Label>Beskrivning</Label><Textarea placeholder="Beskriv innehållet" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} /></div>
-                    <Button onClick={handleSavePost} className="w-full" disabled={isSaving}>
-                      {isSaving ? <><Loader2 className="w-4 h-4 mr-1.5 animate-spin" />{editingPost ? "Uppdaterar..." : "Skapar..."}</> : (editingPost ? "Uppdatera" : "Skapa")}
+
+                    <Button onClick={handleSavePost} className="w-full" disabled={isSaving} style={{ background: "var(--gradient-primary)" }}>
+                      {isSaving
+                        ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />{editingPost ? "Uppdaterar..." : "Skapar..."}</>
+                        : (editingPost ? "Uppdatera händelse" : "Skapa händelse")
+                      }
                     </Button>
                   </div>
                 </DialogContent>
@@ -175,97 +373,235 @@ const Calendar = () => {
           </div>
         </div>
 
-        {/* Progress */}
-        {isGeneratingPlan && (
-          <div className="space-y-2 p-4 rounded-2xl bg-card border border-border/40">
-            <div className="flex items-center justify-between text-sm">
-              <span className="font-medium">Skapar din plan...</span>
-              <span className="text-muted-foreground">{Math.round(generationProgress)}%</span>
-            </div>
-            <Progress value={generationProgress} className="h-2" />
-          </div>
-        )}
-
-        {/* Calendar */}
-        <div className="rounded-2xl bg-card border border-border/40 p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-foreground">{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</h2>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}>Föregående</Button>
-              <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>Idag</Button>
-              <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}>Nästa</Button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-7 gap-1 mb-1">
-            {weekDays.map((day) => <div key={day} className="text-center font-medium text-xs text-muted-foreground p-1">{day}</div>)}
-          </div>
-
-          <div className="grid grid-cols-7 gap-1">
-            {getDaysInMonth().map((day, index) => {
-              const dayPosts = day ? getPostsForDate(day) : [];
-              const isToday = day === new Date().getDate() && currentDate.getMonth() === new Date().getMonth() && currentDate.getFullYear() === new Date().getFullYear();
-              return (
-                <div key={index} className={`min-h-[76px] p-1.5 rounded-lg border transition-colors ${day ? (isToday ? "bg-primary/5 border-2 border-primary/40" : "bg-card hover:bg-muted/20 border-border/30") : "bg-transparent border-transparent"}`}>
-                  {day && (
-                    <>
-                      <div className="mb-1">
-                        {isToday
-                          ? <span className="text-sm font-bold text-primary">{day}</span>
-                          : <span className="text-sm text-muted-foreground">{day}</span>
-                        }
-                      </div>
-                      <div className="space-y-1">
-                        {dayPosts.map((post) => {
-                          const eventType = (post as any).event_type as EventType || 'inlagg';
-                          return (
-                            <div key={post.id} className={`${eventTypeColors[eventType]} text-white text-[10px] p-1 rounded font-medium cursor-pointer hover:opacity-90 group relative`} onClick={() => handleEditPost(post)}>
-                              <span className="truncate block">{post.title}</span>
-                              <div className="absolute top-0.5 right-0.5 opacity-0 group-hover:opacity-100">
-                                <Button variant="ghost" size="icon" className="h-4 w-4 text-white" onClick={(e) => { e.stopPropagation(); deletePost(post.id); }}>
-                                  <Trash2 className="w-2.5 h-2.5" />
-                                </Button>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </>
-                  )}
+        {/* ── AI generation progress ── */}
+        <AnimatePresence>
+          {isGeneratingPlan && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className="p-4 rounded-2xl bg-card border border-border/40 space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-medium flex items-center gap-2">
+                    <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
+                    Skapar din marknadsföringsplan...
+                  </span>
+                  <span className="text-muted-foreground tabular-nums">{Math.round(generationProgress)}%</span>
                 </div>
-              );
-            })}
+                <Progress value={generationProgress} className="h-1.5" />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ── Calendar panel ── */}
+        <div className="rounded-2xl bg-card border border-border/40 overflow-hidden">
+          {/* Month navigation */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
+            <div className="flex items-center gap-3">
+              <h2 className="text-base font-semibold text-foreground">
+                {monthNames[currentDate.getMonth()]}{" "}
+                <span className="text-muted-foreground font-normal">{currentDate.getFullYear()}</span>
+              </h2>
+              {!isCurrentMonth && (
+                <button
+                  onClick={goToToday}
+                  className="text-xs text-primary hover:text-primary/80 font-medium transition-colors px-2 py-0.5 rounded-full bg-primary/10 hover:bg-primary/15"
+                >
+                  Idag
+                </button>
+              )}
+            </div>
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={goToPrevMonth}>
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={goToNextMonth}>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="p-3">
+            {/* Weekday headers */}
+            <div className="grid grid-cols-7 mb-1">
+              {weekDays.map((day) => (
+                <div key={day} className="text-center text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-wider py-1.5">
+                  {day}
+                </div>
+              ))}
+            </div>
+
+            {/* Calendar grid */}
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={calendarKey}
+                custom={direction}
+                initial={{ opacity: 0, x: direction * 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: direction * -20 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="grid grid-cols-7 gap-1"
+              >
+                {getDaysInMonth().map((day, index) => {
+                  const dayPosts = day ? getPostsForDate(day) : [];
+                  const isToday = day !== null && isCurrentMonth && day === today.getDate();
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: Math.min(index * 0.008, 0.18), duration: 0.2 }}
+                      className={cn(
+                        "min-h-[88px] p-1.5 rounded-xl border transition-colors",
+                        day
+                          ? isToday
+                            ? "bg-primary/8 border-primary/30"
+                            : "bg-transparent border-border/20 hover:border-border/40 hover:bg-muted/10"
+                          : "border-transparent"
+                      )}
+                    >
+                      {day && (
+                        <>
+                          <div className="mb-1.5 flex justify-center">
+                            {isToday ? (
+                              <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: "var(--gradient-primary)" }}>
+                                {day}
+                              </span>
+                            ) : (
+                              <span className="w-6 h-6 flex items-center justify-center text-xs text-muted-foreground">
+                                {day}
+                              </span>
+                            )}
+                          </div>
+                          <div className="space-y-0.5">
+                            {dayPosts.map((post) => {
+                              const et = ((post as any).event_type as EventType) || "inlagg";
+                              const colors = eventTypeColors[et];
+                              const Icon = eventTypeIcons[et];
+                              const PlatformIcon = post.platform ? platformIcons[post.platform] : null;
+                              return (
+                                <motion.div
+                                  key={post.id}
+                                  whileHover={{ scale: 1.02 }}
+                                  transition={{ duration: 0.15 }}
+                                  className={cn(
+                                    "group relative flex items-center gap-1 rounded-md px-1.5 py-0.5 border cursor-pointer",
+                                    colors.bg, colors.border
+                                  )}
+                                  onClick={() => handleEditPost(post)}
+                                >
+                                  <Icon className={cn("w-2.5 h-2.5 shrink-0", colors.text)} />
+                                  <span className={cn("truncate text-[10px] font-medium flex-1", colors.text)}>
+                                    {post.title}
+                                  </span>
+                                  {PlatformIcon && (
+                                    <PlatformIcon className={cn("w-2.5 h-2.5 shrink-0 opacity-60", colors.text)} />
+                                  )}
+                                  <button
+                                    className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-destructive text-destructive-foreground items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hidden group-hover:flex shadow-sm"
+                                    onClick={(e) => { e.stopPropagation(); deletePost(post.id); }}
+                                  >
+                                    <span className="text-[9px] leading-none">×</span>
+                                  </button>
+                                </motion.div>
+                              );
+                            })}
+                          </div>
+                        </>
+                      )}
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
 
-        {/* Upcoming */}
+        {/* ── Upcoming posts timeline ── */}
         <div className="rounded-2xl bg-card border border-border/40 p-5">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">Kommande inlägg</h3>
-          <div className="space-y-2">
-            {posts.filter(p => new Date(p.date) >= new Date(new Date().toDateString())).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).slice(0, 5).map((post) => {
-              const eventType = (post as any).event_type as EventType || 'inlagg';
-              return (
-                <div key={post.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/20 border border-border/30 hover:bg-muted/40 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-9 h-9 rounded-xl ${eventTypeColors[eventType]} flex items-center justify-center`}>
-                      <CalendarIcon className="w-4 h-4 text-white" />
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
+            Kommande händelser
+          </h3>
+
+          {upcomingPosts.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex flex-col items-center justify-center py-10 gap-3"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-muted/30 flex items-center justify-center">
+                <CalendarDays className="w-6 h-6 text-muted-foreground/40" />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-medium text-muted-foreground">Inga planerade händelser</p>
+                <p className="text-xs text-muted-foreground/60 mt-0.5">Lägg till din första händelse ovan</p>
+              </div>
+            </motion.div>
+          ) : (
+            <div className="space-y-2">
+              {upcomingPosts.map((post, i) => {
+                const et = ((post as any).event_type as EventType) || "inlagg";
+                const colors = eventTypeColors[et];
+                const Icon = eventTypeIcons[et];
+                const PlatformIcon = post.platform ? platformIcons[post.platform] : null;
+                const postDate = new Date(post.date);
+                const isThisWeek = (postDate.getTime() - today.getTime()) < 7 * 24 * 60 * 60 * 1000;
+                return (
+                  <motion.div
+                    key={post.id}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.04, duration: 0.25, ease: "easeOut" }}
+                    className="group flex items-center gap-3 p-3 rounded-xl bg-muted/10 border border-border/20 hover:bg-muted/20 hover:border-border/40 transition-all"
+                  >
+                    {/* Color strip */}
+                    <div className={cn("w-1 self-stretch rounded-full shrink-0", colors.dot)} />
+
+                    {/* Icon */}
+                    <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shrink-0", colors.bg)}>
+                      <Icon className={cn("w-4 h-4", colors.text)} />
                     </div>
-                    <div>
-                      <p className="font-medium text-sm">{post.title}</p>
-                      <p className="text-xs text-muted-foreground">{new Date(post.date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium text-foreground truncate">{post.title}</p>
+                        {PlatformIcon && (
+                          <PlatformIcon className="w-3.5 h-3.5 text-muted-foreground/50 shrink-0" />
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <p className="text-xs text-muted-foreground">
+                          {postDate.toLocaleDateString('sv-SE', { weekday: 'short', month: 'short', day: 'numeric' })}
+                        </p>
+                        {isThisWeek && (
+                          <span className="text-[10px] font-medium text-primary bg-primary/10 px-1.5 py-0 rounded-full">
+                            Snart
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEditPost(post)}><Edit className="w-3.5 h-3.5" /></Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => deletePost(post.id)}><Trash2 className="w-3.5 h-3.5" /></Button>
-                  </div>
-                </div>
-              );
-            })}
-            {posts.length === 0 && <p className="text-center text-sm text-muted-foreground py-6">Inga planerade inlägg ännu.</p>}
-          </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                      <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg" onClick={() => handleEditPost(post)}>
+                        <Edit className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-destructive hover:text-destructive" onClick={() => deletePost(post.id)}>
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
         </div>
-      </div>
+      </motion.div>
     </DashboardLayout>
   );
 };

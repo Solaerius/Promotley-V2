@@ -75,8 +75,11 @@ export const useAIAssistant = (conversationId: string | null) => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('Not authenticated');
 
-      // Fetch calendar context
-      const { data: contextData } = await supabase.functions.invoke('calendar/context');
+      // Fetch calendar context (correct path + auth header)
+      const { data: contextData } = await supabase.functions.invoke('calendar', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        body: { action: 'context' }
+      });
 
       // Add user message to UI immediately (optimistic)
       const userMessage: ChatMessage = {

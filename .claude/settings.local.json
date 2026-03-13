@@ -26,7 +26,10 @@
       "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npm run lint 2>&1 | grep \"useTikTokData\" | head -10)",
       "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npm run lint 2>&1 | grep -A 3 \"useTikTokData\" | head -20)",
       "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npm run build 2>&1)",
-      "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npm run build 2>&1 | grep -E \"error|warning|✓|built\")"
+      "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npm run build 2>&1 | grep -E \"error|warning|✓|built\")",
+      "Bash(find \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" -type f -name \"*calendar*\" -o -name \"*event*\" -o -name \"*booking*\" 2>/dev/null | head -30)",
+      "Bash(cd \"C:/Users/eddie/Claude Projects/Promotley-V2\" && python \"C:/Users/eddie/.claude/plugins/cache/ui-ux-pro-max-skill/ui-ux-pro-max/2.0.1/src/ui-ux-pro-max/scripts/search.py\" \"content calendar productivity marketing saas\" --design-system -p \"Promotley Calendar\" -f markdown 2>&1 | head -100)",
+      "Bash(cd \"/c/Users/eddie/Claude Projects/Promotley-V2\" && npm run build 2>&1 | tail -40)"
     ]
   }
 }
