@@ -48,7 +48,7 @@ const DashboardLayout = ({ children, pageTitle, hideFooter }: DashboardLayoutPro
 
         <div className="flex-1 flex flex-col min-w-0">
           {/* Content header */}
-          <header className="sticky top-0 z-20 h-12 flex items-center justify-between gap-2 px-4 border-b border-border/40 bg-background/95 backdrop-blur-sm">
+          <header className="sticky top-0 z-20 h-12 flex items-center justify-between gap-2 px-4 border-b border-border/60 bg-background/95 backdrop-blur-sm">
             <div className="flex items-center gap-2">
               <SidebarTrigger className="h-8 w-8" />
               {pageTitle && (
@@ -59,12 +59,15 @@ const DashboardLayout = ({ children, pageTitle, hideFooter }: DashboardLayoutPro
             {/* Notifications */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative h-8 w-8">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative h-8 w-8 hover:bg-primary/10 hover:text-primary"
+                >
                   <Bell className="h-4 w-4" />
                   {unreadCount > 0 && (
                     <Badge
-                      variant="destructive"
-                      className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]"
+                      className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px] bg-primary text-primary-foreground border-0"
                     >
                       {unreadCount > 9 ? "9+" : unreadCount}
                     </Badge>

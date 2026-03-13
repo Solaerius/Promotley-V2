@@ -109,14 +109,13 @@ export function AppSidebar() {
   const displayName = activeOrganization?.name || user?.email?.split("@")[0] || "Användare";
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border/40 bg-background">
+    <Sidebar collapsible="icon" className="border-r border-border/40 bg-background/98 backdrop-blur-sm">
       <SidebarHeader className="p-3">
         <Link to="/dashboard" className="flex items-center gap-2.5">
-          {/* SVG logo instead of image to prevent flicker */}
-          <div className="w-7 h-7 shrink-0 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-xs">P</span>
+          <div className="w-7 h-7 shrink-0 flex items-center justify-center">
+            <span className="font-bold text-lg leading-none tracking-tighter text-primary">[P]</span>
           </div>
-          {!collapsed && <span className="font-semibold text-sm text-foreground tracking-tight">Promotely</span>}
+          {!collapsed && <span className="font-bold text-xs text-foreground tracking-widest uppercase">PROMOTELY</span>}
         </Link>
       </SidebarHeader>
 
@@ -132,8 +131,10 @@ export function AppSidebar() {
                       asChild
                       tooltip={item.title}
                       className={cn(
-                        "transition-all duration-150",
-                        active && "bg-primary/10 text-primary font-medium shadow-sm"
+                        "transition-all duration-150 rounded-none px-3",
+                        active
+                          ? "border-l-2 border-primary text-primary font-semibold pl-[calc(0.75rem-2px)]"
+                          : "border-l-2 border-transparent text-muted-foreground hover:text-foreground hover:border-border pl-[calc(0.75rem-2px)]"
                       )}
                     >
                       <Link to={item.href}>
@@ -156,7 +157,7 @@ export function AppSidebar() {
                 <SidebarMenuButton
                   onClick={toggleTheme}
                   tooltip={theme === "light" ? "Mörkt läge" : "Ljust läge"}
-                  className="transition-colors"
+                  className="transition-colors rounded-none px-3"
                 >
                   {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
                   <span>{theme === "light" ? "Mörkt läge" : "Ljust läge"}</span>
@@ -168,11 +169,27 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="p-2 border-t border-border/30">
+        {/* Credit bar */}
+        {!collapsed && credits && (
+          <div className="px-1 pb-2">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">Krediter</span>
+              <span className="text-[10px] font-semibold text-foreground">{Math.round(creditPct)}%</span>
+            </div>
+            <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+              <div
+                className={cn("h-full rounded-full transition-all", creditColor)}
+                style={{ width: `${creditPct}%` }}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Profile with quick buttons */}
         <div className="flex items-center gap-2">
           <Avatar className="h-7 w-7 shrink-0">
             <AvatarImage src={userAvatarUrl || undefined} />
-            <AvatarFallback className="text-[10px] bg-muted text-muted-foreground">
+            <AvatarFallback className="text-[10px] bg-primary/20 text-primary">
               {displayName.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>

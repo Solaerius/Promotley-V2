@@ -14,7 +14,14 @@
       "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npx supabase functions deploy init-tiktok-oauth --no-verify-jwt 2>&1)",
       "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npx supabase functions deploy oauth-callback --no-verify-jwt 2>&1)",
       "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npx supabase functions deploy fetch-tiktok-data --no-verify-jwt 2>&1 && npx supabase functions deploy refresh-tiktok-token --no-verify-jwt 2>&1 && npx supabase functions deploy fetch-tiktok-videos --no-verify-jwt 2>&1)",
-      "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npm run lint 2>&1 | grep \"pages/Dashboard.tsx\")"
+      "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npm run lint 2>&1 | grep \"pages/Dashboard.tsx\")",
+      "Read(//c/Users/eddie/.claude/plugins/cache/ui-ux-pro-max-skill/ui-ux-pro-max/2.0.1/**)",
+      "Bash(python3 skills/ui-ux-pro-max/scripts/search.py \"social media analytics dashboard SaaS dark premium\" --design-system -p \"Promotley\" -f markdown)",
+      "Bash(cd \"C:\\\\Users\\\\eddie\\\\.claude\\\\plugins\\\\cache\\\\ui-ux-pro-max-skill\\\\ui-ux-pro-max\\\\2.0.1\" && python3 cli/assets/scripts/search.py \"social media analytics dashboard SaaS dark premium\" --design-system -p \"Promotley\" -f markdown 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\eddie\\\\.claude\\\\plugins\\\\cache\\\\ui-ux-pro-max-skill\\\\ui-ux-pro-max\\\\2.0.1\" && python3 cli/assets/scripts/search.py \"editorial bold magazine dark analytics\" --domain style -n 5 2>&1 && python3 cli/assets/scripts/search.py \"SaaS analytics tool dashboard\" --domain product -n 3 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npm run lint 2>&1 | grep -E \"\\(AppSidebar|DashboardLayout\\)\" | head -20)",
+      "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npm run lint 2>&1 | grep -E \"pages/\\(Analytics|AIPage\\)\" | head -20)",
+      "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npm run lint 2>&1 | grep -E \"pages/\\(Calendar|AIChat|AccountPage\\)\" | head -20)"
     ]
   }
 }

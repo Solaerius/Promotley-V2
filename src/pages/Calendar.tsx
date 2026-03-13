@@ -21,7 +21,7 @@ import { Link } from "react-router-dom";
 type EventType = "inlagg" | "uf_marknad" | "event" | "deadline" | "ovrigt";
 
 const eventTypeLabels: Record<EventType, string> = {
-  inlagg: "Inlagg", uf_marknad: "UF-marknad", event: "Event/aktivitet", deadline: "Deadline", ovrigt: "Ovrigt",
+  inlagg: "Inlägg", uf_marknad: "UF-marknad", event: "Event/aktivitet", deadline: "Deadline", ovrigt: "Övrigt",
 };
 
 const eventTypeColors: Record<EventType, string> = {
@@ -59,7 +59,7 @@ const Calendar = () => {
 
   const handleSavePost = async () => {
     if (!formData.date || !formData.platform || !formData.title) {
-      toast({ title: "Fyll i alla obligatoriska falt", variant: "destructive" });
+      toast({ title: "Fyll i alla obligatoriska fält", variant: "destructive" });
       return;
     }
     setIsSaving(true);
@@ -108,15 +108,15 @@ const Calendar = () => {
   };
 
   const monthNames = ["Januari", "Februari", "Mars", "April", "Maj", "Juni", "Juli", "Augusti", "September", "Oktober", "November", "December"];
-  const weekDays = ["Man", "Tis", "Ons", "Tor", "Fre", "Lor", "Son"];
+  const weekDays = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"];
 
   if (loading) return <DashboardLayout><CalendarSkeleton /></DashboardLayout>;
   if (error) return (
     <DashboardLayout>
       <div className="space-y-4">
         <div>
-          <h1 className="text-xl font-semibold text-foreground">Innehallskalender</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Planera dina inlagg</p>
+          <h1 className="text-2xl font-bold text-foreground">Innehållskalender</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Planera dina inlägg</p>
         </div>
         <CalendarErrorState error={error} onRetry={fetchPosts} />
       </div>
@@ -129,15 +129,15 @@ const Calendar = () => {
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
           <div>
-            <h1 className="text-xl font-semibold text-foreground">Innehallskalender</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Planera dina inlagg och hall koll pa din content-strategi</p>
+            <h1 className="text-2xl font-bold text-foreground">Innehållskalender</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">Planera dina inlägg och håll koll på din content-strategi</p>
           </div>
           <div className="flex flex-col gap-2">
             {!isAIProfileComplete && (
               <Alert variant="default" className="border-warning/50 bg-warning/5">
                 <AlertCircle className="h-4 w-4 text-warning" />
                 <AlertDescription className="text-warning text-sm">
-                  Fyll i din <Link to="/account" className="underline font-medium">AI-profil</Link> for att anvanda AI.
+                  Fyll i din <Link to="/account" className="underline font-medium">AI-profil</Link> för att använda AI.
                 </AlertDescription>
               </Alert>
             )}
@@ -149,11 +149,11 @@ const Calendar = () => {
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
                   <Button variant="secondary" size="sm" onClick={() => { setEditingPost(null); setFormData({ date: "", platform: "inlagg", title: "", description: "" }); }}>
-                    <Plus className="w-4 h-4 mr-1.5" /> Lagg till
+                    <Plus className="w-4 h-4 mr-1.5" /> Lägg till
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-md">
-                  <DialogHeader><DialogTitle>{editingPost ? "Redigera handelse" : "Ny handelse"}</DialogTitle></DialogHeader>
+                  <DialogHeader><DialogTitle>{editingPost ? "Redigera händelse" : "Ny händelse"}</DialogTitle></DialogHeader>
                   <div className="space-y-4">
                     <div><Label>Datum</Label><Input type="date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} /></div>
                     <div>
@@ -164,7 +164,7 @@ const Calendar = () => {
                       </Select>
                     </div>
                     <div><Label>Titel</Label><Input placeholder="Titel" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} /></div>
-                    <div><Label>Beskrivning</Label><Textarea placeholder="Beskriv innehallet" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} /></div>
+                    <div><Label>Beskrivning</Label><Textarea placeholder="Beskriv innehållet" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} /></div>
                     <Button onClick={handleSavePost} className="w-full" disabled={isSaving}>
                       {isSaving ? <><Loader2 className="w-4 h-4 mr-1.5 animate-spin" />{editingPost ? "Uppdaterar..." : "Skapar..."}</> : (editingPost ? "Uppdatera" : "Skapa")}
                     </Button>
@@ -177,7 +177,7 @@ const Calendar = () => {
 
         {/* Progress */}
         {isGeneratingPlan && (
-          <div className="space-y-2 p-4 rounded-xl bg-card shadow-sm">
+          <div className="space-y-2 p-4 rounded-2xl bg-card border border-border/40">
             <div className="flex items-center justify-between text-sm">
               <span className="font-medium">Skapar din plan...</span>
               <span className="text-muted-foreground">{Math.round(generationProgress)}%</span>
@@ -187,13 +187,13 @@ const Calendar = () => {
         )}
 
         {/* Calendar */}
-        <div className="rounded-xl bg-card shadow-sm p-5">
+        <div className="rounded-2xl bg-card border border-border/40 p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-semibold text-foreground">{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</h2>
+            <h2 className="text-lg font-bold text-foreground">{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</h2>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}>Foregaende</Button>
+              <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}>Föregående</Button>
               <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>Idag</Button>
-              <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}>Nasta</Button>
+              <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}>Nästa</Button>
             </div>
           </div>
 
@@ -206,15 +206,20 @@ const Calendar = () => {
               const dayPosts = day ? getPostsForDate(day) : [];
               const isToday = day === new Date().getDate() && currentDate.getMonth() === new Date().getMonth() && currentDate.getFullYear() === new Date().getFullYear();
               return (
-                <div key={index} className={`min-h-[76px] p-1.5 rounded-lg border transition-colors ${day ? (isToday ? "bg-primary/5 border-primary/30" : "bg-card hover:bg-muted border-border") : "bg-transparent border-transparent"}`}>
+                <div key={index} className={`min-h-[76px] p-1.5 rounded-lg border transition-colors ${day ? (isToday ? "bg-primary/5 border-2 border-primary/40" : "bg-card hover:bg-muted/20 border-border/30") : "bg-transparent border-transparent"}`}>
                   {day && (
                     <>
-                      <div className="text-sm font-medium mb-1 text-foreground">{day}</div>
+                      <div className="mb-1">
+                        {isToday
+                          ? <span className="text-sm font-bold text-primary">{day}</span>
+                          : <span className="text-sm text-muted-foreground">{day}</span>
+                        }
+                      </div>
                       <div className="space-y-1">
                         {dayPosts.map((post) => {
                           const eventType = (post as any).event_type as EventType || 'inlagg';
                           return (
-                            <div key={post.id} className={`${eventTypeColors[eventType]} text-white text-[10px] p-1 rounded cursor-pointer hover:opacity-90 group relative`} onClick={() => handleEditPost(post)}>
+                            <div key={post.id} className={`${eventTypeColors[eventType]} text-white text-[10px] p-1 rounded font-medium cursor-pointer hover:opacity-90 group relative`} onClick={() => handleEditPost(post)}>
                               <span className="truncate block">{post.title}</span>
                               <div className="absolute top-0.5 right-0.5 opacity-0 group-hover:opacity-100">
                                 <Button variant="ghost" size="icon" className="h-4 w-4 text-white" onClick={(e) => { e.stopPropagation(); deletePost(post.id); }}>
@@ -234,15 +239,15 @@ const Calendar = () => {
         </div>
 
         {/* Upcoming */}
-        <div className="rounded-xl bg-card shadow-sm p-5">
-          <h3 className="text-sm font-medium text-foreground mb-3">Kommande inlagg</h3>
+        <div className="rounded-2xl bg-card border border-border/40 p-5">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">Kommande inlägg</h3>
           <div className="space-y-2">
             {posts.filter(p => new Date(p.date) >= new Date(new Date().toDateString())).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).slice(0, 5).map((post) => {
               const eventType = (post as any).event_type as EventType || 'inlagg';
               return (
-                <div key={post.id} className="flex items-center justify-between p-3 rounded-lg bg-muted">
+                <div key={post.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/20 border border-border/30 hover:bg-muted/40 transition-colors">
                   <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-lg ${eventTypeColors[eventType]} flex items-center justify-center`}>
+                    <div className={`w-9 h-9 rounded-xl ${eventTypeColors[eventType]} flex items-center justify-center`}>
                       <CalendarIcon className="w-4 h-4 text-white" />
                     </div>
                     <div>
@@ -257,7 +262,7 @@ const Calendar = () => {
                 </div>
               );
             })}
-            {posts.length === 0 && <p className="text-center text-sm text-muted-foreground py-6">Inga planerade inlagg annu.</p>}
+            {posts.length === 0 && <p className="text-center text-sm text-muted-foreground py-6">Inga planerade inlägg ännu.</p>}
           </div>
         </div>
       </div>
