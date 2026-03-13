@@ -163,11 +163,19 @@ serve(async (req) => {
   }
 
   try {
-    // Validate API key exists
+    // Validate required secrets
     if (!RESEND_API_KEY) {
       console.error("RESEND_API_KEY not configured");
       return new Response(
         JSON.stringify({ error: "email_service_not_configured" }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (!APP_ORIGIN) {
+      console.error("APP_ORIGIN not configured — verification link will be broken");
+      return new Response(
+        JSON.stringify({ error: "app_origin_not_configured" }),
         { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
