@@ -28,7 +28,9 @@ const AppSettingsContent = () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { toast({ title: "Inte inloggad", variant: "destructive" }); return; }
-      const { data, error } = await supabase.functions.invoke('init-tiktok-oauth');
+      const { data, error } = await supabase.functions.invoke('init-tiktok-oauth', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
       if (error || !data?.url) throw error;
       window.location.href = data.url;
     } catch { toast({ title: "Anslutning misslyckades", variant: "destructive" }); setConnectingProvider(null); }
