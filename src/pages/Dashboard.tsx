@@ -112,7 +112,7 @@ const Dashboard = () => {
     { label: "FÖLJARE", value: formatNumber(tiktokData.user?.follower_count || 0), icon: Users, sub: `${formatNumber(tiktokData.user?.following_count || 0)} följer`, color: STAT_COLORS.primary },
     { label: "TOTALA VISNINGAR", value: formatNumber(tiktokData.stats?.totalViews || 0), icon: Eye, sub: `${tiktokData.stats?.videoCount || 0} videor`, color: STAT_COLORS.amber },
     { label: "GILLA-MARKERINGAR", value: formatNumber(tiktokData.stats?.totalLikes || 0), icon: Heart, sub: `${formatNumber(tiktokData.stats?.totalComments || 0)} komm.`, color: STAT_COLORS.teal },
-    { label: "ENGAGEMANGSGRAD", value: `${tiktokData.stats?.avgEngagementRate || "0"}%`, icon: TrendingUp, sub: "Genomsnitt", color: STAT_COLORS.violet },
+    { label: "ENGAGEMANGSGRAD", value: `${tiktokData.stats?.avgEngagementRate || "0%"}`, icon: TrendingUp, sub: "Genomsnitt", color: STAT_COLORS.violet },
   ];
 
   const instagramStatCards = [
