@@ -30,7 +30,7 @@ project_id = "fmvbzhlqzzwzciqgbzgp"
   [functions.init-meta-oauth]
     verify_jwt = true
   [functions.init-tiktok-oauth]
-    verify_jwt = true
+    verify_jwt = false
   [functions.meta-data-deletion]
     verify_jwt = false
   [functions.meta-deauthorize]
