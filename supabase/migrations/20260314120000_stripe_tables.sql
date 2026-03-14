@@ -46,7 +46,7 @@ CREATE POLICY "Users can read own subscriptions"
 -- Admins can read all rows
 CREATE POLICY "Admins can read all subscriptions"
   ON stripe_subscriptions FOR SELECT
-  USING (is_admin());
+  USING (has_role(auth.uid(), 'admin'::app_role));
 
 -- 4. Create processed_stripe_events table for webhook idempotency
 CREATE TABLE IF NOT EXISTS processed_stripe_events (
