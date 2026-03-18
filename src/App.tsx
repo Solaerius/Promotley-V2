@@ -25,6 +25,9 @@ const AIChat = lazy(() => import("./pages/AIChat"));
 const AccountPage = lazy(() => import("./pages/AccountPage"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const SwishCheckout = lazy(() => import("./pages/SwishCheckout"));
+const CheckoutRedirect = lazy(() => import("./pages/CheckoutRedirect"));
+const CheckoutSuccess = lazy(() => import("./pages/CheckoutSuccess"));
+const CheckoutCancel = lazy(() => import("./pages/CheckoutCancel"));
 const Demo = lazy(() => import("./pages/Demo"));
 const RedeemPromotion = lazy(() => import("./pages/RedeemPromotion"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
@@ -44,6 +47,7 @@ const AdminNotificationSettings = lazy(() => import("./pages/AdminNotificationSe
 const AdminUserManagement = lazy(() => import("./pages/AdminUserManagement"));
 const AdminBanManagement = lazy(() => import("./pages/AdminBanManagement"));
 const AdminSwishOrders = lazy(() => import("./pages/AdminSwishOrders"));
+const AdminStripeOrders = lazy(() => import("./pages/AdminStripeOrders"));
 const AdminPromotions = lazy(() => import("./pages/AdminPromotions"));
 const AdminEmailBroadcast = lazy(() => import("./pages/AdminEmailBroadcast"));
 const AdminEmailAutomation = lazy(() => import("./pages/AdminEmailAutomation"));
@@ -194,13 +198,21 @@ const App = () => (
                 </AdminRoute>
               } 
             />
-            <Route 
-              path="/admin/swish" 
+            <Route
+              path="/admin/swish"
               element={
                 <AdminRoute>
                   <AdminSwishOrders />
                 </AdminRoute>
-              } 
+              }
+            />
+            <Route
+              path="/admin/stripe"
+              element={
+                <AdminRoute>
+                  <AdminStripeOrders />
+                </AdminRoute>
+              }
             />
             <Route 
               path="/admin/promotions" 
@@ -230,18 +242,24 @@ const App = () => (
             <Route path="/demo" element={<Demo />} />
             <Route path="/promo/:code" element={<RedeemPromotion />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
-            <Route 
-              path="/swish-checkout" 
+            <Route
+              path="/swish-checkout"
+              element={<Navigate to="/pricing" replace />}
+            />
+            {/* Stripe Checkout routes */}
+            <Route
+              path="/checkout"
               element={
                 <ProtectedRoute>
-                  <SwishCheckout />
+                  <CheckoutRedirect />
                 </ProtectedRoute>
-              } 
+              }
             />
-            {/* Redirect old checkout routes to Swish */}
-            <Route path="/checkout" element={<Navigate to="/pricing" replace />} />
+            <Route path="/checkout/success" element={<CheckoutSuccess />} />
+            <Route path="/checkout/cancel" element={<CheckoutCancel />} />
             <Route path="/buy-credits" element={<Navigate to="/pricing" replace />} />
-            <Route path="/billing/success" element={<Navigate to="/dashboard" replace />} />
+            {/* Keep for in-flight old sessions */}
+            <Route path="/billing/success" element={<Navigate to="/checkout/success" replace />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
             {/* Organization routes */}

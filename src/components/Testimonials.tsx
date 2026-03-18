@@ -1,5 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Star, Quote } from "lucide-react";
+import { Star } from "lucide-react";
 
 const testimonials = [
   {
@@ -31,34 +30,27 @@ const testimonials = [
 const Testimonials = () => {
   return (
     <section className="relative py-24 md:py-32 overflow-hidden">
-      {/* Background with diagonal gradient */}
-      <div className="absolute inset-0 bg-gradient-diagonal" />
-      
-      {/* Fluid blur orbs */}
-      <div className="blur-orb blur-orb-secondary w-[500px] h-[500px] top-0 left-0 animate-glow-pulse" />
-      <div className="blur-orb blur-orb-primary w-[400px] h-[400px] bottom-0 right-1/4 animate-glow-pulse" style={{ animationDelay: '1.2s' }} />
-      
-      {/* Top blend */}
-      <div 
-        className="absolute top-0 left-0 right-0 h-48 pointer-events-none"
-        style={{
-          background: 'linear-gradient(to bottom, hsl(344 55% 12%) 0%, transparent 100%)',
-          filter: 'blur(30px)',
-        }}
-      />
-      
+      {/* Section accent glow */}
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 30% 60%, hsl(260 70% 14% / 0.5) 0%, transparent 70%)' }} />
+
       <div className="container mx-auto px-4 md:px-6 relative z-10 max-w-6xl">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-6 backdrop-blur-sm">
+          <div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
+            style={{
+              background: 'hsl(260 70% 30% / 0.25)',
+              border: '1px solid hsl(260 60% 50% / 0.25)',
+            }}
+          >
             <Star className="w-4 h-4 text-white fill-white" />
             <span className="text-sm font-medium text-white">Recensioner</span>
           </div>
-          
+
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4" style={{ textWrap: 'balance' }}>
             Vad säger <span className="text-gradient">andra företag?</span>
           </h2>
-          <p className="text-lg text-white/70 max-w-2xl mx-auto" style={{ textWrap: 'balance' }}>
+          <p className="text-lg max-w-2xl mx-auto" style={{ color: 'hsl(0 0% 100% / 0.55)', textWrap: 'balance' }}>
             Hundratals UF-företag och startups växer redan med oss
           </p>
         </div>
@@ -66,52 +58,65 @@ const Testimonials = () => {
         {/* Testimonial Cards */}
         <div className="grid sm:grid-cols-2 gap-6">
           {testimonials.map((testimonial, index) => (
-            <Card 
+            <div
               key={index}
-              className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/[0.15] hover:border-white/30 transition-all duration-300 group"
+              className="relative rounded-2xl p-6 md:p-8 overflow-hidden transition-all duration-300"
+              style={{
+                background: 'hsl(0 0% 100% / 0.04)',
+                border: '1px solid hsl(0 0% 100% / 0.08)',
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLDivElement).style.background = 'hsl(0 0% 100% / 0.07)';
+                (e.currentTarget as HTMLDivElement).style.borderColor = 'hsl(0 0% 100% / 0.14)';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLDivElement).style.background = 'hsl(0 0% 100% / 0.04)';
+                (e.currentTarget as HTMLDivElement).style.borderColor = 'hsl(0 0% 100% / 0.08)';
+              }}
             >
-              <CardContent className="p-6 md:p-8">
-                {/* Quote Icon */}
-                <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center mb-4">
-                  <Quote className="w-5 h-5 text-white/60" />
-                </div>
+              {/* Decorative oversized quote mark */}
+              <div
+                className="absolute top-4 right-6 text-8xl font-serif leading-none select-none pointer-events-none"
+                style={{ color: 'hsl(9 85% 55% / 0.15)' }}
+              >
+                "
+              </div>
 
-                {/* Rating */}
-                <div className="flex gap-1 mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
+              {/* Rating */}
+              <div className="flex gap-1 mb-4 relative z-10">
+                {[...Array(testimonial.rating)].map((_, i) => (
+                  <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                ))}
+              </div>
 
-                {/* Text */}
-                <p className="text-white/90 mb-6 leading-relaxed">
-                  "{testimonial.text}"
-                </p>
+              {/* Text */}
+              <p className="text-white/90 mb-6 leading-relaxed relative z-10">
+                "{testimonial.text}"
+              </p>
 
-                {/* Author */}
-                <div className="pt-4 border-t border-white/10 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold">
-                    {testimonial.name.charAt(0)}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-white">{testimonial.name}</div>
-                    <div className="text-sm text-white/60">{testimonial.company}</div>
-                  </div>
+              {/* Author */}
+              <div
+                className="pt-4 flex items-center gap-3 relative z-10"
+                style={{ borderTop: '1px solid hsl(0 0% 100% / 0.08)' }}
+              >
+                {/* Gradient avatar with initial */}
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shrink-0"
+                  style={{
+                    background: 'linear-gradient(135deg, hsl(9 85% 55%), hsl(331 70% 45%))',
+                  }}
+                >
+                  {testimonial.name.charAt(0)}
                 </div>
-              </CardContent>
-            </Card>
+                <div>
+                  <div className="font-semibold text-white">{testimonial.name}</div>
+                  <div className="text-sm" style={{ color: 'hsl(0 0% 100% / 0.55)' }}>{testimonial.company}</div>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>
-      
-      {/* Bottom blend */}
-      <div 
-        className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none"
-        style={{
-          background: 'linear-gradient(to top, hsl(344 55% 12%) 0%, transparent 100%)',
-          filter: 'blur(30px)',
-        }}
-      />
     </section>
   );
 };

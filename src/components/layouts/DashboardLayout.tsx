@@ -5,7 +5,6 @@ import { useOrganization } from "@/hooks/useOrganization";
 import { useNotifications } from "@/hooks/useNotifications";
 import { EmailVerificationBanner } from "@/components/EmailVerificationBanner";
 import { AppSidebar } from "@/components/AppSidebar";
-import CreditWarningBanner from "@/components/CreditWarningBanner";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Bell, Trash2, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -43,12 +42,12 @@ const DashboardLayout = ({ children, pageTitle, hideFooter }: DashboardLayoutPro
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
+      <div className="min-h-screen flex w-full bg-gradient-to-br from-slate-100 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
         <AppSidebar />
 
         <div className="flex-1 flex flex-col min-w-0">
           {/* Content header */}
-          <header className="sticky top-0 z-20 h-12 flex items-center justify-between gap-2 px-4 border-b border-border/40 bg-background/95 backdrop-blur-sm">
+          <header className="sticky top-0 z-20 h-12 flex items-center justify-between gap-2 px-4 border-b border-border/50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
             <div className="flex items-center gap-2">
               <SidebarTrigger className="h-8 w-8" />
               {pageTitle && (
@@ -59,12 +58,15 @@ const DashboardLayout = ({ children, pageTitle, hideFooter }: DashboardLayoutPro
             {/* Notifications */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative h-8 w-8">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative h-8 w-8 hover:bg-primary/10 hover:text-primary"
+                >
                   <Bell className="h-4 w-4" />
                   {unreadCount > 0 && (
                     <Badge
-                      variant="destructive"
-                      className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]"
+                      className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px] bg-primary text-primary-foreground border-0"
                     >
                       {unreadCount > 9 ? "9+" : unreadCount}
                     </Badge>
@@ -137,7 +139,6 @@ const DashboardLayout = ({ children, pageTitle, hideFooter }: DashboardLayoutPro
 
           {/* Main content - no motion wrapper */}
           <main className="flex-1 p-4 md:p-6">
-            <CreditWarningBanner />
             {children}
           </main>
 

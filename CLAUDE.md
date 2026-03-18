@@ -2,6 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## IMPORTANT INSTRUCTIONS
+Before using or writing ANY code that requires external API docs or libraries, you MUST use the Context7 tools you have access to, to pull the lates documentation and ensure your code is up to date and accurate.
+
+For frontend design use the skills and plugins available. Use specifically ui-ux-pro-max skill and the frontend-design.
+
+When writing swedish you MUST use the letters "Å", "Ä", "Ö" when the word contains it instead of switching to "o" and "a". 
+
 ## Commands
 
 ```bash

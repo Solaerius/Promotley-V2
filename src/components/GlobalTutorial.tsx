@@ -9,24 +9,31 @@ const DASHBOARD_ROUTES = ["/dashboard", "/analytics", "/ai", "/calendar", "/acco
 
 const GlobalTutorial = () => {
   const { user } = useAuth();
-  const { profile, loading: profileLoading } = useAIProfile();
+  const { profile, loading: profileLoading, refetch } = useAIProfile();
   const [showTutorial, setShowTutorial] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
   const location = useLocation();
 
   const isOnDashboardRoute = DASHBOARD_ROUTES.some(r => location.pathname.startsWith(r));
 
   useEffect(() => {
-    if (!profileLoading && profile && profile.tutorial_seen === false && user && isOnDashboardRoute) {
+    if (!dismissed && !profileLoading && profile && profile.tutorial_seen === false && user && isOnDashboardRoute) {
       setShowTutorial(true);
     }
-  }, [profileLoading, profile, user, isOnDashboardRoute]);
+  }, [dismissed, profileLoading, profile, user, isOnDashboardRoute]);
+
+  const handleComplete = () => {
+    setDismissed(true);
+    setShowTutorial(false);
+    refetch();
+  };
 
   if (!showTutorial || !isOnDashboardRoute) return null;
 
   return (
     <AnimatePresence>
       {showTutorial && (
-        <OnboardingTutorial onComplete={() => setShowTutorial(false)} />
+        <OnboardingTutorial onComplete={handleComplete} />
       )}
     </AnimatePresence>
   );

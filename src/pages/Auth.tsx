@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -26,9 +26,12 @@ import {
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const fromDemo = searchParams.get('from') === 'demo';
   const joinMode = searchParams.get('mode') === 'join';
-  
+  // After login, redirect back to where the user was heading (preserved by ProtectedRoute)
+  const redirectTo = (location.state as any)?.from || "/dashboard";
+
   const [isLogin, setIsLogin] = useState(searchParams.get('mode') !== 'register');
   const [isCreatingCompany, setIsCreatingCompany] = useState(!joinMode);
   const [email, setEmail] = useState("");
@@ -99,8 +102,8 @@ const Auth = () => {
           const { data: { session }, error } = await supabase.auth.getSession();
           
           if (session?.user) {
-            console.log('Session established, redirecting to dashboard');
-            navigate("/dashboard");
+            console.log('Session established, redirecting to', redirectTo);
+            navigate(redirectTo);
             return true;
           }
           
@@ -137,7 +140,7 @@ const Auth = () => {
         return () => clearInterval(interval);
       } else if (user) {
         // Regular redirect for already logged in users
-        navigate("/dashboard");
+        navigate(redirectTo);
       }
     };
 

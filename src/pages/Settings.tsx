@@ -169,7 +169,9 @@ const Settings = () => {
         return;
       }
 
-      const { data, error } = await supabase.functions.invoke('init-tiktok-oauth');
+      const { data, error } = await supabase.functions.invoke('init-tiktok-oauth', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
 
       if (error || !data?.url) {
         throw new Error(error?.message || 'Failed to initialize TikTok OAuth');

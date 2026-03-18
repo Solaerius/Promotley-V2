@@ -15,7 +15,7 @@ const Navbar = () => {
       id="site-header"
       className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl mt-2 mx-4 md:mx-6 lg:mx-12 rounded-2xl shadow-elegant border border-border/20 translate-y-[6px]"
       style={{
-        background: 'linear-gradient(135deg, hsl(var(--primary) / 0.1) 0%, hsl(var(--secondary) / 0.08) 50%, hsl(var(--accent) / 0.1) 100%)',
+        background: 'hsl(344 55% 6% / 0.85)',
       }}
     >
       <div className="container mx-auto px-4 md:px-6 py-3">

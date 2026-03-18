@@ -74,7 +74,7 @@ const Pricing = () => {
   const currentTierLevel = credits?.plan ? getTierLevel(credits.plan) : 0;
 
   const handleSelectPlan = (tier: string) => {
-    navigate(`/swish-checkout?plan=${tier}`);
+    navigate(`/checkout?plan=${tier}&type=plan`);
   };
 
   const isCurrentPlan = (plan: typeof plans[0]) => {

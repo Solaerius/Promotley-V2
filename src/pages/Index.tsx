@@ -14,7 +14,17 @@ import BackToTop from "@/components/BackToTop";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
 const Index = () => {
-  return <div className="min-h-screen">
+  return <div className="min-h-screen relative" style={{ background: 'hsl(240 50% 4%)' }}>
+      {/* Single continuous grid texture for the whole page */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          backgroundImage: 'linear-gradient(hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)',
+          backgroundSize: '60px 60px',
+          opacity: 0.025,
+          zIndex: 0,
+        }}
+      />
       <Navbar />
       <Hero />
       
@@ -49,12 +59,12 @@ const Index = () => {
       <CookieConsent />
       
       {/* Footer */}
-      <footer className="border-t py-10 md:py-12 px-4 bg-background">
-        <div className="container mx-auto text-muted-foreground font-poppins">
+      <footer className="border-t py-10 md:py-12 px-4" style={{ borderColor: 'hsl(0 0% 100% / 0.08)', background: 'hsl(240 50% 3%)' }}>
+        <div className="container mx-auto font-poppins" style={{ color: 'hsl(0 0% 100% / 0.4)' }}>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto mb-6 md:mb-8">
             {/* Company Info */}
             <div className="text-center sm:text-left">
-              <h3 className="font-bold text-foreground mb-2 md:mb-3">Promotley UF</h3>
+              <h3 className="font-bold mb-2 md:mb-3" style={{ color: 'hsl(0 0% 100% / 0.85)' }}>Promotley UF</h3>
               <p className="text-xs md:text-sm">AI-driven marknadsföring för UF-företag</p>
               <p className="text-xs md:text-sm mt-1.5 md:mt-2">En del av Ung Företagsamhet Sverige</p>
               <p className="text-xs md:text-sm mt-2 md:mt-3">Borgarfjordsgatan 6C<br />164 40 Kista, Sverige</p>
@@ -62,7 +72,7 @@ const Index = () => {
 
             {/* Contact */}
             <div className="text-center sm:text-left">
-              <h3 className="font-bold text-foreground mb-2 md:mb-3">Kontakt</h3>
+              <h3 className="font-bold mb-2 md:mb-3" style={{ color: 'hsl(0 0% 100% / 0.85)' }}>Kontakt</h3>
               <div className="space-y-1.5 md:space-y-2 text-xs md:text-sm">
                 <div>
                   <a href="mailto:uf@promotley.se" className="hover:text-foreground transition-colors">
@@ -79,7 +89,7 @@ const Index = () => {
 
             {/* Links */}
             <div className="text-center sm:text-left md:text-right sm:col-span-2 md:col-span-1">
-              <h3 className="font-bold text-foreground mb-2 md:mb-3">Länkar</h3>
+              <h3 className="font-bold mb-2 md:mb-3" style={{ color: 'hsl(0 0% 100% / 0.85)' }}>Länkar</h3>
               <div className="space-y-1.5 md:space-y-2 text-xs md:text-sm">
                 <div>
                   <Link to="/privacy-policy" className="hover:text-foreground transition-colors">

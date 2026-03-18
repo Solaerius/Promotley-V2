@@ -94,8 +94,8 @@ const AIPage = () => {
     <DashboardLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-xl font-semibold text-foreground">AI-verktyg</h1>
+        <div className="border-l-4 border-primary pl-3">
+          <h1 className="text-2xl font-bold text-foreground">AI-verktyg</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             Din personliga AI för marknadsföring och innehåll
           </p>
@@ -116,33 +116,36 @@ const AIPage = () => {
         )}
 
         {/* Tools grid */}
-        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 ${isBlocked ? "opacity-50 pointer-events-none" : ""}`}>
-          {tools.map((tool) => {
+        <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2.5 ${isBlocked ? "opacity-50 pointer-events-none" : ""}`}>
+          {tools.map((tool, index) => {
             const Icon = tool.icon;
             return (
               <button
                 key={tool.title}
                 onClick={() => navigate(tool.route)}
-                className="flex items-start gap-3 p-4 rounded-xl bg-card shadow-sm hover:shadow-md transition-all text-left group"
+                className="flex items-start gap-4 p-4 rounded-2xl bg-card border border-border/40 hover:border-primary/40 hover:-translate-y-0.5 transition-all duration-200 text-left group cursor-pointer"
               >
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-muted shrink-0">
-                  <Icon className="w-4.5 h-4.5 text-muted-foreground" />
+                <span className="text-[11px] font-bold font-mono text-muted-foreground/50 mt-1 w-5 shrink-0">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary/10 shrink-0">
+                  <Icon className="w-4.5 h-4.5 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                  <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
                     {tool.title}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5">{tool.description}</p>
                 </div>
-                <ArrowRight className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-1 shrink-0" />
+                <ArrowRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all mt-1.5 shrink-0" />
               </button>
             );
           })}
         </div>
 
         {/* AI profile tip */}
-        <div className="rounded-xl bg-card shadow-sm p-4 flex items-start gap-3">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-primary/10 shrink-0">
+        <div className="rounded-2xl bg-primary/5 border border-primary/20 p-4 flex items-start gap-3">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary/15 shrink-0">
             <Sparkles className="w-4.5 h-4.5 text-primary" />
           </div>
           <div>
