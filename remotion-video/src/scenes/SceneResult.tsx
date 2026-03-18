@@ -129,7 +129,7 @@ export const SceneResult: React.FC = () => {
           <div style={{ fontFamily: FONT, fontSize: 22, fontWeight: 700, color: C.white,
             letterSpacing: "-0.5px" }}>AI Content Strategy</div>
           <div style={{ fontFamily: FONT, fontSize: 14, fontWeight: 400,
-            color: "rgba(255,255,255,0.35)" }}>Powered by Gemini</div>
+            color: "rgba(255,255,255,0.35)" }}>AI Content Strategy Tool</div>
         </div>
       </div>
 
@@ -171,6 +171,25 @@ export const SceneResult: React.FC = () => {
               color: "rgba(255,255,255,0.82)" }}>Women 18–35 · Sweden & Nordics</div>
           </div>
 
+          {/* Platforms */}
+          <div style={{ background: "rgba(255,255,255,0.055)", border: "1px solid rgba(255,255,255,0.10)",
+            borderRadius: 18, padding: "20px 24px", marginBottom: 24 }}>
+            <div style={{ fontFamily: FONT, fontSize: 12, fontWeight: 600,
+              color: "rgba(255,255,255,0.32)", letterSpacing: "2.5px",
+              textTransform: "uppercase", marginBottom: 12 }}>Platforms</div>
+            <div style={{ display: "flex", gap: 10 }}>
+              {["Instagram", "TikTok", "Facebook"].map((p) => (
+                <div key={p} style={{
+                  padding: "6px 18px", borderRadius: 100,
+                  background: GRADIENT_PRIMARY,
+                  fontFamily: FONT, fontSize: 15, fontWeight: 600, color: C.white,
+                }}>
+                  {p}
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Generate button */}
           <div style={{
             height: 80, borderRadius: 22,
@@ -202,7 +221,7 @@ export const SceneResult: React.FC = () => {
 
         {/* Right column — result (1040px) */}
         <div style={{ flex: 1, padding: "40px 48px", display: "flex",
-          flexDirection: "column", justifyContent: "flex-start",
+          flexDirection: "column", gap: 20,
           opacity: resultOp, transform: `translateX(${resultX}px)` }}>
 
           {/* Result card */}
@@ -239,9 +258,29 @@ export const SceneResult: React.FC = () => {
               opacity: interpolate(frame, [135, 148], [0, 1], { extrapolateRight: "clamp" }) }}>
               <div style={{ fontFamily: FONT, fontSize: 15, fontWeight: 600,
                 color: "rgba(255,255,255,0.38)", letterSpacing: "1px", textTransform: "uppercase" }}>
-                Powered by Gemini AI · Updated weekly
+                Updated weekly · Based on your data
               </div>
             </div>
+          </div>
+
+          {/* Action row */}
+          <div style={{
+            display: "flex", gap: 16,
+            opacity: interpolate(frame, [140, 150], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
+          }}>
+            {[
+              { label: "Export PDF",     bg: "rgba(255,255,255,0.08)", border: "rgba(255,255,255,0.14)" },
+              { label: "Schedule All →", bg: GRADIENT_PRIMARY,          border: "transparent" },
+            ].map(({ label, bg, border }) => (
+              <div key={label} style={{
+                flex: 1, height: 60, borderRadius: 16,
+                background: bg, border: `1px solid ${border}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontFamily: FONT, fontSize: 18, fontWeight: 700, color: C.white,
+              }}>
+                {label}
+              </div>
+            ))}
           </div>
         </div>
       </div>

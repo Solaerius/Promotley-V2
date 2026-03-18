@@ -9,9 +9,12 @@ import {
   Img,
 } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Poppins";
+import { loadFont as loadFontSG } from "@remotion/google-fonts/SpaceGrotesk";
 import { C, FONT, GRADIENT_PRIMARY } from "../theme";
 
 loadFont("normal", { weights: ["700", "600", "300"] });
+loadFontSG("normal", { weights: ["300"] });
+const URL_FONT = "'Space Grotesk', sans-serif";
 
 export const Scene7CTA: React.FC = () => {
   const frame = useCurrentFrame();
@@ -92,19 +95,18 @@ export const Scene7CTA: React.FC = () => {
           </h1>
 
           {/* Badge */}
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 10,
+          <div style={{ display: "inline-flex", alignItems: "center",
             padding: "12px 28px", borderRadius: 9999,
             background: "rgba(255,255,255,0.14)", border: "1px solid rgba(255,255,255,0.26)",
             marginTop: 40, opacity: badgeOpacity }}>
-            <span style={{ fontSize: 20 }}>🎉</span>
             <span style={{ fontFamily: FONT, fontSize: 17, fontWeight: 600,
               color: "rgba(255,255,255,0.90)", letterSpacing: "2px",
-              textTransform: "uppercase" }}>No credit card required</span>
+              textTransform: "uppercase" }}>No credit card required to start</span>
           </div>
 
           {/* URL */}
-          <p style={{ fontFamily: FONT, fontSize: 48, fontWeight: 300,
-            color: "rgba(255,255,255,0.82)", marginTop: 36, letterSpacing: "7px",
+          <p style={{ fontFamily: URL_FONT, fontSize: 48, fontWeight: 300,
+            color: "rgba(255,255,255,0.82)", marginTop: 36, letterSpacing: "6px",
             opacity: urlSpring, transform: `translateY(${urlY}px)` }}>
             promotely.se
           </p>
