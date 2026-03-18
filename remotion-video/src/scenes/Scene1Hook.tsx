@@ -30,7 +30,10 @@ export const Scene1Hook: React.FC = () => {
   const titleSpring  = spring({ frame, fps, config: { damping: 18, stiffness: 220, mass: 0.6 } });
   const titleY       = interpolate(titleSpring, [0, 1], [70, 0]);
 
-  const nobodySpring = spring({ frame: Math.max(0, frame - 14), fps, config: { damping: 18, stiffness: 180 } });
+  const andSpring    = spring({ frame: Math.max(0, frame - 8), fps, config: { damping: 18, stiffness: 180 } });
+  const andY         = interpolate(andSpring, [0, 1], [30, 0]);
+
+  const nobodySpring = spring({ frame: Math.max(0, frame - 18), fps, config: { damping: 18, stiffness: 180 } });
   const nobodyY      = interpolate(nobodySpring, [0, 1], [40, 0]);
 
   const againOpacity = interpolate(frame, [58, 72], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
@@ -61,8 +64,14 @@ export const Scene1Hook: React.FC = () => {
           You post.
         </h1>
 
+        <h2 style={{ fontFamily: FONT, fontSize: 56, fontWeight: 400,
+          color: "rgba(255,255,255,0.22)", margin: "8px 0 0", lineHeight: 1.1,
+          letterSpacing: "-1px", transform: `translateY(${andY}px)`, opacity: andSpring }}>
+          and
+        </h2>
+
         <h2 style={{ fontFamily: FONT, fontSize: 96, fontWeight: 600,
-          color: "rgba(255,255,255,0.28)", margin: "14px 0 0", lineHeight: 1.1,
+          color: "rgba(255,255,255,0.28)", margin: "8px 0 0", lineHeight: 1.1,
           letterSpacing: "-3px", transform: `translateY(${nobodyY}px)`, opacity: nobodySpring }}>
           Nobody sees it.
         </h2>

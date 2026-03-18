@@ -5,11 +5,29 @@ import {
   useVideoConfig,
   interpolate,
   spring,
+  Easing,
 } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Poppins";
 import { C, FONT, GRADIENT_PRIMARY } from "../theme";
 
 loadFont("normal", { weights: ["700", "600", "500", "400"] });
+
+// ── Cursor ─────────────────────────────────────────────────────────────────────
+
+const Cursor: React.FC<{ x: number; y: number; pressed: boolean; opacity: number }> = ({
+  x, y, pressed, opacity,
+}) => (
+  <div style={{
+    position: "absolute", left: x, top: y,
+    width: 32, height: 42, zIndex: 300, opacity,
+    transform: `scale(${pressed ? 0.80 : 1})`, pointerEvents: "none",
+  }}>
+    <svg viewBox="0 0 32 42" fill="none">
+      <path d="M3 3 L3 33 L11 24 L17 40 L22 37 L16 21 L27 21 Z"
+        fill="white" stroke="#1a1a1a" strokeWidth="2" strokeLinejoin="round" />
+    </svg>
+  </div>
+);
 
 // ── Compact stat card ──────────────────────────────────────────────────────────
 
@@ -125,15 +143,6 @@ const Dashboard: React.FC = () => (
           <span style={{ fontFamily: FONT, fontSize: 20, fontWeight: 400,
             color: "rgba(255,255,255,0.38)" }}>Here's your marketing overview</span>
         </div>
-        <div style={{ padding: "10px 22px", borderRadius: 100,
-          background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)",
-          display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 15 }}>✦</span>
-          <span style={{ fontFamily: FONT, fontSize: 14, fontWeight: 600,
-            color: "rgba(255,255,255,0.50)", letterSpacing: "0.5px" }}>
-            AI Tools powered by Gemini
-          </span>
-        </div>
       </div>
 
       {/* Stats row (148px) */}
@@ -159,7 +168,7 @@ const Dashboard: React.FC = () => (
         <div style={{ flex: 1, display: "flex", gap: 16 }}>
           <ToolCard emoji="🎯" title="Content Strategy"
             desc="Your personalized content calendar — what to post, when to post, and why it works."
-            btn="Generate" highlight={true} gradBg={GRADIENT_PRIMARY} />
+            btn="Go to tool" highlight={true} gradBg={GRADIENT_PRIMARY} />
           <ToolCard emoji="✍️" title="Caption Writer"
             desc="Generate scroll-stopping captions for any platform in your brand's voice."
             btn="Try it" gradBg="linear-gradient(135deg,#6366f1,#8b5cf6)" />
@@ -193,13 +202,38 @@ export const SceneDashboard: React.FC = () => {
   const slideSpring = spring({ frame, fps, config: { damping: 22, stiffness: 140, mass: 0.9 } });
   const slideY      = interpolate(slideSpring, [0, 1], [160, 0]);
 
-  // Zoom into Content Strategy card
-  // Card center approximate: x=48+(1920-96-16)/2/2=48+452=500, y=76+24+60+20+110+20+48+16+tool_row_half
-  // tool row starts at ~374, each row height = (1080-76-24-60-20-110-20-48-16-14-20)/2 = ~236px
-  // Card center y = 374 + 118 = 492
-  const zoomStart  = Math.round(fps * 3.5);
+  // Zoom into Content Strategy card (top-left)
+  const zoomStart  = Math.round(fps * 3.5); // frame 105
   const zoomSpring = spring({ frame: Math.max(0, frame - zoomStart), fps, config: { damping: 200 } });
   const zoom = interpolate(zoomSpring, [0, 1], [1, 1.68]);
+
+  // ── Cursor animation ────────────────────────────────────────────────────────
+  // Phase 1 (0–45):   wander to stats row area
+  // Phase 2 (45–90):  move to AI tools card area
+  // Phase 3 (90–165): move to "Go to tool" button (screen-space after zoom)
+  // Phase 4 (165–182): click
+
+  const eio = Easing.inOut(Easing.quad);
+
+  const cursorX = (() => {
+    if (frame <= 45)  return interpolate(frame, [0, 45],  [900, 680], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: eio });
+    if (frame <= 90)  return interpolate(frame, [45, 90], [680, 380], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: eio });
+    return interpolate(frame, [90, 165], [380, 80], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: eio });
+  })();
+
+  const cursorY = (() => {
+    if (frame <= 45)  return interpolate(frame, [0, 45],  [360, 220], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: eio });
+    if (frame <= 90)  return interpolate(frame, [45, 90], [220, 480], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: eio });
+    return interpolate(frame, [90, 165], [480, 748], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: eio });
+  })();
+
+  const cursorOpacity = interpolate(frame, [2, 14], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const cursorPressed = frame >= 166 && frame <= 182;
+
+  // Ripple on click
+  const rippleP  = interpolate(frame, [167, 196], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const rippleOp = interpolate(rippleP, [0, 0.6, 1], [0.55, 0.25, 0]);
+  const rippleSc = interpolate(rippleP, [0, 1], [0.8, 2.8]);
 
   return (
     <AbsoluteFill style={{ backgroundColor: C.bgDark, opacity: sceneOpacity, overflow: "hidden" }}>
@@ -207,12 +241,25 @@ export const SceneDashboard: React.FC = () => {
         overflow: "hidden" }}>
         <div style={{
           transform: `translateY(${slideY}px) scale(${zoom})`,
-          transformOrigin: "8% 48%",
+          transformOrigin: "12% 46%",
           width: 1920, height: 1080,
         }}>
           <Dashboard />
         </div>
       </div>
+
+      {/* Ripple at button position */}
+      {frame >= 167 && (
+        <div style={{
+          position: "absolute", left: 80 - 65, top: 748 - 65,
+          width: 130, height: 130, borderRadius: "50%",
+          background: "rgba(255,255,255,0.30)",
+          transform: `scale(${rippleSc})`, opacity: rippleOp,
+          pointerEvents: "none", zIndex: 200,
+        }} />
+      )}
+
+      <Cursor x={cursorX} y={cursorY} pressed={cursorPressed} opacity={cursorOpacity} />
     </AbsoluteFill>
   );
 };
