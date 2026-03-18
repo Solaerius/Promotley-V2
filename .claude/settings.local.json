@@ -2,6 +2,33 @@
   "permissions": {
     "allow": [
       "Bash(find \"C:\\\\Users\\\\24eder\\\\Documents\\\\Claude\\\\promotley-93f7ced5\" -maxdepth 2 -name \".env*\" -o -name \"*.env*\" 2>/dev/null | head -10)",
+<<<<<<< HEAD
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(npx remotion:*)",
+      "Bash(npx skills:*)",
+      "Bash(gh auth:*)",
+      "Bash(git config:*)",
+      "Bash(git ls-remote:*)",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(grep -n \"^export\" src/scenes/*.tsx src/Video.tsx src/Root.tsx)",
+      "Bash(cp \"C:/Users/24eder/Downloads/vecteezy_tiktok-logo-png-tikok-icon-transparent-png-tikok-app-logo-png_18930463.png\" \"C:/Users/24eder/Documents/Claude/promotley-93f7ced5/remotion-video/public/tiktok.png\")",
+      "Bash(cp \"C:/Users/24eder/Downloads/vecteezy_instagram-logo-png-instagram-icon-transparent_18930415.png\" \"C:/Users/24eder/Documents/Claude/promotley-93f7ced5/remotion-video/public/instagram.png\")",
+      "Bash(cp \"C:/Users/24eder/Downloads/vecteezy_linkedin-logo-png-linkedin-icon-transparent_18930587.png\" \"C:/Users/24eder/Documents/Claude/promotley-93f7ced5/remotion-video/public/linkedin.png\")",
+      "Bash(cp \"C:/Users/24eder/Downloads/vecteezy_youtube-logo-png-youtube-icon-transparent_18930572.png\" \"C:/Users/24eder/Documents/Claude/promotley-93f7ced5/remotion-video/public/youtube.png\")",
+      "Bash(cp \"C:/Users/24eder/Downloads/new-2023-twitter-logo-x-icon-design/sl_z_072523_61700_01.jpg\" \"C:/Users/24eder/Documents/Claude/promotley-93f7ced5/remotion-video/public/x-logo.jpg\")",
+      "Bash(PUBLIC=\"C:/Users/24eder/Documents/Claude/promotley-93f7ced5/remotion-video/public\")",
+      "Bash(DL=\"C:/Users/24eder/Downloads\")",
+      "Bash(cp \"$DL/vecteezy_tiktok-logo-png-tikok-icon-transparent-png-tikok-app-logo-png_18930463.png\" \"$PUBLIC/tiktok.png\")",
+      "Bash(cp \"$DL/vecteezy_instagram-logo-png-instagram-icon-transparent_18930415.png\" \"$PUBLIC/instagram.png\")",
+      "Bash(cp \"$DL/vecteezy_linkedin-logo-png-linkedin-icon-transparent-png_18930587.png\" \"$PUBLIC/linkedin.png\")",
+      "Bash(SRC=\"C:/Users/24eder/Downloads/social_logos_normalizediuhguk\")",
+      "Bash(DEST=\"C:/Users/24eder/Documents/Claude/promotley-93f7ced5/remotion-video/public\")",
+      "Bash(cp \"$SRC/youtube.png\" \"$DEST/youtube.png\")",
+      "Bash(cp \"$SRC/tiktok.png\" \"$DEST/tiktok.png\")",
+      "Bash(cp \"$SRC/x.png\" \"$DEST/x.png\")"
+=======
       "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npm run build 2>&1 | tail -30)",
       "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npx supabase secrets list 2>&1)",
       "Bash(cd \"C:\\\\Users\\\\eddie\\\\Claude Projects\\\\Promotley-V2\" && npm install 2>&1 | tail -5)",
@@ -50,6 +77,7 @@
       "Bash(cd \"/c/Users/eddie/Claude Projects/Promotley-V2\" && python3 -c \"\ncontent = open\\('src/lib/planConfig.ts', 'rb'\\).read\\(\\)\nprint\\(repr\\(content[:200]\\)\\)\n\")",
       "Bash(cd \"/c/Users/eddie/Claude Projects/Promotley-V2\" && python3 -c \"\ncontent = open\\('src/lib/planConfig.ts', 'rb'\\).read\\(\\).decode\\('utf-8'\\)\nold = ' * Single source of truth for AI model mappings and credit policies\\\\n */'\nnew = ' * Single source of truth for AI model mappings and credit policies\\\\n *\\\\n * IMPORTANT: Credit values \\(50/100/200\\) are duplicated in\\\\n * supabase/functions/stripe-webhook -- update both when changing.\\\\n */'\nresult = content.replace\\(old, new, 1\\)\nif result == content:\n    print\\('NO CHANGE - pattern not found'\\)\nelse:\n    open\\('src/lib/planConfig.ts', 'wb'\\).write\\(result.encode\\('utf-8'\\)\\)\n    print\\('done'\\)\n\")",
       "Bash(cd \"/c/Users/eddie/Claude Projects/Promotley-V2\" && npm run build 2>&1 | tail -30)"
+>>>>>>> 1dcb5904773f457d13f101509dcbf77cf9f9b66f
     ]
   }
 }
