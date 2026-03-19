@@ -1,0 +1,35 @@
+{
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "engineering-advanced-skills@claude-code-skills": true,
+    "fullstack-engineer@claude-code-skills": true,
+    "voltagent-core-dev@voltagent-subagents": true,
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true
+  },
+  "extraKnownMarketplaces": {
+    "claude-code-skills": {
+      "source": {
+        "source": "github",
+        "repo": "alirezarezvani/claude-skills"
+      }
+    },
+    "voltagent-subagents": {
+      "source": {
+        "source": "github",
+        "repo": "VoltAgent/awesome-claude-code-subagents"
+      }
+    },
+    "ui-ux-pro-max-skill": {
+      "source": {
+        "source": "github",
+        "repo": "nextlevelbuilder/ui-ux-pro-max-skill"
+      }
+    }
+  }
+}
