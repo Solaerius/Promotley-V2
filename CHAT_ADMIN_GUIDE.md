@@ -7,7 +7,7 @@ The Promotely live chat system allows real-time customer support through your Lo
 
 ### `conversations`
 Tracks each chat session with customers.
-- `id`: Unique conversation identifier
+- `id`: Unique conversation identifier.
 - `user_id`: Reference to authenticated user (nullable for guest chats)
 - `user_name`: Display name of the user
 - `user_email`: Email address (if provided)
