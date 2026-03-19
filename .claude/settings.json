@@ -10,7 +10,8 @@
     "engineering-advanced-skills@claude-code-skills": true,
     "fullstack-engineer@claude-code-skills": true,
     "voltagent-core-dev@voltagent-subagents": true,
-    "ui-ux-pro-max@ui-ux-pro-max-skill": true
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true,
+    "stripe@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "claude-code-skills": {
