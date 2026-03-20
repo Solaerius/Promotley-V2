@@ -90,7 +90,6 @@ export const useMetaData = ({ enabled = true }: { enabled?: boolean } = {}) => {
 
   useEffect(() => {
     if (!enabled) return;
-    setLoading(true);
     fetchMetaData();
   }, [enabled]);
 
