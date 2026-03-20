@@ -60,12 +60,12 @@ let _cache: TikTokData | null = null;
 let _cacheTime = 0;
 let _inflight: Promise<void> | null = null;
 
-export const useTikTokData = () => {
+export const useTikTokData = ({ enabled = true }: { enabled?: boolean } = {}) => {
   const [data, setData] = useState<TikTokData>(() =>
     _cache ?? { user: null, stats: null, videos: [], pagination: null, scopeInfo: null }
   );
   // If we already have cached data, don't show loading spinner
-  const [loading, setLoading] = useState(!_cache);
+  const [loading, setLoading] = useState(!_cache && enabled);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const { toast } = useToast();
@@ -195,6 +195,7 @@ export const useTikTokData = () => {
   }, [data.pagination, loadingMore]);
 
   useEffect(() => {
+    if (!enabled) return;
     const isStale = Date.now() - _cacheTime > STALE_MS;
     if (_cache && !isStale) {
       // Cache is fresh — nothing to do, state was already initialised from cache
@@ -202,7 +203,7 @@ export const useTikTokData = () => {
     }
     // No cache, or cache is stale — fetch (silently if we have cached data to show)
     fetchTikTokData();
-  }, []);
+  }, [enabled]);
 
   return {
     ...data,

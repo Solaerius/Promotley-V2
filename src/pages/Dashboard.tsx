@@ -47,9 +47,9 @@ const STAT_COLORS = {
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const { isConnected, connections } = useConnections();
-  const tiktokData = useTikTokData();
-  const metaData = useMetaData();
+  const { isConnected, connections, loading: connectionsLoading } = useConnections();
+  const tiktokData = useTikTokData({ enabled: !connectionsLoading && isConnected("tiktok") });
+  const metaData = useMetaData({ enabled: !connectionsLoading && (isConnected("meta_ig") || isConnected("meta_fb")) });
   const { credits } = useUserCredits();
   const { posts } = useCalendar();
   const [recentActivity, setRecentActivity] = useState<{ type: string; icon: React.ElementType; label: string; detail: string; time: string }[]>([]);

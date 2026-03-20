@@ -25,12 +25,12 @@ interface MetaData {
   facebook: FacebookData | null;
 }
 
-export const useMetaData = () => {
+export const useMetaData = ({ enabled = true }: { enabled?: boolean } = {}) => {
   const [data, setData] = useState<MetaData>({
     instagram: null,
     facebook: null,
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const { toast } = useToast();
 
@@ -89,8 +89,10 @@ export const useMetaData = () => {
   };
 
   useEffect(() => {
+    if (!enabled) return;
+    setLoading(true);
     fetchMetaData();
-  }, []);
+  }, [enabled]);
 
   return {
     ...data,
