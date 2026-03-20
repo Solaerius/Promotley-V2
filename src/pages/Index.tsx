@@ -1,5 +1,7 @@
+import { useRef } from "react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
+import LogoStrip from "@/components/LogoStrip";
 import ProblemSection from "@/components/ProblemSection";
 import HowItWorks from "@/components/HowItWorks";
 import ResultsSection from "@/components/ResultsSection";
@@ -14,6 +16,7 @@ import BackToTop from "@/components/BackToTop";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Link } from "react-router-dom";
 const Index = () => {
+  const logoStripRef = useRef<HTMLDivElement>(null);
   return <div className="min-h-screen relative" style={{ background: 'hsl(240 50% 4%)' }}>
       {/* Single continuous grid texture for the whole page */}
       <div
@@ -25,8 +28,9 @@ const Index = () => {
           zIndex: 0,
         }}
       />
-      <Navbar />
+      <Navbar logoStripRef={logoStripRef} />
       <Hero />
+      <LogoStrip ref={logoStripRef} />
       
       <AnimatedSection animation="slide-up">
         <ProblemSection />
