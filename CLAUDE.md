@@ -20,6 +20,9 @@ rtk git add . && rtk git commit -m "msg" && rtk git push
 
 ## RTK Commands by Workflow
 
+### IMPORTANT RTK INSTRUCTIONS
+When running rtk "filepath" you NEED to use forward slashes "/" instead of backward slashes "\". For example /Documents/Claude/promotley-93f7ced5 becomes /Documents/Claude/promotley-93f7ced5
+
 ### Build & Compile (80-90% savings)
 ```bash
 rtk cargo build         # Cargo build output
@@ -119,6 +122,8 @@ rtk proxy <cmd>         # Run command without filtering (for debugging)
 rtk init                # Add RTK instructions to CLAUDE.md
 rtk init --global       # Add RTK to ~/.claude/CLAUDE.md
 ```
+
+
 
 ## Token Savings Overview
 
