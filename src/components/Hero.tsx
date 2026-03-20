@@ -1,43 +1,76 @@
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { ArrowRight } from "lucide-react";
 
 // Platform SVG logos
 const TikTokLogo = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+  <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 shrink-0">
+    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
   </svg>
 );
 
 const GoogleLogo = () => (
-  <svg viewBox="0 0 24 24" className="h-5 w-5">
-    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+  <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0">
+    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
   </svg>
 );
 
 const AppleLogo = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-    <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>
+  <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 shrink-0">
+    <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" />
   </svg>
 );
 
 const OAuthButton = ({
-  onClick, logo, label, delay
-}: { onClick: () => void; logo: React.ReactNode; label: string; delay: number }) => (
+  onClick,
+  logo,
+  label,
+  delay,
+}: {
+  onClick: () => void;
+  logo: React.ReactNode;
+  label: string;
+  delay: number;
+}) => (
   <motion.button
-    initial={{ opacity: 0, x: 20 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ delay, duration: 0.4, ease: "easeOut" }}
+    initial={{ opacity: 0, y: 8 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay, duration: 0.35, ease: "easeOut" }}
     onClick={onClick}
-    className="flex items-center gap-3 w-full px-5 py-3.5 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 transition-colors text-white text-sm font-medium backdrop-blur-sm"
+    className="group flex items-center gap-3 w-full px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer"
+    style={{
+      background: "hsl(0 0% 100% / 0.05)",
+      border: "1px solid hsl(0 0% 100% / 0.1)",
+      color: "hsl(0 0% 90%)",
+    }}
+    onMouseEnter={(e) => {
+      (e.currentTarget as HTMLButtonElement).style.background = "hsl(0 0% 100% / 0.1)";
+      (e.currentTarget as HTMLButtonElement).style.borderColor = "hsl(0 0% 100% / 0.18)";
+    }}
+    onMouseLeave={(e) => {
+      (e.currentTarget as HTMLButtonElement).style.background = "hsl(0 0% 100% / 0.05)";
+      (e.currentTarget as HTMLButtonElement).style.borderColor = "hsl(0 0% 100% / 0.1)";
+    }}
   >
     {logo}
     <span>{label}</span>
+    <ArrowRight className="h-3.5 w-3.5 ml-auto opacity-0 group-hover:opacity-50 transition-opacity" />
   </motion.button>
 );
+
+const FEATURE_PILLS = ["AI-driven strategi", "Swish-betalning", "TikTok & Meta", "Svenska UF-företag"];
+
+const AVATAR_COLORS = [
+  "hsl(260 60% 50%)",
+  "hsl(200 60% 45%)",
+  "hsl(330 55% 50%)",
+  "hsl(150 50% 40%)",
+];
+const AVATAR_CHARS = ["A", "S", "E", "L"];
 
 const Hero = () => {
   const { toast } = useToast();
@@ -60,81 +93,282 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
-      {/* Background */}
-      <div
-        className="absolute inset-0"
+      {/* Background layer */}
+      <div className="absolute inset-0" style={{
+        background: "radial-gradient(ellipse 90% 70% at 50% -5%, hsl(260 65% 13%) 0%, hsl(240 50% 5%) 55%, hsl(240 50% 3%) 100%)",
+      }} />
+
+      {/* Ambient orb — violet, top-left */}
+      <motion.div
+        className="absolute pointer-events-none"
+        animate={{ scale: [1, 1.12, 1], opacity: [0.28, 0.38, 0.28] }}
+        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
         style={{
-          background: 'radial-gradient(ellipse 80% 60% at 50% -10%, hsl(260 70% 18%) 0%, hsl(240 50% 6%) 55%, hsl(240 50% 3%) 100%)',
+          width: 680,
+          height: 680,
+          top: -180,
+          left: -200,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, hsl(260 70% 38%) 0%, transparent 68%)",
+          filter: "blur(70px)",
         }}
       />
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left: Heading */}
+      {/* Ambient orb — teal, bottom-right */}
+      <motion.div
+        className="absolute pointer-events-none"
+        animate={{ scale: [1, 1.18, 1], opacity: [0.12, 0.2, 0.12] }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+        style={{
+          width: 520,
+          height: 520,
+          bottom: -80,
+          right: "5%",
+          borderRadius: "50%",
+          background: "radial-gradient(circle, hsl(185 60% 32%) 0%, transparent 68%)",
+          filter: "blur(90px)",
+        }}
+      />
+
+      {/* Content */}
+      <div className="container mx-auto px-6 relative z-10 py-12">
+        <div className="grid lg:grid-cols-[1fr_400px] xl:grid-cols-[1fr_440px] gap-14 xl:gap-24 items-center">
+
+          {/* ── LEFT COLUMN ── */}
           <div>
+            {/* Live badge */}
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
+              transition={{ duration: 0.45 }}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-8"
+              style={{
+                background: "hsl(260 70% 22% / 0.55)",
+                border: "1px solid hsl(260 70% 55% / 0.25)",
+              }}
             >
-              <h1
-                className="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-none"
-                style={{ color: 'hsl(0 0% 98%)' }}
+              <span className="relative flex h-1.5 w-1.5">
+                <span
+                  className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                  style={{ background: "hsl(260 80% 75%)" }}
+                />
+                <span
+                  className="relative inline-flex rounded-full h-1.5 w-1.5"
+                  style={{ background: "hsl(260 80% 72%)" }}
+                />
+              </span>
+              <span className="text-xs font-medium" style={{ color: "hsl(260 70% 78%)" }}>
+                Nu med AI-driven innehållsanalys
+              </span>
+            </motion.div>
+
+            {/* Main heading */}
+            <motion.h1
+              initial={{ opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+              className="text-6xl md:text-7xl xl:text-8xl font-bold tracking-tight mb-6"
+              style={{ lineHeight: 0.95, color: "hsl(0 0% 97%)" }}
+            >
+              Marknads-
+              <br />
+              <span
+                style={{
+                  background: "linear-gradient(130deg, hsl(265 75% 78%) 0%, hsl(285 80% 82%) 45%, hsl(310 70% 78%) 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
               >
-                Marknadsför
-                <br />
-                <span style={{ color: 'hsl(260 70% 65%)' }}>nu</span>
-              </h1>
-              <p className="text-lg md:text-xl font-light max-w-lg" style={{ color: 'hsl(0 0% 70%)' }}>
-                Gör marknadsföringen rätt med våra verktyg — AI-driven strategi, captions och analys för svenska företag.
+                för nu
+              </span>
+            </motion.h1>
+
+            {/* Subheading */}
+            <motion.p
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.22 }}
+              className="text-lg md:text-xl font-light max-w-md leading-relaxed mb-10"
+              style={{ color: "hsl(0 0% 62%)" }}
+            >
+              AI-driven strategi, captions och analys — skräddarsytt för svenska UF-företag. Koppla dina kanaler och börja växa.
+            </motion.p>
+
+            {/* Feature pills */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.38 }}
+              className="flex flex-wrap gap-2 mb-10"
+            >
+              {FEATURE_PILLS.map((pill) => (
+                <span
+                  key={pill}
+                  className="text-xs px-3 py-1.5 rounded-full font-medium"
+                  style={{
+                    background: "hsl(0 0% 100% / 0.05)",
+                    border: "1px solid hsl(0 0% 100% / 0.09)",
+                    color: "hsl(0 0% 68%)",
+                  }}
+                >
+                  {pill}
+                </span>
+              ))}
+            </motion.div>
+
+            {/* Social proof */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="flex items-center gap-3"
+            >
+              <div className="flex -space-x-2">
+                {AVATAR_CHARS.map((char, i) => (
+                  <div
+                    key={i}
+                    className="w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-semibold"
+                    style={{
+                      background: AVATAR_COLORS[i],
+                      borderColor: "hsl(240 50% 4%)",
+                      color: "white",
+                    }}
+                  >
+                    {char}
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs" style={{ color: "hsl(0 0% 48%)" }}>
+                <span className="font-semibold" style={{ color: "hsl(0 0% 78%)" }}>120+</span>{" "}
+                UF-företag använder Promotley
               </p>
             </motion.div>
           </div>
 
-          {/* Right: OAuth buttons */}
-          <div className="flex flex-col gap-3 max-w-sm lg:ml-auto w-full">
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="text-sm mb-2 font-medium"
-              style={{ color: 'hsl(0 0% 55%)' }}
-            >
-              Kom igång på sekunder
-            </motion.p>
-
-            <OAuthButton
-              onClick={() => window.location.href = '/auth'}
-              logo={<TikTokLogo />}
-              label="Fortsätt med TikTok"
-              delay={0.35}
-            />
-            <OAuthButton
-              onClick={handleGoogle}
-              logo={<GoogleLogo />}
-              label="Fortsätt med Google"
-              delay={0.45}
-            />
-            <OAuthButton
-              onClick={handleApple}
-              logo={<AppleLogo />}
-              label="Fortsätt med Apple"
-              delay={0.55}
-            />
-
+          {/* ── RIGHT COLUMN: Auth card ── */}
+          <div className="relative">
+            {/* Card glow */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
-              className="text-center"
+              transition={{ delay: 0.3, duration: 0.8 }}
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: "radial-gradient(ellipse at center, hsl(260 70% 28% / 0.35) 0%, transparent 70%)",
+                filter: "blur(40px)",
+                transform: "scale(1.25)",
+              }}
+            />
+
+            {/* Card */}
+            <motion.div
+              initial={{ opacity: 0, x: 24, y: 8 }}
+              animate={{ opacity: 1, x: 0, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+              className="relative rounded-2xl p-7"
+              style={{
+                background: "hsl(240 30% 7% / 0.75)",
+                border: "1px solid hsl(0 0% 100% / 0.08)",
+                backdropFilter: "blur(24px)",
+                boxShadow: "0 32px 80px hsl(240 50% 2% / 0.6), inset 0 1px 0 hsl(0 0% 100% / 0.06)",
+              }}
             >
-              <a
+              {/* Card header */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="mb-6"
+              >
+                <h2 className="text-xl font-bold mb-1" style={{ color: "hsl(0 0% 96%)" }}>
+                  Kom igång gratis
+                </h2>
+                <p className="text-sm" style={{ color: "hsl(0 0% 48%)" }}>
+                  Ingen bindningstid. Inget kreditkort.
+                </p>
+              </motion.div>
+
+              {/* OAuth buttons */}
+              <div className="space-y-2.5">
+                <OAuthButton
+                  onClick={() => (window.location.href = "/auth")}
+                  logo={<TikTokLogo />}
+                  label="Fortsätt med TikTok"
+                  delay={0.42}
+                />
+                <OAuthButton
+                  onClick={handleGoogle}
+                  logo={<GoogleLogo />}
+                  label="Fortsätt med Google"
+                  delay={0.52}
+                />
+                <OAuthButton
+                  onClick={handleApple}
+                  logo={<AppleLogo />}
+                  label="Fortsätt med Apple"
+                  delay={0.62}
+                />
+              </div>
+
+              {/* Divider */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.72 }}
+                className="flex items-center gap-3 my-5"
+              >
+                <div className="flex-1 h-px" style={{ background: "hsl(0 0% 100% / 0.07)" }} />
+                <span className="text-xs font-medium" style={{ color: "hsl(0 0% 38%)" }}>
+                  eller
+                </span>
+                <div className="flex-1 h-px" style={{ background: "hsl(0 0% 100% / 0.07)" }} />
+              </motion.div>
+
+              {/* Email option */}
+              <motion.a
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.78 }}
                 href="/auth?mode=register"
-                className="text-xs underline-offset-4 hover:underline"
-                style={{ color: 'hsl(0 0% 45%)' }}
+                className="group flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-medium transition-all duration-200"
+                style={{
+                  background: "hsl(0 0% 100% / 0.03)",
+                  border: "1px solid hsl(0 0% 100% / 0.07)",
+                  color: "hsl(0 0% 62%)",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLAnchorElement).style.color = "hsl(0 0% 80%)";
+                  (e.currentTarget as HTMLAnchorElement).style.borderColor = "hsl(0 0% 100% / 0.12)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLAnchorElement).style.color = "hsl(0 0% 62%)";
+                  (e.currentTarget as HTMLAnchorElement).style.borderColor = "hsl(0 0% 100% / 0.07)";
+                }}
               >
                 Registrera med e-post
-              </a>
+                <ArrowRight className="h-3.5 w-3.5 opacity-0 group-hover:opacity-60 transition-opacity" />
+              </motion.a>
+
+              {/* Terms note */}
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.85 }}
+                className="text-center text-xs mt-4 leading-relaxed"
+                style={{ color: "hsl(0 0% 33%)" }}
+              >
+                Genom att registrera dig godkänner du våra{" "}
+                <a
+                  href="/terms-of-service"
+                  className="underline underline-offset-2 transition-colors"
+                  style={{ color: "hsl(0 0% 45%)" }}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "hsl(0 0% 65%)")}
+                  onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "hsl(0 0% 45%)")}
+                >
+                  användarvillkor
+                </a>
+              </motion.p>
             </motion.div>
           </div>
         </div>
