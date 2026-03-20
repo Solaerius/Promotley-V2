@@ -4,6 +4,7 @@ import DashboardLayout from "@/components/layouts/DashboardLayout";
 import {
   TrendingUp, Users, Calendar, Zap, ArrowRight, BarChart3,
   MessageSquare, CheckCircle2, Sparkles, Eye, Heart, ChevronRight, Play,
+  Instagram,
 } from "lucide-react";
 import { useConnections } from "@/hooks/useConnections";
 import { useTikTokData } from "@/hooks/useTikTokData";
@@ -13,7 +14,6 @@ import { useCalendar } from "@/hooks/useCalendar";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import TikTokIcon from "@/components/icons/TikTokIcon";
-import { Instagram } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { formatDistanceToNow, format } from "date-fns";
 import { sv } from "date-fns/locale";
@@ -39,10 +39,10 @@ const getISOWeek = (dateStr: string | null, fallback: number): string => {
 };
 
 const STAT_COLORS = {
-  primary: { bg: "bg-primary/15", text: "text-primary", border: "border-primary/50" },
-  amber: { bg: "bg-amber-500/15", text: "text-amber-400", border: "border-amber-500/50" },
-  teal: { bg: "bg-emerald-500/15", text: "text-emerald-400", border: "border-emerald-500/50" },
-  violet: { bg: "bg-violet-500/15", text: "text-violet-400", border: "border-violet-500/50" },
+  primary: { bg: "bg-primary/10", border: "border-primary/20", text: "text-primary" },
+  amber: { bg: "bg-amber-500/10", border: "border-amber-500/20", text: "text-amber-400" },
+  teal: { bg: "bg-teal-500/10", border: "border-teal-500/20", text: "text-teal-400" },
+  violet: { bg: "bg-violet-500/10", border: "border-violet-500/20", text: "text-violet-400" },
 };
 
 const Dashboard = () => {
@@ -156,368 +156,232 @@ const Dashboard = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 max-w-5xl mx-auto">
+      <div className="min-h-screen p-6 space-y-6 font-poppins" style={{ background: 'hsl(240 20% 4%)' }}>
 
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-border/40">
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-semibold text-foreground">Välkommen tillbaka, {firstName}</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Här är en snabb överblick av dina konton.</p>
+            <h1 className="text-2xl font-semibold text-foreground">
+              Hej, {user?.user_metadata?.full_name?.split(" ")[0] || "där"} 👋
+            </h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Här är din marknadsföringsöversikt
+            </p>
           </div>
-          <Button variant="outline" size="sm" asChild>
-            <Link to="/analytics">Se statistik <ArrowRight className="w-3.5 h-3.5 ml-1.5" /></Link>
-          </Button>
+          <Link to="/ai">
+            <Button size="sm" className="gap-2">
+              <Zap className="h-4 w-4" />
+              AI-verktyg
+            </Button>
+          </Link>
         </div>
 
-        {/* Platform Tabs — pill style */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {platformTabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activePlatform === tab.key;
-            return (
-              <button
-                key={tab.key}
-                onClick={() => setActivePlatform(tab.key)}
-                className={`flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium rounded-full transition-all ${
-                  isActive
-                    ? "bg-primary/15 text-primary border border-primary/30"
-                    : "text-muted-foreground hover:bg-muted border border-transparent"
-                }`}
-              >
-                {Icon && <Icon className="w-3.5 h-3.5" />}
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Stat Cards — bolder */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {activeStatCards.map((stat) => {
-            const Icon = stat.icon;
-            return (
-              <div
-                key={stat.label}
-                className={`rounded-2xl bg-card border border-border/40 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 p-4 border-l-2 ${stat.color.border}`}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-[10px] font-semibold tracking-widest text-muted-foreground">{stat.label}</p>
-                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${stat.color.bg}`}>
-                    <Icon className={`w-3.5 h-3.5 ${stat.color.text}`} />
-                  </div>
-                </div>
-                <p className="text-3xl font-bold text-foreground tracking-tight leading-none">{stat.value}</p>
-                <p className="text-[11px] text-muted-foreground mt-1.5">{stat.sub}</p>
+        {/* Stat cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            {
+              label: "Totala följare",
+              value: formatNumber(totalFollowers),
+              icon: Users,
+              color: STAT_COLORS.primary,
+            },
+            {
+              label: "Tillgängliga krediter",
+              value: credits?.credits_left ?? "–",
+              icon: Zap,
+              color: STAT_COLORS.amber,
+            },
+            {
+              label: "Kommande inlägg",
+              value: upcomingPosts.length,
+              icon: Calendar,
+              color: STAT_COLORS.teal,
+            },
+            {
+              label: "Anslutna konton",
+              value: connections.length,
+              icon: TrendingUp,
+              color: STAT_COLORS.violet,
+            },
+          ].map(({ label, value, icon: Icon, color }) => (
+            <div
+              key={label}
+              className={`rounded-xl border p-4 ${color.bg} ${color.border}`}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{label}</span>
+                <Icon className={`h-4 w-4 ${color.text}`} />
               </div>
-            );
-          })}
-        </div>
-
-        {/* Main content: left + right */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-
-          {/* Left column (2/3) */}
-          <div className="lg:col-span-2 space-y-5">
-
-            {/* Follower Growth Area Chart */}
-            {anyConnected && followerHistory.length >= 2 && (
-              <div className="rounded-2xl bg-card border border-border/40 shadow-sm p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Följartillväxt</h2>
-                  <Link to="/analytics" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors">
-                    Se alla <ChevronRight className="w-3 h-3" />
-                  </Link>
-                </div>
-                <div className="h-44">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={followerHistory}>
-                      <defs>
-                        <linearGradient id="followerGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.4} />
-                      <XAxis
-                        dataKey="date"
-                        tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-                        axisLine={false}
-                        tickLine={false}
-                      />
-                      <YAxis
-                        tickFormatter={(v) => formatNumber(v)}
-                        tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-                        axisLine={false}
-                        tickLine={false}
-                        width={38}
-                      />
-                      <Tooltip
-                        cursor={{ stroke: "hsl(var(--primary))", strokeWidth: 1, strokeDasharray: "3 3" }}
-                        content={({ active, payload }) => {
-                          if (!active || !payload?.length) return null;
-                          return (
-                            <div className="rounded-lg bg-popover border border-border p-2.5 shadow-md text-xs">
-                              <p className="text-muted-foreground mb-0.5">{payload[0]?.payload?.date}</p>
-                              <p className="font-semibold text-foreground">{formatNumber(payload[0]?.value as number)} följare</p>
-                            </div>
-                          );
-                        }}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="followers"
-                        stroke="hsl(var(--primary))"
-                        strokeWidth={2}
-                        fill="url(#followerGradient)"
-                        dot={false}
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            )}
-
-            {/* Video performance chart */}
-            {showTikTokContent && videoChartData.length > 0 && (
-              <div className="rounded-2xl bg-card border border-border/40 shadow-sm p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Videoprestation</h2>
-                  <Link to="/analytics" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors">
-                    Se alla <ChevronRight className="w-3 h-3" />
-                  </Link>
-                </div>
-                <div className="h-52">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={videoChartData} barGap={3} barSize={16}>
-                      <defs>
-                        <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={1} />
-                          <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
-                        </linearGradient>
-                        <linearGradient id="barGradientAmber" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="hsl(38 80% 50%)" stopOpacity={1} />
-                          <stop offset="100%" stopColor="hsl(38 80% 50%)" stopOpacity={0.3} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.4} />
-                      <XAxis
-                        dataKey="name"
-                        tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-                        axisLine={false}
-                        tickLine={false}
-                      />
-                      <YAxis
-                        tickFormatter={(v) => formatNumber(v)}
-                        tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-                        axisLine={false}
-                        tickLine={false}
-                        width={38}
-                      />
-                      <Tooltip
-                        cursor={{ fill: "hsl(var(--muted))", radius: 4 }}
-                        content={({ active, payload }) => {
-                          if (!active || !payload?.length) return null;
-                          return (
-                            <div className="rounded-lg bg-popover border border-border p-2.5 shadow-md text-xs">
-                              <p className="font-medium text-foreground mb-1.5 max-w-[180px] truncate">
-                                {payload[0]?.payload?.fullTitle || "Video"}
-                              </p>
-                              {payload.map((p) => (
-                                <p key={p.name} className="text-muted-foreground">
-                                  {p.name}: <span className="text-foreground font-semibold">{formatNumber(p.value as number)}</span>
-                                </p>
-                              ))}
-                            </div>
-                          );
-                        }}
-                      />
-                      <Bar dataKey="Visningar" fill="url(#barGradient)" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="Likes" fill="url(#barGradientAmber)" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="flex items-center gap-4 mt-3">
-                  <div className="flex items-center gap-1.5 bg-primary/10 rounded-full px-2.5 py-1">
-                    <div className="w-2 h-2 rounded-full bg-primary" />
-                    <span className="text-[11px] font-medium text-primary">Visningar</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 bg-amber-500/10 rounded-full px-2.5 py-1">
-                    <div className="w-2 h-2 rounded-full bg-amber-400" />
-                    <span className="text-[11px] font-medium text-amber-400">Likes</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Top videos table */}
-            {showTikTokContent && tiktokData.videos?.length > 0 && (
-              <div className="rounded-2xl bg-card border border-border/40 shadow-sm overflow-hidden">
-                <div className="px-5 py-4 flex items-center justify-between border-b border-border/40">
-                  <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Senaste videor</h2>
-                  <Link to="/analytics" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors">
-                    Se alla <ChevronRight className="w-3 h-3" />
-                  </Link>
-                </div>
-                <div className="divide-y divide-border/40">
-                  {tiktokData.videos.slice(0, 5).map((video, i) => (
-                    <div key={video.id} className="flex items-center gap-3 px-5 py-3.5 hover:bg-muted/20 transition-colors group">
-                      {/* Rank badge */}
-                      <div className="w-5 shrink-0 text-center">
-                        <span className={`text-xs font-bold ${i === 0 ? "text-amber-400" : i === 1 ? "text-slate-400" : i === 2 ? "text-orange-600" : "text-muted-foreground/40"}`}>
-                          {i + 1}
-                        </span>
-                      </div>
-                      {/* Thumbnail placeholder */}
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 border border-border/40 flex items-center justify-center shrink-0">
-                        <Play className="w-3.5 h-3.5 text-primary/60" />
-                      </div>
-                      <p className="text-sm text-foreground flex-1 truncate min-w-0">
-                        {video.title || `Video ${i + 1}`}
-                      </p>
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground shrink-0">
-                        <span className="flex items-center gap-1">
-                          <Eye className="w-3 h-3" />{formatNumber(video.views)}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Heart className="w-3 h-3" />{formatNumber(video.likes)}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MessageSquare className="w-3 h-3" />{formatNumber(video.comments)}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Overview quick links */}
-            {activePlatform === "overview" && (
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { title: "Statistik", desc: "Se dina siffror", href: "/analytics", icon: BarChart3, color: STAT_COLORS.primary },
-                  { title: "AI-Chat", desc: "Prata med AI", href: "/ai/chat", icon: MessageSquare, color: STAT_COLORS.teal },
-                  { title: "Kalender", desc: "Planera innehåll", href: "/calendar", icon: Calendar, color: STAT_COLORS.amber },
-                ].map((link) => {
-                  const Icon = link.icon;
-                  return (
-                    <Link key={link.title} to={link.href}>
-                      <div className={`flex flex-col gap-3 p-4 rounded-2xl bg-card border border-border/40 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 h-full border-l-2 ${link.color.border}`}>
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${link.color.bg}`}>
-                          <Icon className={`w-4 h-4 ${link.color.text}`} />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-foreground">{link.title}</p>
-                          <p className="text-xs text-muted-foreground">{link.desc}</p>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Not connected states */}
-            {activePlatform === "tiktok" && !isConnected("tiktok") && (
-              <div className="rounded-2xl bg-card border border-border/40 p-8 text-center">
-                <p className="text-sm text-muted-foreground">Anslut ditt TikTok-konto för att se data här.</p>
-                <Button variant="outline" size="sm" className="mt-3" asChild>
-                  <Link to="/account?tab=app">Anslut konto</Link>
-                </Button>
-              </div>
-            )}
-            {activePlatform === "meta_ig" && !isConnected("meta_ig") && (
-              <div className="rounded-2xl bg-card border border-border/40 p-8 text-center">
-                <p className="text-sm text-muted-foreground">Anslut ditt Instagram-konto för att se data här.</p>
-                <Button variant="outline" size="sm" className="mt-3" asChild>
-                  <Link to="/account?tab=app">Anslut konto</Link>
-                </Button>
-              </div>
-            )}
-          </div>
-
-          {/* Right column (1/3) */}
-          <div className="space-y-5">
-
-            {/* Activity Feed */}
-            <div className="rounded-2xl bg-card border border-border/40 shadow-sm p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Senaste aktivitet</h2>
-              </div>
-              {recentActivity.length === 0 ? (
-                <p className="text-xs text-muted-foreground py-3 text-center">Ingen aktivitet ännu.</p>
-              ) : (
-                <div className="space-y-2">
-                  {recentActivity.map((activity, i) => {
-                    const Icon = activity.icon;
-                    const initials = activity.label.slice(0, 2).toUpperCase();
-                    return (
-                      <div
-                        key={i}
-                        className="flex items-start gap-2.5 p-2.5 rounded-xl border border-border/30 hover:bg-muted/20 transition-colors"
-                      >
-                        <div className="w-7 h-7 rounded-full flex items-center justify-center bg-primary/15 shrink-0 mt-0.5">
-                          <Icon className="w-3.5 h-3.5 text-primary" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-foreground leading-none mb-0.5">{activity.label}</p>
-                          <p className="text-[11px] text-muted-foreground truncate">{activity.detail}</p>
-                        </div>
-                        <span className="text-[10px] text-muted-foreground/50 shrink-0 mt-0.5">
-                          {formatDistanceToNow(new Date(activity.time), { addSuffix: false, locale: sv })}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+              <p className={`text-2xl font-bold ${color.text}`}>{value}</p>
             </div>
+          ))}
+        </div>
 
-            {/* Upcoming Posts */}
-            <div className="rounded-2xl bg-card border border-border/40 shadow-sm p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Kommande inlägg</h2>
-                <Link to="/calendar" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors">
-                  Se alla <ChevronRight className="w-3 h-3" />
+        {/* Platform data row */}
+        <div className="grid lg:grid-cols-2 gap-4">
+          {/* TikTok */}
+          <div className="rounded-xl border border-border/50 bg-card p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <TikTokIcon className="h-5 w-5" />
+              <h2 className="font-semibold text-sm">TikTok</h2>
+            </div>
+            {!isConnected("tiktok") ? (
+              <div className="text-center py-6">
+                <p className="text-sm text-muted-foreground mb-3">Inget TikTok-konto anslutet</p>
+                <Link to="/account">
+                  <Button size="sm" variant="outline">Anslut konto</Button>
                 </Link>
               </div>
-              {upcomingPosts.length === 0 ? (
-                <div className="py-4 text-center">
-                  <p className="text-xs text-muted-foreground">Inga inlägg planerade.</p>
-                  <Button variant="ghost" size="sm" className="mt-2 text-xs" asChild>
-                    <Link to="/calendar">Planera ett inlägg</Link>
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {upcomingPosts.map((post, i) => (
-                    <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl border border-border/30 hover:bg-muted/20 transition-colors">
-                      <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex flex-col items-center justify-center shrink-0">
-                        <span className="text-xs font-bold text-primary leading-none">
-                          {format(new Date(post.date), "d", { locale: sv })}
-                        </span>
-                        <span className="text-[9px] text-primary/70 leading-none uppercase mt-0.5">
-                          {format(new Date(post.date), "MMM", { locale: sv })}
-                        </span>
-                      </div>
-                      <p className="text-xs text-foreground truncate flex-1 font-medium">{post.title}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Upgrade Banner */}
-            {credits && (credits.plan === "free_trial" || credits.plan === "starter") && (
-              <div className="rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 p-4">
-                <p className="text-sm font-semibold text-foreground">Uppgradera din plan</p>
-                <p className="text-xs text-muted-foreground mt-0.5 mb-3">Fler krediter och avancerad analys</p>
-                <Button size="sm" className="w-full" asChild>
-                  <Link to="/pricing">Se planer <ArrowRight className="w-3.5 h-3.5 ml-1.5" /></Link>
-                </Button>
+            ) : tiktokData.loading ? (
+              <div className="flex justify-center py-6">
+                <div className="animate-spin h-6 w-6 rounded-full border-2 border-primary border-t-transparent" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: "Följare", value: formatNumber(tiktokData.user?.follower_count ?? 0) },
+                  { label: "Videor", value: tiktokData.user?.video_count ?? 0 },
+                  { label: "Gillade", value: formatNumber(tiktokData.user?.likes_count ?? 0) },
+                  { label: "Följer", value: tiktokData.user?.following_count ?? 0 },
+                ].map(({ label, value }) => (
+                  <div key={label} className="bg-muted/30 rounded-lg p-3">
+                    <p className="text-xs text-muted-foreground">{label}</p>
+                    <p className="text-lg font-semibold mt-0.5">{value}</p>
+                  </div>
+                ))}
               </div>
             )}
           </div>
+
+          {/* Instagram/Meta */}
+          <div className="rounded-xl border border-border/50 bg-card p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <Instagram className="h-5 w-5 text-pink-400" />
+              <h2 className="font-semibold text-sm">Instagram</h2>
+            </div>
+            {!isConnected("meta_ig") ? (
+              <div className="text-center py-6">
+                <p className="text-sm text-muted-foreground mb-3">Inget Instagram-konto anslutet</p>
+                <Link to="/account">
+                  <Button size="sm" variant="outline">Anslut konto</Button>
+                </Link>
+              </div>
+            ) : metaData.loading ? (
+              <div className="flex justify-center py-6">
+                <div className="animate-spin h-6 w-6 rounded-full border-2 border-pink-400 border-t-transparent" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: "Följare", value: formatNumber(metaData.instagram?.followers_count ?? 0) },
+                  { label: "Följer", value: metaData.instagram?.follows_count ?? 0 },
+                  { label: "Inlägg", value: metaData.instagram?.media_count ?? 0 },
+                  { label: "@handle", value: `@${metaData.instagram?.username ?? "–"}` },
+                ].map(({ label, value }) => (
+                  <div key={label} className="bg-muted/30 rounded-lg p-3">
+                    <p className="text-xs text-muted-foreground">{label}</p>
+                    <p className="text-lg font-semibold mt-0.5 truncate">{value}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Follower history chart */}
+        {followerHistory.length > 0 && (
+          <div className="rounded-xl border border-border/50 bg-card p-5">
+            <h2 className="font-semibold text-sm mb-4 flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-primary" />
+              Följarutveckling
+            </h2>
+            <ResponsiveContainer width="100%" height={160}>
+              <AreaChart data={followerHistory}>
+                <defs>
+                  <linearGradient id="fg" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="date" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
+                <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
+                <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8 }} />
+                <Area type="monotone" dataKey="followers" stroke="hsl(var(--primary))" fill="url(#fg)" strokeWidth={2} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+
+        {/* Upcoming posts */}
+        {upcomingPosts.length > 0 && (
+          <div className="rounded-xl border border-border/50 bg-card p-5">
+            <h2 className="font-semibold text-sm mb-4 flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-teal-400" />
+              Kommande inlägg
+            </h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {upcomingPosts.map(post => (
+                <div key={post.id} className="bg-muted/30 rounded-lg p-3">
+                  <p className="text-xs text-muted-foreground mb-1">
+                    {format(new Date(post.date), "d MMM", { locale: sv })}
+                  </p>
+                  <p className="text-sm font-medium line-clamp-2">{post.title}</p>
+                  {post.platform && (
+                    <span className="inline-block mt-2 text-xs px-2 py-0.5 rounded-full bg-primary/15 text-primary">
+                      {post.platform}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Recent activity */}
+        {recentActivity.length > 0 && (
+          <div className="rounded-xl border border-border/50 bg-card p-5">
+            <h2 className="font-semibold text-sm mb-4 flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-amber-400" />
+              Senaste aktivitet
+            </h2>
+            <div className="space-y-3">
+              {recentActivity.map((activity, i) => {
+                const Icon = activity.icon;
+                return (
+                  <div key={i} className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Icon className="h-3.5 w-3.5 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium">{activity.label}</p>
+                      <p className="text-xs text-muted-foreground truncate">{activity.detail}</p>
+                    </div>
+                    <span className="text-xs text-muted-foreground flex-shrink-0">
+                      {formatDistanceToNow(new Date(activity.time), { addSuffix: true, locale: sv })}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Quick actions */}
+        <div className="grid sm:grid-cols-3 gap-3">
+          {[
+            { label: "Skapa caption", icon: MessageSquare, href: "/ai/caption", color: "text-orange-400" },
+            { label: "Hashtag-förslag", icon: CheckCircle2, href: "/ai/hashtags", color: "text-blue-400" },
+            { label: "Kampanjstrategi", icon: ArrowRight, href: "/ai/campaign", color: "text-violet-400" },
+          ].map(({ label, icon: Icon, href, color }) => (
+            <Link key={label} to={href}>
+              <div className="rounded-xl border border-border/50 bg-card hover:bg-card/80 transition-colors p-4 flex items-center gap-3 group">
+                <Icon className={`h-5 w-5 ${color}`} />
+                <span className="text-sm font-medium">{label}</span>
+                <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </DashboardLayout>
