@@ -162,3 +162,17 @@ export const demoChatMessages = [
 ];
 
 export const DEMO_LIMIT_MESSAGE = 'Detta är en demo – skapa ett konto för att låsa upp alla funktioner.';
+
+export const demoAIResponses: Record<string, string> = {
+  caption: `✨ Caption för @stockholmskaffet:\n\n"Måndag smakar bättre med rätt kaffe ☕ Vi har precis fått in vår nya single origin från Etiopien — blommig, ljus och helt underbar. Kom in och prova, vi bjuder på det första provsmakat hela måndag förmiddag!\n\n#stockholmskaffet #nytkaffe #etiopiskkaffe #specialtykaffe #stockholm #kaffeälskare #mondaymood #lokalkaffe"`,
+
+  hashtags: `🏷️ Rekommenderade hashtags för Stockholms Kaffet:\n\n**Volym (1M+):** #kaffe #coffee #fika #stockholm\n**Medel (100k–1M):** #specialtycoffee #kaffekultur #stockholmcafe #swedishcoffee\n**Nisch (<100k):** #stockholmskaffet #etiopiskkaffe #singleorigincoffee #kafferostning\n\n💡 Tips: Mixa 3–4 volymtaggar med 4–5 nischtaggar för bäst organisk räckvidd på Instagram.`,
+
+  contentIdeas: `💡 5 Content-idéer för Stockholms Kaffet:\n\n1. **"Bakom kulisserna"** — Visa rostningsprocessen i en 30 sek Reel. Autentiskt och delbart.\n2. **"Kaffekunskap"** — Förklara skillnaden mellan washed och natural process. Bygger expertposition.\n3. **"Kundporträtt"** — Intervjua en stamkund om deras morgonrutin. Stärker community-känslan.\n4. **"Produktteaser"** — En 3-delad story-serie inför nästa säsongskaffe. Skapar förväntning.\n5. **"Before/after"** — Visa kaffebönan från farm till kopp i ett enda inlägg. Storytelling som säljer.`,
+
+  weeklyPlan: `📅 Veckoplanen för Stockholms Kaffet (v.12):\n\n**Måndag:** Instagram-Reel — Lansering av ny etiopisk single origin\n**Tisdag:** Story-poll — "Filter eller espresso?" (ökar engagemang)\n**Onsdag:** Inlägg — Bakom kulisserna i rostningen\n**Torsdag:** TikTok — "3 saker du inte visste om kaffe"\n**Fredag:** Story — Helgmeny + påminnelse om öppettider\n**Lördag:** Reel — Kundmoment / café-stämning\n**Söndag:** Citat-inlägg — Veckans kaffetanke\n\n⏰ Bästa publiceringstider: 7–9 och 17–19 för din målgrupp.`,
+
+  campaign: `🎯 Kampanjstrategi: Påsklansering 2025\n\n**Mål:** Öka butiksbesök +20% under påskhelgen\n**Målgrupp:** Stockholmare 25–45 år, kaffeintresserade\n\n**Fas 1 – Teaser (v.13):** "Något nytt är på väg" — mystiska stories, inga detaljer\n**Fas 2 – Lansering (v.14):** Påskkaffe + limited edition påse, Reel + pressmeddelande\n**Fas 3 – Avslutning (v.15):** "Sista chansen" + UGC från kunder, avsluta med tackinlägg\n\n**Kanaler:** Instagram (primär), TikTok (räckvidd), e-post (lojala kunder)\n**Budget:** 80% organiskt, 20% boostat innehåll på Meta\n**KPI:er:** Räckvidd, butiksbesök, UGC-andel`,
+
+  ufTips: `🚀 UF-tips för Stockholms Kaffet:\n\n1. **Mässor:** Anmäl er till UF-mässan i god tid — er monter är ert varumärke inför jury och besökare\n2. **Årsredovisning:** Börja dokumentera försäljning och marknadsföringsinsatser redan nu, inte sista veckan\n3. **Sociala medier:** Visa UF-resan! Följare älskar autentiska "vi bygger ett företag"-berättelser\n4. **Samarbeten:** Ta kontakt med andra UF-företag för cross-promo — inga konkurrenter, bara partners\n5. **Prissättning:** Räkna alltid in din arbetstid i priset. Sälj inte för billigt — det undervärderar hela UF-rörelsen`,
+};
