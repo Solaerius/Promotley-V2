@@ -32,7 +32,7 @@ const LogoStrip = forwardRef<HTMLDivElement>((_, ref) => {
       <div
         className="flex gap-12 items-center"
         style={{
-          animation: 'logoScroll 30s linear infinite',
+          animation: 'logoScroll 120s linear infinite',
           width: 'max-content',
         }}
       >
@@ -53,7 +53,7 @@ const LogoStrip = forwardRef<HTMLDivElement>((_, ref) => {
       <style>{`
         @keyframes logoScroll {
           from { transform: translateX(0); }
-          to { transform: translateX(-10%); }
+          to { transform: translateX(-50%); }
         }
       `}</style>
     </div>
