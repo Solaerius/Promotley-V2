@@ -51,7 +51,7 @@ const LogoStrip = forwardRef<HTMLDivElement>((_, ref) => {
       <style>{`
         @keyframes logoScroll {
           from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
+          to { transform: translateX(-10%); }
         }
       `}</style>
     </div>
