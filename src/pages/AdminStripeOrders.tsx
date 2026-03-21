@@ -1,3 +1,4 @@
+// Admin pages are Swedish-only (internal use). i18n not applied here.
 import { useState } from "react";
 import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
 import { supabase } from "@/integrations/supabase/client";

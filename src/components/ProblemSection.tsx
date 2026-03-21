@@ -1,10 +1,13 @@
 import { AlertCircle, CheckCircle, ArrowRight } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 const ProblemSection = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="relative py-24 md:py-32 px-4 overflow-hidden font-poppins">
       {/* Section accent glow */}
-      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 30% 50%, hsl(260 60% 14% / 0.55) 0%, transparent 70%)' }} />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 30% 50%, hsl(var(--primary) / 0.1) 0%, transparent 70%)' }} />
 
       <div className="container mx-auto max-w-6xl relative z-10">
         {/* Section header */}
@@ -13,8 +16,8 @@ const ProblemSection = () => {
           <div
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
             style={{
-              background: 'hsl(260 70% 30% / 0.25)',
-              border: '1px solid hsl(260 60% 50% / 0.25)',
+              background: 'hsl(var(--primary) / 0.15)',
+              border: '1px solid hsl(var(--primary) / 0.3)',
             }}
           >
             <AlertCircle className="w-4 h-4 text-white" />
@@ -72,8 +75,8 @@ const ProblemSection = () => {
           <div
             className="relative p-8 md:p-10 rounded-2xl transition-all duration-300"
             style={{
-              background: 'hsl(260 60% 20% / 0.15)',
-              border: '1px solid hsl(260 60% 55% / 0.25)',
+              background: 'hsl(var(--primary) / 0.08)',
+              border: '1px solid hsl(var(--primary) / 0.25)',
             }}
           >
             {/* Recommended badge */}
@@ -81,7 +84,7 @@ const ProblemSection = () => {
               <span
                 className="px-4 py-1.5 rounded-full text-xs font-semibold shadow-md text-white"
                 style={{
-                  background: 'linear-gradient(135deg, hsl(9 85% 55%), hsl(331 70% 45%))',
+                  background: 'linear-gradient(135deg, hsl(var(--accent-brand)), hsl(var(--primary)))',
                 }}
               >
                 Rekommenderat
@@ -91,9 +94,9 @@ const ProblemSection = () => {
             <div className="flex items-center gap-4 mb-8">
               <div
                 className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
-                style={{ background: 'hsl(9 85% 55% / 0.12)' }}
+                style={{ background: 'hsl(var(--accent-brand) / 0.12)' }}
               >
-                <CheckCircle className="w-6 h-6" style={{ color: 'hsl(9 85% 65%)' }} />
+                <CheckCircle className="w-6 h-6" style={{ color: 'hsl(var(--accent-brand))' }} />
               </div>
               <h3 className="text-2xl md:text-3xl font-bold text-white">Med Promotley</h3>
             </div>
@@ -109,7 +112,7 @@ const ProblemSection = () => {
                 <li key={idx} className="flex items-start gap-4 text-white">
                   <span
                     className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-sm font-bold"
-                    style={{ background: 'hsl(9 85% 55% / 0.15)', color: 'hsl(9 85% 65%)' }}
+                    style={{ background: 'hsl(var(--accent-brand) / 0.15)', color: 'hsl(var(--accent-brand))' }}
                   >
                     ✓
                   </span>
@@ -124,9 +127,9 @@ const ProblemSection = () => {
         <div className="flex justify-center mt-8 md:hidden">
           <div
             className="w-10 h-10 rounded-full flex items-center justify-center"
-            style={{ background: 'hsl(9 85% 55% / 0.12)' }}
+            style={{ background: 'hsl(var(--accent-brand) / 0.12)' }}
           >
-            <ArrowRight className="w-5 h-5" style={{ color: 'hsl(9 85% 65%)' }} />
+            <ArrowRight className="w-5 h-5" style={{ color: 'hsl(var(--accent-brand))' }} />
           </div>
         </div>
       </div>

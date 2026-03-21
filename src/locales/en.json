@@ -1,0 +1,237 @@
+{
+  "nav": {
+    "pricing": "Pricing",
+    "demo": "Demo",
+    "about": "About",
+    "login": "Log in",
+    "register": "Register",
+    "dashboard": "Dashboard",
+    "analytics": "Analytics",
+    "account": "Account"
+  },
+  "hero": {
+    "badge": "AI-powered marketing",
+    "headline": "Marketing that actually works",
+    "subheadline": "Promotley analyzes your social media and gives you personalized AI suggestions to maximize engagement and growth.",
+    "cta_primary": "Get started free",
+    "cta_secondary": "See how it works",
+    "card_subheader": "No commitment. No credit card.",
+    "email_register": "Register with email",
+    "pills": {
+      "instagram": "Instagram",
+      "tiktok": "TikTok",
+      "facebook": "Facebook",
+      "ai": "AI analysis",
+      "calendar": "Content calendar"
+    }
+  },
+  "pricing": {
+    "title": "Choose your plan",
+    "badge_popular": "Most popular",
+    "per_month": "/mo",
+    "cta": "Choose plan",
+    "cta_current": "Your current plan"
+  },
+  "auth": {
+    "login_title": "Welcome back",
+    "register_title": "Create your account",
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Confirm password",
+    "forgot_password": "Forgot password?",
+    "terms_accept": "I accept the <terms>terms of service</terms> and <privacy>privacy policy</privacy>",
+    "newsletter": "I want to receive news and offers by email",
+    "submit_login": "Log in",
+    "submit_register": "Create account",
+    "or_continue": "Or continue with",
+    "google": "Continue with Google",
+    "apple": "Continue with Apple",
+    "no_account": "Don't have an account?",
+    "has_account": "Already have an account?",
+    "promo_code": "Promo code",
+    "promo_code_placeholder": "Enter promo code (optional)",
+    "promo_code_toggle": "Have a promo code?"
+  },
+  "verify": {
+    "title": "Confirm your email",
+    "description": "We've sent a confirmation email to",
+    "resend": "Resend email",
+    "resend_wait": "Resend in {{seconds}}s",
+    "verified": "Email verified!",
+    "redirecting": "Redirecting you...",
+    "change_email": "Change email address",
+    "sign_out": "Sign out"
+  },
+  "onboarding": {
+    "step0_title": "Get started with Promotley",
+    "step0_subtitle": "How do you want to use Promotley?",
+    "create_company": "Register your company",
+    "create_company_desc": "Create a new company profile and start marketing",
+    "join_company": "Join a company",
+    "join_company_desc": "Join an existing company with an invite code",
+    "step1_title": "Basic information",
+    "step2_title": "Target audience & business",
+    "step3_title": "Channels & tone",
+    "step4_title": "Confirmation",
+    "company_name": "Company name",
+    "industry": "Industry",
+    "city": "City",
+    "postal_code": "Postal code",
+    "country": "Country",
+    "country_default": "Sweden",
+    "target_audience": "Target audience",
+    "description": "Description",
+    "goal": "Goal",
+    "price_level": "Price level",
+    "keywords": "Keywords",
+    "tonality": "Tone of voice",
+    "general_info": "General information",
+    "invite_code": "Invite code",
+    "invite_code_placeholder": "Enter your invite code",
+    "verify_code": "Verify code",
+    "join_org": "Join {{name}}",
+    "terms": "I accept the terms of service",
+    "newsletter": "I want to receive news and offers",
+    "submit": "Create company now",
+    "next": "Next",
+    "back": "Back",
+    "progress_labels": ["Basic info", "Audience", "Channels", "Confirmation"],
+    "required_field": "Required field"
+  },
+  "dashboard": {
+    "greeting": "Hello, {{name}}!",
+    "greeting_generic": "Welcome back!",
+    "followers": "Followers",
+    "credits": "Credits",
+    "posts": "Posts",
+    "connected": "Connected",
+    "not_connected": "Not connected",
+    "follower_history": "Follower history",
+    "upcoming_posts": "Upcoming posts",
+    "recent_activity": "Recent activity",
+    "quick_actions": "Quick actions",
+    "no_posts": "No scheduled posts",
+    "connect_account": "Connect account",
+    "create_post": "Create post",
+    "view_analytics": "View analytics",
+    "ai_suggestions": "AI suggestions"
+  },
+  "common": {
+    "back": "Back",
+    "next": "Next",
+    "save": "Save",
+    "cancel": "Cancel",
+    "error_generic": "Something went wrong. Please try again.",
+    "loading": "Loading...",
+    "settings": "Settings",
+    "logout": "Log out",
+    "notifications": "Notifications",
+    "mark_all_read": "Mark all as read",
+    "no_notifications": "No notifications",
+    "close": "Close",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "home": "Home",
+    "dark_mode": "Dark mode",
+    "light_mode": "Light mode",
+    "credits_left": "left"
+  },
+  "errors": {
+    "invalid_credentials": "Incorrect email or password.",
+    "email_in_use": "This email address is already in use.",
+    "weak_password": "Password must be at least 8 characters.",
+    "network": "Network error. Check your connection.",
+    "passwords_no_match": "Passwords do not match.",
+    "terms_required": "You must accept the terms of service.",
+    "email_invalid": "Please enter a valid email address.",
+    "field_required": "This field is required.",
+    "invite_code_invalid": "Invalid invite code.",
+    "invite_code_not_found": "No company found with that code."
+  },
+  "toasts": {
+    "account_created": "Account created!",
+    "verify_email_prompt": "Check your email to confirm your account.",
+    "login_success": "Logged in!",
+    "login_failed": "Login failed.",
+    "email_sent": "Email sent!",
+    "wait": "Please wait {{seconds}} seconds before sending again.",
+    "org_created": "Company created!",
+    "org_joined": "You've joined the company!",
+    "saved": "Saved!",
+    "error": "Something went wrong."
+  },
+  "sections": {
+    "problem": {
+      "title": "Marketing is hard",
+      "subtitle": "Most UF companies waste time on social media without strategy — and see no results."
+    },
+    "howItWorks": {
+      "title": "How it works"
+    },
+    "demo": {
+      "title": "See Promotley in action",
+      "cta": "Try for free"
+    },
+    "trust": {
+      "title": "Thousands of UF companies trust Promotley"
+    },
+    "finalCta": {
+      "title": "Ready to take your marketing to the next level?",
+      "button": "Get started free"
+    }
+  },
+  "footer": {
+    "tagline": "AI-powered marketing for UF companies.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contact": "Contact",
+    "rights": "All rights reserved."
+  },
+  "cookies": {
+    "banner_title": "We use cookies",
+    "banner_description": "We use cookies to improve your experience on our website. Necessary cookies are required for the site to function. You can choose to accept additional cookies for analytics and marketing.",
+    "close_aria": "Close",
+    "customize": "Customize",
+    "necessary_only": "Necessary only",
+    "accept_all": "Accept all",
+    "settings_title": "Cookie settings",
+    "settings_description": "Choose which types of cookies you want to allow. Necessary cookies cannot be disabled.",
+    "necessary_label": "Necessary cookies",
+    "necessary_description": "These cookies are required for the website to function and cannot be disabled. They are used for basic functions such as navigation and security.",
+    "analytics_label": "Analytics cookies",
+    "analytics_description": "Helps us understand how visitors interact with the website by collecting and reporting information anonymously.",
+    "marketing_label": "Marketing cookies",
+    "marketing_description": "Used to display relevant ads and marketing campaigns. Tracks visitors across websites.",
+    "save_settings": "Save settings",
+    "privacy_link": "Read more in our",
+    "privacy_link_text": "privacy policy"
+  },
+  "notfound": {
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist or has been moved.",
+    "back_home": "Back to home"
+  },
+  "banner": {
+    "verify_title": "Verify your email",
+    "verify_description": "to unlock AI features and payments.",
+    "resend_wait": "Wait {{seconds}}s",
+    "resend": "Resend",
+    "show_details": "Show details",
+    "close_aria": "Close",
+    "toast_rate_limited_title": "Wait a moment",
+    "toast_rate_limited_description": "You can resend in {{seconds}} seconds.",
+    "toast_sent_title": "Email sent!",
+    "toast_sent_description": "Check your inbox for the verification link.",
+    "toast_failed_title": "Could not send",
+    "toast_failed_description": "Please try again in a moment."
+  },
+  "account": {
+    "page_title": "Account & Settings",
+    "page_subtitle": "Manage your account, organisation and connections",
+    "section_account": "Account",
+    "section_organisation": "Organisation",
+    "section_app": "Connections & Theme"
+  }
+}

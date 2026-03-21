@@ -15,12 +15,15 @@
     --popover-foreground: 222 47% 11%;
 
     /* Primary: brand magenta-pink (from logo gradient) */
-    --primary: 331 65% 35%;
+    --primary: 326 56% 37%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 331 70% 45%;
+    --primary-glow: 326 60% 50%;
+    --accent-brand: 10 84% 58%;
+    --brand-wine: 347 45% 14%;
+    --gradient-hero-bg: 0 0% 99%;
 
     /* Secondary */
-    --secondary: 331 65% 35%;
+    --secondary: 326 56% 37%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 214 32% 95%;
@@ -39,15 +42,15 @@
 
     --border: 214 32% 87%;
     --input: 214 32% 87%;
-    --ring: 331 65% 35%;
+    --ring: 326 56% 37%;
     --radius: 0.75rem;
     
     /* VIBRANT Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(9 90% 55%) 0%, hsl(331 70% 45%) 50%, hsl(344 60% 35%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(10 84% 58%) 0%, hsl(326 56% 45%) 50%, hsl(347 45% 30%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(331 65% 40%) 0%, hsl(344 55% 15%) 100%);
     --gradient-diagonal: linear-gradient(135deg, hsl(344 55% 12%) 0%, hsl(331 65% 28%) 40%, hsl(9 85% 48%) 100%);
     --gradient-warm: linear-gradient(135deg, hsl(9 84% 52% / 0.12) 0%, hsl(331 65% 35% / 0.08) 100%);
-    --gradient-text: linear-gradient(135deg, hsl(9 90% 58%) 0%, hsl(331 75% 50%) 50%, hsl(344 60% 40%) 100%);
+    --gradient-text: linear-gradient(135deg, hsl(10 84% 62%) 0%, hsl(326 60% 55%) 50%, hsl(347 45% 40%) 100%);
     
     /* Shadows (+30% deeper) */
     --shadow-xs: 0 1px 3px hsl(344 45% 10% / 0.08);
@@ -69,36 +72,39 @@
   }
 
   .dark {
-    /* Dark: slate-950 / slate-900 family */
-    --background: 222 47% 6%;
-    --foreground: 210 40% 96%;
-    --card: 222 47% 9%;
-    --card-foreground: 210 40% 96%;
-    --popover: 222 47% 9%;
-    --popover-foreground: 210 40% 96%;
-    --primary: 331 60% 52%;
+    /* Dark: wine / brand family */
+    --background: 347 40% 5%;
+    --foreground: 0 0% 96%;
+    --card: 347 35% 8%;
+    --card-foreground: 0 0% 96%;
+    --popover: 347 35% 8%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 326 60% 55%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 331 65% 58%;
-    --secondary: 331 60% 52%;
+    --primary-glow: 326 65% 62%;
+    --secondary: 326 60% 55%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 217 33% 14%;
+    --muted: 347 30% 13%;
     --muted-foreground: 215 20% 58%;
-    --accent: 217 33% 17%;
-    --accent-foreground: 210 40% 96%;
+    --accent: 347 30% 16%;
+    --accent-foreground: 0 0% 96%;
     --destructive: 0 62% 45%;
     --destructive-foreground: 0 0% 100%;
     --success: 142 60% 32%;
     --success-foreground: 0 0% 100%;
     --warning: 38 80% 45%;
     --warning-foreground: 0 0% 100%;
-    --border: 217 33% 18%;
-    --input: 217 33% 18%;
-    --ring: 331 60% 52%;
-    --gradient-primary: linear-gradient(135deg, hsl(9 85% 55%) 0%, hsl(331 65% 45%) 50%, hsl(344 50% 35%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(331 60% 42%) 0%, hsl(344 40% 18%) 100%);
-    --gradient-diagonal: linear-gradient(135deg, hsl(344 40% 10%) 0%, hsl(331 55% 25%) 40%, hsl(9 75% 45%) 100%);
-    --gradient-warm: linear-gradient(135deg, hsl(9 85% 55% / 0.15) 0%, hsl(331 60% 42% / 0.1) 100%);
-    --gradient-text: linear-gradient(135deg, hsl(9 90% 60%) 0%, hsl(331 70% 52%) 50%, hsl(344 55% 42%) 100%);
+    --border: 347 30% 18%;
+    --input: 347 30% 18%;
+    --ring: 326 60% 55%;
+    --gradient-primary: linear-gradient(135deg, hsl(10 84% 58%) 0%, hsl(326 56% 45%) 50%, hsl(347 45% 30%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(326 60% 42%) 0%, hsl(347 40% 18%) 100%);
+    --gradient-diagonal: linear-gradient(135deg, hsl(347 40% 10%) 0%, hsl(326 55% 25%) 40%, hsl(10 75% 45%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(10 84% 58% / 0.15) 0%, hsl(326 60% 42% / 0.1) 100%);
+    --gradient-text: linear-gradient(135deg, hsl(10 84% 62%) 0%, hsl(326 60% 55%) 50%, hsl(347 45% 40%) 100%);
+    --accent-brand: 10 84% 65%;
+    --brand-wine: 347 45% 14%;
+    --gradient-hero-bg: 347 40% 5%;
     --shadow-xs: 0 1px 3px hsl(0 0% 0% / 0.33);
     --shadow-sm: 0 2px 6px hsl(0 0% 0% / 0.39);
     --shadow-md: 0 6px 16px hsl(0 0% 0% / 0.46);

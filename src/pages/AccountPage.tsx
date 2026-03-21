@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { User, Building2, Palette, ChevronDown } from "lucide-react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { cn } from "@/lib/utils";
@@ -10,15 +11,16 @@ import AccountContent from "@/components/account/AccountContent";
 import OrganizationContent from "@/components/account/OrganizationContent";
 import AppSettingsContent from "@/components/account/AppSettingsContent";
 
-const sections = [
-  { id: "konto", label: "Konto", icon: User },
-  { id: "organisation", label: "Organisation", icon: Building2 },
-  { id: "app", label: "Kopplingar & Tema", icon: Palette },
-];
-
 const AccountPage = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const isMobile = useIsMobile();
+
+  const sections = [
+    { id: "konto", label: t('account.section_account'), icon: User },
+    { id: "organisation", label: t('account.section_organisation'), icon: Building2 },
+    { id: "app", label: t('account.section_app'), icon: Palette },
+  ];
   const [activeSection, setActiveSection] = useState(() => {
     return searchParams.get("tab") || "konto";
   });
@@ -49,8 +51,8 @@ const AccountPage = () => {
   return (
     <DashboardLayout>
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-2xl font-bold text-foreground mb-1">Konto & Inställningar</h1>
-        <p className="text-sm text-muted-foreground mb-6">Hantera ditt konto, organisation och kopplingar</p>
+        <h1 className="text-2xl font-bold text-foreground mb-1">{t('account.page_title')}</h1>
+        <p className="text-sm text-muted-foreground mb-6">{t('account.page_subtitle')}</p>
 
         {/* Mobile: dropdown selector */}
         {isMobile ? (

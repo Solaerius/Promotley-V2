@@ -11,7 +11,11 @@
     "fullstack-engineer@claude-code-skills": true,
     "voltagent-core-dev@voltagent-subagents": true,
     "ui-ux-pro-max@ui-ux-pro-max-skill": true,
-    "stripe@claude-plugins-official": true
+    "stripe@claude-plugins-official": true,
+    "content-creator@claude-code-skills": true,
+    "chrome-devtools-mcp@claude-plugins-official": true,
+    "marketing-skills@claude-code-skills": true,
+    "autofix-bot@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "claude-code-skills": {

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Promotley UF — Exhibition Banner Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #1A1A1A;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 32px;
+      font-family: 'DM Sans', sans-serif;
+      color: #fff;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .header h1 {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 4px;
+      color: #EE593D;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.5px;
+    }
+
+    .banner-frame {
+      width: 100%;
+      max-width: 1400px;
+      background: #0D0D0D;
+      border-radius: 6px;
+      padding: 24px;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06);
+    }
+
+    .banner-frame img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 2px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 1400px;
+      width: 100%;
+      margin-top: 40px;
+    }
+
+    .info-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 8px;
+      padding: 22px 24px;
+    }
+
+    .info-card h3 {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      color: #EE593D;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .info-card ul {
+      list-style: none;
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.8;
+    }
+
+    .info-card ul li::before {
+      content: "— ";
+      color: rgba(238,89,61,0.5);
+    }
+
+    .subheading-eval {
+      max-width: 1400px;
+      width: 100%;
+      margin-top: 20px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 8px;
+      padding: 28px 32px;
+    }
+
+    .subheading-eval h3 {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      color: #EE593D;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .option-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .option-row:last-child { border-bottom: none; }
+
+    .option-num {
+      font-size: 11px;
+      color: rgba(255,255,255,0.25);
+      font-weight: 600;
+      min-width: 20px;
+      margin-top: 2px;
+    }
+
+    .option-text {
+      font-size: 15px;
+      color: rgba(255,255,255,0.8);
+      font-weight: 500;
+      min-width: 340px;
+    }
+
+    .option-text.winner {
+      color: #fff;
+    }
+
+    .winner-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #EE593D, #952A5E);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 2px 8px;
+      border-radius: 3px;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    .option-eval {
+      font-size: 13px;
+      color: rgba(255,255,255,0.38);
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .option-eval.winner-eval {
+      color: rgba(255,255,255,0.55);
+    }
+
+    .scores {
+      display: flex;
+      gap: 10px;
+      min-width: 160px;
+    }
+
+    .score-pill {
+      font-size: 10px;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .score-high { background: rgba(238,89,61,0.2); color: #EE593D; border: 1px solid rgba(238,89,61,0.3); }
+    .score-med { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.1); }
+    .score-low { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.28); border: 1px solid rgba(255,255,255,0.07); }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>Exhibition Banner — Print Preview</h1>
+    <p>Promotley UF &nbsp;·&nbsp; Large Format Print &nbsp;·&nbsp; International Expo, Riga</p>
+  </div>
+
+  <div class="banner-frame">
+    <img src="promotley-banner.svg" alt="Promotley UF Exhibition Banner" />
+  </div>
+
+  <!-- Subheading Evaluation -->
+  <div class="subheading-eval">
+    <h3>Subheading Evaluation — 5 Options</h3>
+
+    <div class="option-row">
+      <span class="option-num">1</span>
+      <span class="option-text">"AI-Powered Marketing for Growing Businesses"</span>
+      <span class="option-eval">Clear value prop, but 7 words is borderline too long for distance reading. "Growing businesses" is vague and generic — doesn't differentiate.</span>
+      <div class="scores">
+        <span class="score-med">Clarity: 7</span>
+        <span class="score-low">Premium: 5</span>
+      </div>
+    </div>
+
+    <div class="option-row">
+      <span class="option-num">2</span>
+      <span class="option-text winner">"Your tool for smarter marketing" <span class="winner-badge">CHOSEN</span></span>
+      <span class="option-eval winner-eval">Personal "Your" creates instant connection. "Smarter marketing" is clear and benefit-driven. Concise, memorable, reads perfectly from distance.</span>
+      <div class="scores">
+        <span class="score-high">Clarity: 10</span>
+        <span class="score-high">Premium: 9</span>
+      </div>
+    </div>
+
+    <div class="option-row">
+      <span class="option-num">3</span>
+      <span class="option-text">"Marketing Intelligence, Powered by AI."</span>
+      <span class="option-eval">Professional and premium. "Intelligence" is sophisticated but slightly abstract — doesn't anchor to social media. Better for B2B corporate, slightly cold for a startup stand.</span>
+      <div class="scores">
+        <span class="score-high">Clarity: 7</span>
+        <span class="score-high">Premium: 9</span>
+      </div>
+    </div>
+
+    <div class="option-row">
+      <span class="option-num">4</span>
+      <span class="option-text">"Turn Insights Into Marketing Results"</span>
+      <span class="option-eval">Action-oriented but reads like a CTA, not a positioning statement. Verb-first makes it harder to read from distance. "Insights" and "Results" are overused.</span>
+      <div class="scores">
+        <span class="score-med">Clarity: 6</span>
+        <span class="score-low">Premium: 5</span>
+      </div>
+    </div>
+
+    <div class="option-row">
+      <span class="option-num">5</span>
+      <span class="option-text">"The AI Marketing Platform for Startups"</span>
+      <span class="option-eval">Descriptive and clear, good category positioning. "Platform" is overused in tech. "For Startups" narrows the audience unnecessarily at an international expo.</span>
+      <div class="scores">
+        <span class="score-med">Clarity: 8</span>
+        <span class="score-med">Premium: 6</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Grid -->
+  <div class="info-grid">
+    <div class="info-card">
+      <h3>Print Dimensions</h3>
+      <ul>
+        <li>Recommended: 300 × 100 cm</li>
+        <li>Aspect ratio: 3:1 (horizontal)</li>
+        <li>Min viable: 200 × 67 cm</li>
+        <li>Safe margin: 3 cm on all sides</li>
+        <li>Bleed: +5 mm on all edges</li>
+      </ul>
+    </div>
+
+    <div class="info-card">
+      <h3>Export for Print</h3>
+      <ul>
+        <li>Open SVG in Adobe Illustrator</li>
+        <li>Embed fonts → Outline all text</li>
+        <li>Convert to CMYK color space</li>
+        <li>Export as PDF/X-1a or PDF/X-4</li>
+        <li>For JPG: export at 300 DPI, sRGB</li>
+        <li>Large format: 72–150 DPI at actual size</li>
+      </ul>
+    </div>
+
+    <div class="info-card">
+      <h3>Design System</h3>
+      <ul>
+        <li>Background: #35141D (brand dark)</li>
+        <li>Primary accent: #EE593D (orange-coral)</li>
+        <li>Secondary: #952A5E (deep magenta)</li>
+        <li>Display font: Syne ExtraBold 800</li>
+        <li>Body font: DM Sans 400/500/600</li>
+        <li>Logo: Color gradient P mark</li>
+      </ul>
+    </div>
+  </div>
+
+</body>
+</html>

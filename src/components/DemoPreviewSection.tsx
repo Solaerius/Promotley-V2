@@ -2,12 +2,15 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, TrendingUp, Users, BarChart3, Zap, MessageSquare, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslation } from 'react-i18next';
 
 const DemoPreviewSection = () => {
+  const { t } = useTranslation();
+
   return (
     <section id="demo-preview" className="relative py-24 md:py-32 overflow-hidden">
       {/* Section accent glow */}
-      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 60%, hsl(260 70% 14% / 0.5) 0%, transparent 70%)' }} />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 60%, hsl(var(--primary) / 0.1) 0%, transparent 70%)' }} />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         {/* Section header */}
@@ -15,16 +18,15 @@ const DemoPreviewSection = () => {
           <div
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
             style={{
-              background: 'hsl(260 70% 30% / 0.25)',
-              border: '1px solid hsl(260 60% 50% / 0.25)',
+              background: 'hsl(var(--primary) / 0.15)',
+              border: '1px solid hsl(var(--primary) / 0.3)',
             }}
           >
             <Play className="w-4 h-4 text-white" />
             <span className="text-sm font-medium text-white">Se det i aktion</span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight">
-            Se hur Promotely{" "}
-            <span className="text-gradient">funkar</span>
+            {t('sections.demo.title')}
           </h2>
           <p className="text-base md:text-lg max-w-2xl mx-auto" style={{ color: 'hsl(0 0% 100% / 0.55)' }}>
             Testa vår interaktiva demo och se hur AI-driven marknadsföring kan hjälpa ditt UF-företag växa
@@ -196,7 +198,7 @@ const DemoPreviewSection = () => {
               variant="gradient"
               className="text-base px-8 py-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.03]"
             >
-              Testa demo nu
+              {t('sections.demo.cta')}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>

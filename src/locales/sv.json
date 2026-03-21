@@ -1,0 +1,237 @@
+{
+  "nav": {
+    "pricing": "Pris",
+    "demo": "Demo",
+    "about": "Om oss",
+    "login": "Logga in",
+    "register": "Registrera",
+    "dashboard": "Dashboard",
+    "analytics": "Statistik",
+    "account": "Konto"
+  },
+  "hero": {
+    "badge": "AI-driven marknadsföring",
+    "headline": "Marknadsföring som faktiskt funkar",
+    "subheadline": "Promotley analyserar dina sociala medier och ger dig personliga AI-förslag för att maximera engagemang och tillväxt.",
+    "cta_primary": "Kom igång gratis",
+    "cta_secondary": "Se hur det funkar",
+    "card_subheader": "Ingen bindningstid. Inget kreditkort.",
+    "email_register": "Registrera med e-post",
+    "pills": {
+      "instagram": "Instagram",
+      "tiktok": "TikTok",
+      "facebook": "Facebook",
+      "ai": "AI-analys",
+      "calendar": "Innehållskalender"
+    }
+  },
+  "pricing": {
+    "title": "Välj din plan",
+    "badge_popular": "Populärast",
+    "per_month": "/mån",
+    "cta": "Välj plan",
+    "cta_current": "Din nuvarande plan"
+  },
+  "auth": {
+    "login_title": "Välkommen tillbaka",
+    "register_title": "Skapa ditt konto",
+    "email": "E-post",
+    "password": "Lösenord",
+    "confirm_password": "Bekräfta lösenord",
+    "forgot_password": "Glömt lösenordet?",
+    "terms_accept": "Jag godkänner <terms>användarvillkoren</terms> och <privacy>integritetspolicyn</privacy>",
+    "newsletter": "Jag vill ta emot nyheter och erbjudanden via e-post",
+    "submit_login": "Logga in",
+    "submit_register": "Skapa konto",
+    "or_continue": "Eller fortsätt med",
+    "google": "Fortsätt med Google",
+    "apple": "Fortsätt med Apple",
+    "no_account": "Har du inget konto?",
+    "has_account": "Har du redan ett konto?",
+    "promo_code": "Kampanjkod",
+    "promo_code_placeholder": "Ange kampanjkod (valfritt)",
+    "promo_code_toggle": "Har du en kampanjkod?"
+  },
+  "verify": {
+    "title": "Bekräfta din e-post",
+    "description": "Vi har skickat ett bekräftelsemail till",
+    "resend": "Skicka nytt mail",
+    "resend_wait": "Skicka om om {{seconds}}s",
+    "verified": "E-post verifierad!",
+    "redirecting": "Omdirigerar dig...",
+    "change_email": "Byt e-postadress",
+    "sign_out": "Logga ut"
+  },
+  "onboarding": {
+    "step0_title": "Kom igång med Promotley",
+    "step0_subtitle": "Hur vill du använda Promotley?",
+    "create_company": "Registrera ditt företag",
+    "create_company_desc": "Skapa ett nytt företagsprofil och börja marknadsföra",
+    "join_company": "Anslut till ett företag",
+    "join_company_desc": "Gå med i ett befintligt företag med en inbjudningskod",
+    "step1_title": "Grundläggande information",
+    "step2_title": "Målgrupp & verksamhet",
+    "step3_title": "Kanaler & ton",
+    "step4_title": "Bekräftelse",
+    "company_name": "Företagsnamn",
+    "industry": "Bransch",
+    "city": "Stad",
+    "postal_code": "Postnummer",
+    "country": "Land",
+    "country_default": "Sverige",
+    "target_audience": "Målgrupp",
+    "description": "Beskrivning",
+    "goal": "Målsättning",
+    "price_level": "Prisnivå",
+    "keywords": "Nyckelord",
+    "tonality": "Tonalitet",
+    "general_info": "Allmän information",
+    "invite_code": "Inbjudningskod",
+    "invite_code_placeholder": "Ange din inbjudningskod",
+    "verify_code": "Verifiera kod",
+    "join_org": "Gå med i {{name}}",
+    "terms": "Jag godkänner användarvillkoren",
+    "newsletter": "Jag vill ta emot nyheter och erbjudanden",
+    "submit": "Skapa företaget nu",
+    "next": "Nästa",
+    "back": "Tillbaka",
+    "progress_labels": ["Grundinfo", "Målgrupp", "Kanaler", "Bekräftelse"],
+    "required_field": "Obligatoriskt fält"
+  },
+  "dashboard": {
+    "greeting": "Hej, {{name}}!",
+    "greeting_generic": "Välkommen tillbaka!",
+    "followers": "Följare",
+    "credits": "Krediter",
+    "posts": "Inlägg",
+    "connected": "Ansluten",
+    "not_connected": "Inte ansluten",
+    "follower_history": "Följarhistorik",
+    "upcoming_posts": "Kommande inlägg",
+    "recent_activity": "Senaste aktivitet",
+    "quick_actions": "Snabbåtgärder",
+    "no_posts": "Inga schemalagda inlägg",
+    "connect_account": "Anslut konto",
+    "create_post": "Skapa inlägg",
+    "view_analytics": "Visa statistik",
+    "ai_suggestions": "AI-förslag"
+  },
+  "common": {
+    "back": "Tillbaka",
+    "next": "Nästa",
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "error_generic": "Något gick fel. Försök igen.",
+    "loading": "Laddar...",
+    "settings": "Inställningar",
+    "logout": "Logga ut",
+    "notifications": "Notiser",
+    "mark_all_read": "Markera alla som lästa",
+    "no_notifications": "Inga notiser",
+    "close": "Stäng",
+    "confirm": "Bekräfta",
+    "delete": "Ta bort",
+    "edit": "Redigera",
+    "search": "Sök",
+    "home": "Hem",
+    "dark_mode": "Mörkt läge",
+    "light_mode": "Ljust läge",
+    "credits_left": "kvar"
+  },
+  "errors": {
+    "invalid_credentials": "Felaktig e-post eller lösenord.",
+    "email_in_use": "Den här e-postadressen används redan.",
+    "weak_password": "Lösenordet måste vara minst 8 tecken.",
+    "network": "Nätverksfel. Kontrollera din anslutning.",
+    "passwords_no_match": "Lösenorden matchar inte.",
+    "terms_required": "Du måste godkänna användarvillkoren.",
+    "email_invalid": "Ange en giltig e-postadress.",
+    "field_required": "Detta fält är obligatoriskt.",
+    "invite_code_invalid": "Ogiltig inbjudningskod.",
+    "invite_code_not_found": "Hittade inget företag med den koden."
+  },
+  "toasts": {
+    "account_created": "Konto skapat!",
+    "verify_email_prompt": "Kolla din e-post för att bekräfta ditt konto.",
+    "login_success": "Inloggad!",
+    "login_failed": "Inloggning misslyckades.",
+    "email_sent": "E-post skickad!",
+    "wait": "Vänta {{seconds}} sekunder innan du skickar igen.",
+    "org_created": "Företag skapat!",
+    "org_joined": "Du har anslutit till företaget!",
+    "saved": "Sparad!",
+    "error": "Något gick fel."
+  },
+  "sections": {
+    "problem": {
+      "title": "Marknadsföring är svårt",
+      "subtitle": "De flesta UF-företag slösar tid på sociala medier utan strategi — och ser inga resultat."
+    },
+    "howItWorks": {
+      "title": "Hur det funkar"
+    },
+    "demo": {
+      "title": "Se Promotley i aktion",
+      "cta": "Prova gratis"
+    },
+    "trust": {
+      "title": "Tusentals UF-företag litar på Promotley"
+    },
+    "finalCta": {
+      "title": "Redo att ta din marknadsföring till nästa nivå?",
+      "button": "Kom igång gratis"
+    }
+  },
+  "footer": {
+    "tagline": "AI-driven marknadsföring för UF-företag.",
+    "privacy": "Integritetspolicy",
+    "terms": "Användarvillkor",
+    "contact": "Kontakt",
+    "rights": "Alla rättigheter förbehållna."
+  },
+  "cookies": {
+    "banner_title": "Vi använder cookies",
+    "banner_description": "Vi använder cookies för att förbättra din upplevelse på vår webbplats. Nödvändiga cookies krävs för att sajten ska fungera. Du kan välja att acceptera ytterligare cookies för analys och marknadsföring.",
+    "close_aria": "Stäng",
+    "customize": "Anpassa",
+    "necessary_only": "Endast nödvändiga",
+    "accept_all": "Acceptera alla",
+    "settings_title": "Cookie-inställningar",
+    "settings_description": "Välj vilka typer av cookies du vill tillåta. Nödvändiga cookies kan inte stängas av.",
+    "necessary_label": "Nödvändiga cookies",
+    "necessary_description": "Dessa cookies krävs för att webbplatsen ska fungera och kan inte stängas av. De används för grundläggande funktioner som navigation och säkerhet.",
+    "analytics_label": "Analys-cookies",
+    "analytics_description": "Hjälper oss att förstå hur besökare interagerar med webbplatsen genom att samla in och rapportera information anonymt.",
+    "marketing_label": "Marknadsförings-cookies",
+    "marketing_description": "Används för att visa relevanta annonser och marknadsföringskampanjer. Spårar besökare över webbplatser.",
+    "save_settings": "Spara inställningar",
+    "privacy_link": "Läs mer i vår",
+    "privacy_link_text": "integritetspolicy"
+  },
+  "notfound": {
+    "title": "Sidan hittades inte",
+    "description": "Sidan du letar efter existerar inte eller har flyttats.",
+    "back_home": "Tillbaka till startsidan"
+  },
+  "banner": {
+    "verify_title": "Verifiera din e-post",
+    "verify_description": "för att låsa upp AI-funktioner och betalning.",
+    "resend_wait": "Vänta {{seconds}}s",
+    "resend": "Skicka igen",
+    "show_details": "Visa detaljer",
+    "close_aria": "Stäng",
+    "toast_rate_limited_title": "Vänta lite",
+    "toast_rate_limited_description": "Du kan skicka igen om {{seconds}} sekunder.",
+    "toast_sent_title": "E-post skickad!",
+    "toast_sent_description": "Kolla din inkorg för verifieringslänken.",
+    "toast_failed_title": "Kunde inte skicka",
+    "toast_failed_description": "Försök igen om en stund."
+  },
+  "account": {
+    "page_title": "Konto & Inställningar",
+    "page_subtitle": "Hantera ditt konto, organisation och kopplingar",
+    "section_account": "Konto",
+    "section_organisation": "Organisation",
+    "section_app": "Kopplingar & Tema"
+  }
+}
