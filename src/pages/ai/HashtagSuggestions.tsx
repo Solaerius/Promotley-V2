@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Hash, Copy, Check, Sparkles } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ Gruppera hashtags efter räckvidd. Returnera 15-25 hashtags totalt.
 Format: {"groups": [{"label": "Hög räckvidd", "hashtags": ["#tag1", "#tag2"]}, {"label": "Medel räckvidd", "hashtags": [...]}, {"label": "Nisch", "hashtags": [...]}]}`;
 
 const HashtagSuggestions = () => {
+  const { t } = useTranslation();
   const [platform, setPlatform] = useState('instagram');
   const [topic, setTopic] = useState('');
   const [copied, setCopied] = useState(false);
@@ -40,26 +42,26 @@ const HashtagSuggestions = () => {
     const all = result.groups.flatMap(g => g.hashtags).join(' ');
     navigator.clipboard.writeText(all);
     setCopied(true);
-    toast({ title: 'Kopierat!', description: 'Alla hashtags kopierade.' });
+    toast({ title: t('ai_tool.copied_title'), description: t('hashtag.copied_all') });
     setTimeout(() => setCopied(false), 2000);
   };
 
   const copySingle = (tag: string) => {
     navigator.clipboard.writeText(tag);
-    toast({ title: 'Kopierat!', description: `${tag} kopierad.` });
+    toast({ title: t('ai_tool.copied_title'), description: t('hashtag.copied_single', { tag }) });
   };
 
   return (
     <AIToolPageLayout
-      title="Hashtag-förslag"
-      description="Få relevanta hashtags grupperade efter räckvidd för ökad synlighet"
+      title={t('hashtag.title')}
+      description={t('hashtag.description')}
       icon={Hash}
       gradient="from-blue-500 to-cyan-500"
     >
       <Card className="liquid-glass-light">
         <CardContent className="p-5 space-y-4">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium dashboard-heading-dark">Plattform</label>
+            <label className="text-sm font-medium dashboard-heading-dark">{t('ai_tool.platform')}</label>
             <Select value={platform} onValueChange={setPlatform}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -70,16 +72,16 @@ const HashtagSuggestions = () => {
             </Select>
           </div>
           <div className="space-y-1.5">
-            <label className="text-sm font-medium dashboard-heading-dark">Beskriv ditt inlägg eller ämne</label>
+            <label className="text-sm font-medium dashboard-heading-dark">{t('hashtag.topic_label')}</label>
             <Textarea
-              placeholder="T.ex. UF-företag som säljer hållbara smycken till ungdomar..."
+              placeholder={t('hashtag.topic_placeholder')}
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               rows={3}
             />
           </div>
           <Button variant="gradient" className="w-full" onClick={handleGenerate} disabled={loading || !topic.trim()}>
-            {loading ? <><Sparkles className="w-4 h-4 mr-2 animate-spin" /> Genererar...</> : <><Sparkles className="w-4 h-4 mr-2" /> Generera hashtags</>}
+            {loading ? <><Sparkles className="w-4 h-4 mr-2 animate-spin" /> {t('ai_tool.generating')}</> : <><Sparkles className="w-4 h-4 mr-2" /> {t('hashtag.generate_btn')}</>}
           </Button>
         </CardContent>
       </Card>
@@ -93,10 +95,10 @@ const HashtagSuggestions = () => {
       {result?.groups && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold dashboard-heading-dark">Hashtags</h2>
+            <h2 className="text-lg font-semibold dashboard-heading-dark">{t('hashtag.results_heading')}</h2>
             <Button variant="outline" size="sm" onClick={copyAll}>
               {copied ? <Check className="w-4 h-4 mr-1 text-green-500" /> : <Copy className="w-4 h-4 mr-1" />}
-              Kopiera alla
+              {t('hashtag.copy_all_btn')}
             </Button>
           </div>
           {result.groups.map((group, i) => (

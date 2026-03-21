@@ -63,7 +63,6 @@ const OAuthButton = ({
   </motion.button>
 );
 
-const FEATURE_PILLS = ["AI-driven strategi", "Swish-betalning", "TikTok & Meta", "Svenska UF-företag"];
 
 const AVATAR_COLORS = [
   "hsl(var(--primary))",
@@ -203,7 +202,7 @@ const Hero = () => {
               transition={{ delay: 0.38 }}
               className="flex flex-wrap gap-2 mb-10"
             >
-              {FEATURE_PILLS.map((pill) => (
+              {(t('hero.feature_pills', { returnObjects: true }) as string[]).map((pill) => (
                 <span
                   key={pill}
                   className="text-xs px-3 py-1.5 rounded-full font-medium"

@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -23,24 +24,25 @@ import {
 import logo from '@/assets/logo.png';
 import { cn } from '@/lib/utils';
 
-const demoNavTabs = [
-  { name: "Dashboard", value: "dashboard", icon: LayoutDashboard },
-  { name: "Statistik", value: "analytics", icon: BarChart3 },
-  { name: "AI & Verktyg", value: "ai", icon: Sparkles },
-  { name: "Säljradar", value: "radar", icon: Radar },
-  { name: "Kalender", value: "calendar", icon: Calendar },
-];
-
-const demoAITools = [
-  { icon: FileText, title: "Caption-generator", description: "Skapa engagerande captions för dina inlägg", color: "from-orange-500 to-red-500", responseKey: "caption" },
-  { icon: Hash, title: "Hashtag-förslag", description: "Få relevanta hashtags för ökad räckvidd", color: "from-blue-500 to-cyan-500", responseKey: "hashtags" },
-  { icon: Image, title: "Content-idéer", description: "Brainstorma nya innehållsidéer", color: "from-purple-500 to-pink-500", responseKey: "contentIdeas" },
-  { icon: Calendar, title: "Veckoplanering", description: "Planera din innehållskalender", color: "from-green-500 to-emerald-500", responseKey: "weeklyPlan" },
-  { icon: Target, title: "Kampanjstrategi", description: "Bygg en strategi för din nästa kampanj", color: "from-amber-500 to-orange-500", responseKey: "campaign" },
-  { icon: Lightbulb, title: "UF-tips", description: "Få råd specifikt för UF-företag", color: "from-indigo-500 to-purple-500", responseKey: "ufTips" },
-];
-
 const Demo = () => {
+  const { t } = useTranslation();
+
+  const demoNavTabs = useMemo(() => [
+    { name: t('sections.demo.tab_dashboard'), value: "dashboard", icon: LayoutDashboard },
+    { name: t('sections.demo.tab_analytics'), value: "analytics", icon: BarChart3 },
+    { name: t('sections.demo.tab_ai'), value: "ai", icon: Sparkles },
+    { name: t('sections.demo.tab_radar'), value: "radar", icon: Radar },
+    { name: t('sections.demo.tab_calendar'), value: "calendar", icon: Calendar },
+  ], [t]);
+
+  const demoAITools = useMemo(() => [
+    { icon: FileText, title: t('tools.caption_title'), description: t('tools.caption_desc'), color: "from-orange-500 to-red-500", responseKey: "caption" },
+    { icon: Hash, title: t('tools.hashtag_title'), description: t('tools.hashtag_desc'), color: "from-blue-500 to-cyan-500", responseKey: "hashtags" },
+    { icon: Image, title: t('tools.content_title'), description: t('tools.content_desc'), color: "from-purple-500 to-pink-500", responseKey: "contentIdeas" },
+    { icon: Calendar, title: t('tools.weekly_title'), description: t('tools.weekly_desc'), color: "from-green-500 to-emerald-500", responseKey: "weeklyPlan" },
+    { icon: Target, title: t('tools.campaign_title'), description: t('tools.campaign_desc'), color: "from-amber-500 to-orange-500", responseKey: "campaign" },
+    { icon: Lightbulb, title: t('tools.uf_title'), description: t('tools.uf_desc'), color: "from-indigo-500 to-purple-500", responseKey: "ufTips" },
+  ], [t]);
   const [clickCounts, setClickCounts] = useState<Record<string, number>>({});
   const [showLimitAlert, setShowLimitAlert] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -81,10 +83,10 @@ const Demo = () => {
   };
 
   const statsCards = [
-    { title: 'Följare', value: formatNumber(demoStats.followers), icon: Users },
-    { title: 'Engagemang', value: demoStats.engagement + '%', icon: TrendingUp },
-    { title: 'Räckvidd', value: formatNumber(demoStats.reach), icon: BarChart3 },
-    { title: 'AI-krediter', value: demoStats.credits_left.toString(), icon: Zap },
+    { title: t('demo_page.stat_followers'), value: formatNumber(demoStats.followers), icon: Users },
+    { title: t('demo_page.stat_engagement'), value: demoStats.engagement + '%', icon: TrendingUp },
+    { title: t('demo_page.stat_reach'), value: formatNumber(demoStats.reach), icon: BarChart3 },
+    { title: t('demo_page.stat_credits'), value: demoStats.credits_left.toString(), icon: Zap },
   ];
 
   const getLeadIcon = (typ: string) => {
@@ -123,12 +125,12 @@ const Demo = () => {
       <div className="sticky top-0 z-[60] bg-gradient-to-r from-primary/90 to-secondary/90 backdrop-blur-lg text-white py-2.5 px-4 text-center">
         <div className="flex items-center justify-center gap-3 flex-wrap">
           <span className="text-sm font-medium">
-            Du tittar på en demo av {demoCompany.foretagsnamn}
+            {t('demo_page.banner', { name: demoCompany.foretagsnamn })}
           </span>
           <Link to="/auth?mode=register">
             <Button size="sm" variant="secondary" className="gap-1.5 text-xs">
               <LogIn className="w-3.5 h-3.5" />
-              Skapa konto gratis
+              {t('demo_page.create_account_free')}
             </Button>
           </Link>
         </div>
@@ -205,7 +207,7 @@ const Demo = () => {
               <span className="text-sm">{DEMO_LIMIT_MESSAGE}</span>
               <Link to="/auth?mode=register">
                 <Button size="sm" variant="gradient" className="text-xs whitespace-nowrap">
-                  Skapa konto
+                  {t('demo_page.create_account_free')}
                 </Button>
               </Link>
             </AlertDescription>
@@ -255,7 +257,7 @@ const Demo = () => {
 
             {/* Chart */}
             <div className="rounded-2xl p-6 bg-card border border-border/40">
-              <h3 className="text-lg font-semibold mb-4 text-foreground">Tillväxt senaste 6 veckorna</h3>
+              <h3 className="text-lg font-semibold mb-4 text-foreground">{t('demo_page.chart_title')}</h3>
               <ResponsiveContainer width="100%" height={200}>
                 <AreaChart data={demoChartData}>
                   <defs>
@@ -281,10 +283,10 @@ const Demo = () => {
                     {platform.platform === 'instagram' ? '📸 Instagram' : '🎵 TikTok'}
                   </h4>
                   <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div><span className="text-muted-foreground">Följare:</span> <span className="text-foreground font-medium">{formatNumber(platform.followers)}</span></div>
-                    <div><span className="text-muted-foreground">Likes:</span> <span className="text-foreground font-medium">{formatNumber(platform.likes)}</span></div>
-                    <div><span className="text-muted-foreground">Kommentarer:</span> <span className="text-foreground font-medium">{formatNumber(platform.comments)}</span></div>
-                    <div><span className="text-muted-foreground">Räckvidd:</span> <span className="text-foreground font-medium">{formatNumber(platform.reach)}</span></div>
+                    <div><span className="text-muted-foreground">{t('demo_page.social_followers')}:</span> <span className="text-foreground font-medium">{formatNumber(platform.followers)}</span></div>
+                    <div><span className="text-muted-foreground">{t('demo_page.social_likes')}:</span> <span className="text-foreground font-medium">{formatNumber(platform.likes)}</span></div>
+                    <div><span className="text-muted-foreground">{t('demo_page.social_comments')}:</span> <span className="text-foreground font-medium">{formatNumber(platform.comments)}</span></div>
+                    <div><span className="text-muted-foreground">{t('demo_page.social_reach')}:</span> <span className="text-foreground font-medium">{formatNumber(platform.reach)}</span></div>
                   </div>
                 </div>
               ))}
@@ -296,12 +298,12 @@ const Demo = () => {
         {activeTab === 'analytics' && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             <div className="rounded-2xl p-6 bg-card border border-border/40">
-              <h3 className="text-lg font-semibold text-foreground mb-2">AI-analys av {demoCompany.foretagsnamn}</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-2">{t('demo_page.ai_analysis_of', { name: demoCompany.foretagsnamn })}</h3>
               <p className="text-muted-foreground text-sm mb-4">{demoAIAnalysis.summary}</p>
               <div className="space-y-4">
                 <div>
                   <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-green-400" /> Styrkor
+                    <Sparkles className="w-4 h-4 text-green-400" /> {t('demo_page.strengths')}
                   </h4>
                   <ul className="space-y-1">
                     {demoAIAnalysis.strengths.map((s, i) => (
@@ -311,7 +313,7 @@ const Demo = () => {
                 </div>
                 <div>
                   <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-yellow-400" /> Förbättringar
+                    <TrendingUp className="w-4 h-4 text-yellow-400" /> {t('demo_page.improvements')}
                   </h4>
                   <ul className="space-y-1">
                     {demoAIAnalysis.improvements.map((s, i) => (
@@ -321,7 +323,7 @@ const Demo = () => {
                 </div>
                 <div>
                   <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
-                    <ArrowRight className="w-4 h-4 text-primary" /> Nästa steg
+                    <ArrowRight className="w-4 h-4 text-primary" /> {t('demo_page.next_steps')}
                   </h4>
                   <ul className="space-y-1">
                     {demoAIAnalysis.nextSteps.map((s, i) => (
@@ -332,7 +334,7 @@ const Demo = () => {
               </div>
               <Button variant="gradient" className="mt-4 gap-2" onClick={() => handleDemoClick('analysis')}>
                 <Sparkles className="w-4 h-4" />
-                {isLimited('analysis') ? 'Skapa konto för ny analys' : 'Generera ny analys'}
+                {isLimited('analysis') ? t('demo_page.new_analysis_locked') : t('demo_page.new_analysis')}
               </Button>
             </div>
           </motion.div>
@@ -343,14 +345,14 @@ const Demo = () => {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             {/* AI sub-tabs like real AIPage */}
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground">AI-Assistent</h1>
-              <p className="text-sm text-muted-foreground mb-4">Din personliga AI för marknadsföring och innehåll</p>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">{t('demo_page.ai_assistant_title')}</h1>
+              <p className="text-sm text-muted-foreground mb-4">{t('demo_page.ai_assistant_subtitle')}</p>
 
               <div className="inline-flex h-10 items-center justify-center rounded-full bg-muted/50 backdrop-blur-sm border border-border/40 p-1 mb-6">
                 {[
-                  { value: 'chat', label: 'Chat', icon: MessageSquare },
-                  { value: 'verktyg', label: 'Verktyg', icon: Wand2 },
-                  { value: 'analys', label: 'Analys', icon: BarChart3 },
+                  { value: 'chat', label: t('demo_page.sub_chat'), icon: MessageSquare },
+                  { value: 'verktyg', label: t('demo_page.sub_tools'), icon: Wand2 },
+                  { value: 'analys', label: t('demo_page.sub_analysis'), icon: BarChart3 },
                 ].map(tab => {
                   const Icon = tab.icon;
                   const active = aiSubTab === tab.value;
@@ -377,7 +379,7 @@ const Demo = () => {
             {aiSubTab === 'chat' && (
               <div className="rounded-2xl p-6 bg-card border border-border/40">
                 <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-primary" /> AI-Chatt
+                  <MessageSquare className="w-5 h-5 text-primary" /> {t('demo_page.chat_title')}
                 </h3>
 
                 {/* Chat messages */}
@@ -399,9 +401,9 @@ const Demo = () => {
                 <div className="text-center mb-3 py-3 rounded-xl border border-primary/20 bg-primary/5">
                   <p className="text-sm text-foreground flex items-center justify-center gap-2 flex-wrap">
                     <Lock className="w-4 h-4 text-primary" />
-                    AI-Chatten är tillgänglig med ett eget konto.
+                    {t('demo_page.chat_locked')}
                     <Link to="/auth?mode=register" className="text-primary hover:underline font-medium">
-                      Skapa konto →
+                      {t('demo_page.chat_create_account')}
                     </Link>
                   </p>
                 </div>
@@ -411,7 +413,7 @@ const Demo = () => {
                   <input
                     type="text"
                     disabled
-                    placeholder="Skriv ett meddelande..."
+                    placeholder={t('demo_page.chat_placeholder')}
                     className="flex-1 rounded-xl px-4 py-3 text-sm bg-background border border-border/40 text-foreground placeholder:text-muted-foreground/50 cursor-not-allowed"
                   />
                   <Button variant="gradient" size="icon" disabled>
@@ -462,13 +464,13 @@ const Demo = () => {
                         <Sparkles className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="font-semibold mb-1 text-foreground">Lås upp alla AI-verktyg</h3>
+                        <h3 className="font-semibold mb-1 text-foreground">{t('demo_page.unlock_tools_title')}</h3>
                         <p className="text-sm text-muted-foreground mb-3">
-                          Skapa ett konto för att generera innehåll, marknadsplaner och strategier med AI.
+                          {t('demo_page.unlock_tools_desc')}
                         </p>
                         <Link to="/auth?mode=register">
                           <Button variant="gradient" size="sm">
-                            Skapa konto gratis
+                            {t('demo_page.create_account_free')}
                           </Button>
                         </Link>
                       </div>
@@ -481,12 +483,12 @@ const Demo = () => {
             {/* AI Analys sub-tab */}
             {aiSubTab === 'analys' && (
               <div className="rounded-2xl p-6 bg-card border border-border/40">
-                <h3 className="text-lg font-semibold text-foreground mb-2">AI-analys av {demoCompany.foretagsnamn}</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-2">{t('demo_page.ai_analysis_of', { name: demoCompany.foretagsnamn })}</h3>
                 <p className="text-muted-foreground text-sm mb-4">{demoAIAnalysis.summary}</p>
                 <div className="space-y-4">
                   <div>
                     <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-green-400" /> Styrkor
+                      <Sparkles className="w-4 h-4 text-green-400" /> {t('demo_page.strengths')}
                     </h4>
                     <ul className="space-y-1">
                       {demoAIAnalysis.strengths.map((s, i) => (
@@ -496,7 +498,7 @@ const Demo = () => {
                   </div>
                   <div>
                     <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4 text-yellow-400" /> Förbättringar
+                      <TrendingUp className="w-4 h-4 text-yellow-400" /> {t('demo_page.improvements')}
                     </h4>
                     <ul className="space-y-1">
                       {demoAIAnalysis.improvements.map((s, i) => (
@@ -508,8 +510,8 @@ const Demo = () => {
                 <div className="text-center mt-6 py-3 rounded-xl border border-primary/20 bg-primary/5">
                   <p className="text-sm text-foreground flex items-center justify-center gap-2">
                     <Lock className="w-4 h-4 text-primary" />
-                    Skapa konto för att köra egna AI-analyser.
-                    <Link to="/auth?mode=register" className="text-primary hover:underline font-medium">Kom igång →</Link>
+                    {t('demo_page.new_analysis_locked')}
+                    <Link to="/auth?mode=register" className="text-primary hover:underline font-medium">{t('demo_page.calendar_cta')}</Link>
                   </p>
                 </div>
               </div>
@@ -529,7 +531,7 @@ const Demo = () => {
             {/* Leads */}
             <div>
               <h3 className="text-lg font-semibold mb-3 text-foreground flex items-center gap-2">
-                <Users className="w-5 h-5 text-primary" /> Leads & Möjligheter
+                <Users className="w-5 h-5 text-primary" /> {t('demo_page.leads_title')}
               </h3>
               <div className="grid gap-3 md:grid-cols-2">
                 {demoSalesRadar.leads.map((lead, i) => {
@@ -551,7 +553,7 @@ const Demo = () => {
                               <div className="flex items-center gap-1 text-xs text-primary font-medium">
                                 <ArrowRight className="w-3 h-3" /> {lead.action}
                               </div>
-                              <p className="text-xs text-muted-foreground mt-1 italic">Potential: {lead.potential}</p>
+                              <p className="text-xs text-muted-foreground mt-1 italic">{t('demo_page.potential')}: {lead.potential}</p>
                             </div>
                           </div>
                         </CardContent>
@@ -565,7 +567,7 @@ const Demo = () => {
             {/* Trends */}
             <div>
               <h3 className="text-lg font-semibold mb-3 text-foreground flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-primary" /> Trender & Aktuellt
+                <TrendingUp className="w-5 h-5 text-primary" /> {t('demo_page.trends_title')}
               </h3>
               <div className="grid gap-3 md:grid-cols-2">
                 {demoSalesRadar.trends.map((trend, i) => {
@@ -599,7 +601,7 @@ const Demo = () => {
 
             <Button variant="gradient" className="gap-2" onClick={() => handleDemoClick('radar')}>
               <Radar className="w-4 h-4" />
-              {isLimited('radar') ? 'Skapa konto för fler skanningar' : 'Skanna fler möjligheter'}
+              {isLimited('radar') ? t('demo_page.radar_scan_locked') : t('demo_page.radar_scan_more')}
             </Button>
           </motion.div>
         )}
@@ -609,7 +611,7 @@ const Demo = () => {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             <div className="rounded-2xl p-6 bg-card border border-border/40">
               <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-primary" /> Planerade inlägg
+                <Calendar className="w-5 h-5 text-primary" /> {t('demo_page.calendar_title')}
               </h3>
               <div className="space-y-3">
                 {demoCalendarPosts.map(post => (
@@ -628,7 +630,7 @@ const Demo = () => {
               </div>
               <p className="text-xs text-muted-foreground mt-4 flex items-center gap-1">
                 <Lock className="w-3 h-3" />
-                Skapa och redigera inlägg med ett eget konto. <Link to="/auth?mode=register" className="text-primary hover:underline">Kom igång →</Link>
+                {t('demo_page.calendar_locked')} <Link to="/auth?mode=register" className="text-primary hover:underline">{t('demo_page.calendar_cta')}</Link>
               </p>
             </div>
           </motion.div>
@@ -643,14 +645,14 @@ const Demo = () => {
           style={{ background: 'linear-gradient(135deg, hsl(9 90% 55% / 0.25) 0%, hsl(331 70% 45% / 0.25) 100%)' }}
         >
           <h3 className="text-2xl font-bold text-foreground mb-2">
-            Redo att växa som {demoCompany.foretagsnamn}?
+            {t('demo_page.cta_ready', { name: demoCompany.foretagsnamn })}
           </h3>
           <p className="text-muted-foreground mb-5 max-w-md mx-auto">
-            Skapa ditt konto gratis och få tillgång till AI-driven marknadsföring anpassad för ditt företag.
+            {t('demo_page.cta_desc')}
           </p>
           <Link to="/auth?mode=register">
             <Button variant="gradient" size="lg" className="gap-2">
-              Skapa konto gratis
+              {t('demo_page.create_account_free')}
               <ArrowRight className="w-4 h-4" />
             </Button>
           </Link>
@@ -670,9 +672,9 @@ const Demo = () => {
             className="bg-card border border-border/50 rounded-2xl p-8 max-w-sm w-full text-center"
             onClick={e => e.stopPropagation()}
           >
-            <h2 className="text-xl font-bold mb-2">Vill du se mer?</h2>
+            <h2 className="text-xl font-bold mb-2">{t('demo_page.modal_title')}</h2>
             <p className="text-muted-foreground text-sm mb-6">
-              Skapa ett gratis konto för att använda alla funktioner utan begränsningar.
+              {t('demo_page.modal_desc')}
             </p>
 
             <div className="flex flex-col gap-3">
@@ -688,7 +690,7 @@ const Demo = () => {
                 className="flex items-center justify-center gap-3 w-full py-3 rounded-xl border border-border/50 hover:bg-muted/50 transition-colors text-sm font-medium"
               >
                 <svg viewBox="0 0 24 24" className="h-5 w-5"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                Skapa ett konto med Google
+                {t('demo_page.modal_google')}
               </button>
 
               {/* Apple */}
@@ -703,7 +705,7 @@ const Demo = () => {
                 className="flex items-center justify-center gap-3 w-full py-3 rounded-xl bg-foreground text-background hover:opacity-90 transition-opacity text-sm font-medium"
               >
                 <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
-                Skapa ett konto med Apple
+                {t('demo_page.modal_apple')}
               </button>
 
               {/* Email */}
@@ -712,7 +714,7 @@ const Demo = () => {
                 className="block w-full py-3 rounded-xl border border-border/50 hover:bg-muted/50 transition-colors text-sm font-medium text-center"
                 onClick={() => setShowRegisterModal(false)}
               >
-                Registrera med e-post
+                {t('demo_page.modal_email')}
               </Link>
             </div>
 
@@ -720,7 +722,7 @@ const Demo = () => {
               onClick={() => setShowRegisterModal(false)}
               className="mt-4 text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
-              Stäng
+              {t('demo_page.modal_close')}
             </button>
           </motion.div>
         </div>

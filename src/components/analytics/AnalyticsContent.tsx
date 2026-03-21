@@ -25,8 +25,10 @@ import { useAnalytics } from "@/hooks/useAnalytics";
 import { useTikTokGrowth } from "@/hooks/useTikTokGrowth";
 import { Link } from "react-router-dom";
 import TikTokProfileSection from "@/components/TikTokProfileSection";
+import { useTranslation } from 'react-i18next';
 
 const AnalyticsContent = () => {
+  const { t } = useTranslation();
   const { isConnected, connections } = useConnections();
   const metaData = useMetaData();
   const tiktokData = useTikTokData();
@@ -53,19 +55,19 @@ const AnalyticsContent = () => {
   }
 
   const stats = [];
-  if (connectedStats.totalFollowers > 0) stats.push({ title: "Totala foljare", value: connectedStats.totalFollowers.toLocaleString(), icon: Users });
-  if (connectedStats.totalViews > 0) stats.push({ title: "Visningar", value: connectedStats.totalViews.toLocaleString(), icon: Eye });
-  if (connectedStats.totalLikes > 0) stats.push({ title: "Likes", value: connectedStats.totalLikes.toLocaleString(), icon: Heart });
-  if (connectedStats.totalComments > 0) stats.push({ title: "Kommentarer", value: connectedStats.totalComments.toLocaleString(), icon: MessageCircle });
+  if (connectedStats.totalFollowers > 0) stats.push({ title: t('analytics.total_followers'), value: connectedStats.totalFollowers.toLocaleString(), icon: Users });
+  if (connectedStats.totalViews > 0) stats.push({ title: t('analytics.views'), value: connectedStats.totalViews.toLocaleString(), icon: Eye });
+  if (connectedStats.totalLikes > 0) stats.push({ title: t('analytics.likes'), value: connectedStats.totalLikes.toLocaleString(), icon: Heart });
+  if (connectedStats.totalComments > 0) stats.push({ title: t('analytics.comments'), value: connectedStats.totalComments.toLocaleString(), icon: MessageCircle });
 
   if (!hasConnections) {
     return (
       <div className="rounded-xl bg-card shadow-sm p-12 text-center">
         <Users className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
-        <h3 className="text-base font-medium text-foreground mb-1">Inga konton kopplade</h3>
-        <p className="text-sm text-muted-foreground mb-4">Koppla dina sociala medier for att se statistik</p>
+        <h3 className="text-base font-medium text-foreground mb-1">{t('analytics.no_accounts_title')}</h3>
+        <p className="text-sm text-muted-foreground mb-4">{t('analytics.no_accounts_desc')}</p>
         <Link to="/account">
-          <Button size="sm">Ga till konto</Button>
+          <Button size="sm">{t('analytics.go_to_account')}</Button>
         </Link>
       </div>
     );
@@ -98,7 +100,7 @@ const AnalyticsContent = () => {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="rounded-xl bg-card shadow-sm p-5">
-          <h3 className="text-sm font-medium text-foreground mb-3">Foljartillvaxt</h3>
+          <h3 className="text-sm font-medium text-foreground mb-3">{t('analytics.follower_growth')}</h3>
           {hasGrowthData ? (
             <ResponsiveContainer width="100%" height={160}>
               <LineChart data={growthData}>
@@ -107,18 +109,18 @@ const AnalyticsContent = () => {
                 <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 10 }} />
                 <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} />
                 <Legend />
-                <Line type="monotone" dataKey="followers" stroke="hsl(var(--primary))" strokeWidth={2} name="Foljare" dot={false} />
+                <Line type="monotone" dataKey="followers" stroke="hsl(var(--primary))" strokeWidth={2} name={t('analytics.instagram_followers')} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           ) : (
             <div className="h-[160px] flex items-center justify-center">
-              <p className="text-sm text-muted-foreground">Foljartillvaxt visas efter ett par dagars data</p>
+              <p className="text-sm text-muted-foreground">{t('analytics.growth_no_data')}</p>
             </div>
           )}
         </div>
 
         <div className="rounded-xl bg-card shadow-sm p-5">
-          <h3 className="text-sm font-medium text-foreground mb-3">Engagemang</h3>
+          <h3 className="text-sm font-medium text-foreground mb-3">{t('analytics.engagement_chart')}</h3>
           {hasGrowthData ? (
             <ResponsiveContainer width="100%" height={160}>
               <LineChart data={growthData}>
@@ -127,13 +129,13 @@ const AnalyticsContent = () => {
                 <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 10 }} />
                 <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} />
                 <Legend />
-                <Line type="monotone" dataKey="likes" stroke="hsl(var(--primary))" strokeWidth={2} name="Likes" dot={false} />
-                <Line type="monotone" dataKey="views" stroke="hsl(var(--muted-foreground))" strokeWidth={2} name="Visningar" dot={false} />
+                <Line type="monotone" dataKey="likes" stroke="hsl(var(--primary))" strokeWidth={2} name={t('analytics.likes')} dot={false} />
+                <Line type="monotone" dataKey="views" stroke="hsl(var(--muted-foreground))" strokeWidth={2} name={t('analytics.views')} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           ) : (
             <div className="h-[160px] flex items-center justify-center">
-              <p className="text-sm text-muted-foreground">Engagemang visas efter ett par dagars data</p>
+              <p className="text-sm text-muted-foreground">{t('analytics.engagement_no_data')}</p>
             </div>
           )}
         </div>
@@ -141,7 +143,7 @@ const AnalyticsContent = () => {
 
       {/* Platform Breakdown */}
       <div className="rounded-xl bg-card shadow-sm p-5">
-        <h3 className="text-sm font-medium text-foreground mb-4">Plattformsoversikt</h3>
+        <h3 className="text-sm font-medium text-foreground mb-4">{t('analytics.platform_overview')}</h3>
         <Tabs defaultValue={isConnected('meta_ig') ? 'instagram' : 'tiktok'} className="w-full">
           <TabsList className="grid w-full grid-cols-2 bg-muted rounded-lg p-1">
             <TabsTrigger value="instagram" className={`rounded-md text-sm ${!isConnected('meta_ig') ? 'opacity-50' : ''}`}>
@@ -158,10 +160,10 @@ const AnalyticsContent = () => {
             {isConnected('meta_ig') && metaData.instagram ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                  { label: "Foljare", value: metaData.instagram.followers_count },
-                  { label: "Foljer", value: metaData.instagram.follows_count },
-                  { label: "Inlagg", value: metaData.instagram.media_count },
-                  { label: "Namn", value: metaData.instagram.name },
+                  { label: t('analytics.instagram_followers'), value: metaData.instagram.followers_count },
+                  { label: t('analytics.instagram_following'), value: metaData.instagram.follows_count },
+                  { label: t('analytics.instagram_posts'), value: metaData.instagram.media_count },
+                  { label: t('analytics.instagram_name'), value: metaData.instagram.name },
                 ].map((item, i) => (
                   <div key={i} className="p-3 rounded-lg bg-muted">
                     <p className="text-[11px] text-muted-foreground mb-0.5">{item.label}</p>
@@ -172,7 +174,7 @@ const AnalyticsContent = () => {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">Anslut Instagram for att se statistik</p>
+              <p className="text-sm text-muted-foreground">{t('analytics.connect_instagram')}</p>
             )}
           </TabsContent>
 
@@ -180,7 +182,7 @@ const AnalyticsContent = () => {
             {isConnected('tiktok') ? (
               <TikTokProfileSection />
             ) : (
-              <p className="text-sm text-muted-foreground">Anslut TikTok for att se statistik</p>
+              <p className="text-sm text-muted-foreground">{t('analytics.connect_tiktok')}</p>
             )}
           </TabsContent>
         </Tabs>

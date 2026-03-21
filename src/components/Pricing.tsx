@@ -70,13 +70,13 @@ const Pricing = () => {
             }}
           >
             <Sparkles className="w-4 h-4 text-white" />
-            <span className="text-sm font-medium text-white">Priser</span>
+            <span className="text-sm font-medium text-white">{t('pricing.section_label')}</span>
           </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold px-2 leading-tight text-white">
-            {t('pricing.title')}, <span className="text-gradient">kraftfulla resultat</span>
+            {t('pricing.title')}, <span className="text-gradient">{t('pricing.strong_results')}</span>
           </h2>
           <p className="text-base md:text-lg px-4" style={{ color: 'hsl(0 0% 100% / 0.55)' }}>
-            Välj den plan som passar ditt företags tillväxtfas
+            {t('pricing.section_subtitle')}
           </p>
         </div>
 
@@ -100,7 +100,7 @@ const Pricing = () => {
                 >
                   {/* Most popular badge */}
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                    <span className="badge-primary px-4 py-1.5 rounded-full text-xs font-semibold shadow-md text-white whitespace-nowrap">
+                    <span className="bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-xs font-semibold shadow-lg whitespace-nowrap">
                       {t('pricing.badge_popular')}
                     </span>
                   </div>
@@ -123,7 +123,7 @@ const Pricing = () => {
                         </div>
                         <div className="flex items-center gap-2 mt-2">
                           <span className="text-2xl font-bold text-gradient">{plan.credits}</span>
-                          <span className="text-sm" style={{ color: 'hsl(0 0% 100% / 0.55)' }}>krediter/mån</span>
+                          <span className="text-sm" style={{ color: 'hsl(0 0% 100% / 0.55)' }}>{t('pricing.credits_month')}</span>
                         </div>
                       </div>
 

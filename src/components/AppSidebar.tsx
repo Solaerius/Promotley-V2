@@ -48,17 +48,18 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const navItems = [
-  { title: "Hem", href: "/dashboard", icon: Home },
-  { title: "Statistik", href: "/analytics", icon: TrendingUp },
-  { title: "Verktyg", href: "/ai", icon: Wand2 },
-  { title: "AI-Chat", href: "/ai/chat", icon: BrainCircuit },
-  { title: "Kalender", href: "/calendar", icon: CalendarDays },
-  { title: "Konto", href: "/account", icon: CircleUser },
-];
 
 export function AppSidebar() {
   const { t } = useTranslation();
+
+  const navItems = [
+    { title: t('nav.home'), href: "/dashboard", icon: Home },
+    { title: t('nav.analytics'), href: "/analytics", icon: TrendingUp },
+    { title: t('nav.tools'), href: "/ai", icon: Wand2 },
+    { title: t('nav.ai_chat'), href: "/ai/chat", icon: BrainCircuit },
+    { title: t('nav.calendar'), href: "/calendar", icon: CalendarDays },
+    { title: t('nav.account'), href: "/account", icon: CircleUser },
+  ];
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
@@ -107,7 +108,7 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r border-border/50 bg-background/90 backdrop-blur-md">
       <SidebarHeader className="p-3">
-        <Link to="/dashboard" className="flex items-center gap-2.5">
+        <Link to="/" className="flex items-center gap-2.5">
           <img src="/logo.png" alt="Promotley" className="w-7 h-7 shrink-0 object-contain dark:invert" />
           {!collapsed && <span className="font-bold text-xs text-foreground tracking-widest uppercase">PROMOTELY</span>}
         </Link>

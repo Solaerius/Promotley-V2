@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FileText, Copy, Check, Sparkles } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,6 +20,7 @@ Skapa 3 olika captions baserat på användarens input. Variera stil och längd.
 Format: {"captions": [{"text": "caption med radbrytningar", "tone": "tonens namn"}]}`;
 
 const CaptionGenerator = () => {
+  const { t } = useTranslation();
   const [platform, setPlatform] = useState('instagram');
   const [tone, setTone] = useState('proffsig');
   const [topic, setTopic] = useState('');
@@ -34,14 +36,14 @@ const CaptionGenerator = () => {
   const copyCaption = (text: string, index: number) => {
     navigator.clipboard.writeText(text);
     setCopiedIndex(index);
-    toast({ title: 'Kopierat!', description: 'Caption kopierad till urklipp.' });
+    toast({ title: t('ai_tool.copied_title'), description: t('caption.copy_toast') });
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
   return (
     <AIToolPageLayout
-      title="Caption-generator"
-      description="Skapa engagerande captions för dina inlägg på sociala medier"
+      title={t('caption.title')}
+      description={t('caption.description')}
       icon={FileText}
       gradient="from-orange-500 to-red-500"
     >
@@ -50,7 +52,7 @@ const CaptionGenerator = () => {
         <CardContent className="p-5 space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium dashboard-heading-dark">Plattform</label>
+              <label className="text-sm font-medium dashboard-heading-dark">{t('ai_tool.platform')}</label>
               <Select value={platform} onValueChange={setPlatform}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -61,22 +63,22 @@ const CaptionGenerator = () => {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium dashboard-heading-dark">Ton</label>
+              <label className="text-sm font-medium dashboard-heading-dark">{t('caption.tone_label')}</label>
               <Select value={tone} onValueChange={setTone}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="proffsig">Proffsig</SelectItem>
-                  <SelectItem value="rolig">Rolig</SelectItem>
-                  <SelectItem value="inspirerande">Inspirerande</SelectItem>
-                  <SelectItem value="casual">Casual</SelectItem>
+                  <SelectItem value="proffsig">{t('caption.tone_professional')}</SelectItem>
+                  <SelectItem value="rolig">{t('caption.tone_funny')}</SelectItem>
+                  <SelectItem value="inspirerande">{t('caption.tone_inspiring')}</SelectItem>
+                  <SelectItem value="casual">{t('caption.tone_casual')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <div className="space-y-1.5">
-            <label className="text-sm font-medium dashboard-heading-dark">Vad handlar inlägget om?</label>
+            <label className="text-sm font-medium dashboard-heading-dark">{t('caption.topic_label')}</label>
             <Textarea
-              placeholder="T.ex. lansering av ny produkt, bakom kulisserna, kundrecension..."
+              placeholder={t('caption.topic_placeholder')}
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               rows={3}
@@ -89,9 +91,9 @@ const CaptionGenerator = () => {
             disabled={loading || !topic.trim()}
           >
             {loading ? (
-              <><Sparkles className="w-4 h-4 mr-2 animate-spin" /> Genererar...</>
+              <><Sparkles className="w-4 h-4 mr-2 animate-spin" /> {t('ai_tool.generating')}</>
             ) : (
-              <><Sparkles className="w-4 h-4 mr-2" /> Generera captions</>
+              <><Sparkles className="w-4 h-4 mr-2" /> {t('caption.generate_btn')}</>
             )}
           </Button>
         </CardContent>
@@ -107,7 +109,7 @@ const CaptionGenerator = () => {
       {/* Results */}
       {result?.captions && (
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold dashboard-heading-dark">Förslag</h2>
+          <h2 className="text-lg font-semibold dashboard-heading-dark">{t('ai_tool.suggestions_heading')}</h2>
           {result.captions.map((cap, i) => (
             <Card key={i} className="liquid-glass-light group">
               <CardContent className="p-4">

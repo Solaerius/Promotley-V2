@@ -55,8 +55,8 @@ const logos = [
   },
 ];
 
-// Duplicate for seamless loop
-const allLogos = [...logos, ...logos];
+// Quadruple for seamless loop across wide screens
+const allLogos = [...logos, ...logos, ...logos, ...logos];
 
 const LogoStrip = forwardRef<HTMLDivElement>((_, ref) => {
   return (
@@ -102,7 +102,7 @@ const LogoStrip = forwardRef<HTMLDivElement>((_, ref) => {
       <style>{`
         @keyframes logoScroll {
           from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
+          to { transform: translateX(-25%); }
         }
       `}</style>
     </div>

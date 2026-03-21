@@ -20,60 +20,19 @@ import { useAIProfile } from "@/hooks/useAIProfile";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Link } from "react-router-dom";
 
-const tools = [
-  {
-    icon: FileText,
-    title: "Caption-generator",
-    description: "Skapa engagerande captions för dina inlägg",
-    route: "/ai/caption",
-  },
-  {
-    icon: Hash,
-    title: "Hashtag-förslag",
-    description: "Få relevanta hashtags för ökad räckvidd",
-    route: "/ai/hashtags",
-  },
-  {
-    icon: Image,
-    title: "Content-idéer",
-    description: "Brainstorma nya innehållsidéer",
-    route: "/ai/content-ideas",
-  },
-  {
-    icon: Calendar,
-    title: "Veckoplanering",
-    description: "Planera din innehållskalender",
-    route: "/ai/weekly-plan",
-  },
-  {
-    icon: Target,
-    title: "Kampanjstrategi",
-    description: "Bygg en strategi för din nästa kampanj",
-    route: "/ai/campaign",
-  },
-  {
-    icon: Lightbulb,
-    title: "UF-tips",
-    description: "Få råd specifikt för UF-företag",
-    route: "/ai/uf-tips",
-  },
-  {
-    icon: BarChart3,
-    title: "AI-analys",
-    description: "Analysera dina sociala medier med AI",
-    route: "/ai-dashboard",
-  },
-  {
-    icon: Radar,
-    title: "Säljradar",
-    description: "Hitta leads och trender i din bransch",
-    route: "/ai?tab=radar",
-    isInternal: true,
-  },
-];
-
 const AIPage = () => {
   const { t } = useTranslation();
+
+  const tools = [
+    { icon: FileText, title: t('tools.caption_title'), description: t('tools.caption_desc'), route: "/ai/caption" },
+    { icon: Hash, title: t('tools.hashtag_title'), description: t('tools.hashtag_desc'), route: "/ai/hashtags" },
+    { icon: Image, title: t('tools.content_title'), description: t('tools.content_desc'), route: "/ai/content-ideas" },
+    { icon: Calendar, title: t('tools.weekly_title'), description: t('tools.weekly_desc'), route: "/ai/weekly-plan" },
+    { icon: Target, title: t('tools.campaign_title'), description: t('tools.campaign_desc'), route: "/ai/campaign" },
+    { icon: Lightbulb, title: t('tools.uf_title'), description: t('tools.uf_desc'), route: "/ai/uf-tips" },
+    { icon: BarChart3, title: t('tools.analysis_title'), description: t('tools.analysis_desc'), route: "/ai-dashboard" },
+    { icon: Radar, title: t('tools.radar_title'), description: t('tools.radar_desc'), route: "/ai?tab=radar", isInternal: true },
+  ];
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { profile: aiProfile, loading: aiProfileLoading } = useAIProfile();

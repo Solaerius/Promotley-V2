@@ -430,7 +430,7 @@ const Auth = () => {
               disabled={isSubmitting}
             />
             {errors.email && (
-              <p className="text-sm text-destructive">{errors.email}</p>
+              <p className="text-sm text-destructive">{t(errors.email)}</p>
             )}
           </div>
 
@@ -456,7 +456,7 @@ const Auth = () => {
               </button>
             </div>
             {errors.password && (
-              <p className="text-sm text-destructive">{errors.password}</p>
+              <p className="text-sm text-destructive">{t(errors.password)}</p>
             )}
             {!isLogin && <PasswordRequirements password={password} />}
             
@@ -527,7 +527,7 @@ const Auth = () => {
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="text-sm text-destructive">{errors.confirmPassword}</p>
+                <p className="text-sm text-destructive">{t(errors.confirmPassword)}</p>
               )}
             </div>
           )}

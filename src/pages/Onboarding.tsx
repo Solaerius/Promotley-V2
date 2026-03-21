@@ -20,29 +20,6 @@ import { useTranslation } from "react-i18next";
 
 type Mode = "create" | "join" | null;
 
-const INDUSTRIES = [
-  "Mat & dryck",
-  "Kläder & mode",
-  "Teknik & elektronik",
-  "Hälsa & skönhet",
-  "Hobby & fritid",
-  "Utbildning & tjänster",
-  "Hem & inredning",
-  "Sport & träning",
-  "Konst & hantverk",
-  "Miljö & hållbarhet",
-  "Annat",
-];
-
-const TONALITY_OPTIONS = [
-  "Professionell",
-  "Vänlig & personlig",
-  "Humoristisk",
-  "Inspirerande",
-  "Informativ",
-  "Ungdomlig & trendig",
-];
-
 const stepVariants = {
   enter: (dir: number) => ({ opacity: 0, x: dir > 0 ? 40 : -40 }),
   center: { opacity: 1, x: 0 },
@@ -151,7 +128,7 @@ export default function Onboarding() {
       if (!formData.branch) errs.branch = req;
       if (!formData.stad.trim()) errs.stad = req;
       if (!formData.postnummer.trim()) errs.postnummer = req;
-      else if (!/^\d{5}$/.test(formData.postnummer)) errs.postnummer = "Ange 5 siffror";
+      else if (!/^\d{5}$/.test(formData.postnummer)) errs.postnummer = t("onboarding.postal_code_digits");
     }
     if (step === 2) {
       if (!formData.malgrupp.trim()) errs.malgrupp = req;
@@ -215,6 +192,8 @@ export default function Onboarding() {
     }
   };
 
+  const INDUSTRIES = t("onboarding.industries", { returnObjects: true }) as string[];
+  const TONALITY_OPTIONS = t("onboarding.tones", { returnObjects: true }) as string[];
   const PROGRESS_LABELS = t("onboarding.progress_labels", { returnObjects: true }) as string[];
 
   const RequiredMark = () => (
@@ -312,8 +291,8 @@ export default function Onboarding() {
         <h2 className="text-xl font-bold">{t("onboarding.step1_title")}</h2>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="full_name">Ditt namn</Label>
-        <Input id="full_name" value={formData.full_name} onChange={(e) => set("full_name", e.target.value)} placeholder="För- och efternamn" />
+        <Label htmlFor="full_name">{t("onboarding.your_name")}</Label>
+        <Input id="full_name" value={formData.full_name} onChange={(e) => set("full_name", e.target.value)} placeholder={t("onboarding.name_placeholder")} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="foretagsnamn">{t("onboarding.company_name")}<RequiredMark /></Label>
@@ -324,7 +303,7 @@ export default function Onboarding() {
         <Label htmlFor="branch">{t("onboarding.industry")}<RequiredMark /></Label>
         <Select value={formData.branch} onValueChange={(v) => set("branch", v)}>
           <SelectTrigger id="branch">
-            <SelectValue placeholder="Välj bransch" />
+            <SelectValue placeholder={t("onboarding.select_industry")} />
           </SelectTrigger>
           <SelectContent position="popper" side="bottom" sideOffset={4}>
             {INDUSTRIES.map((ind) => (
@@ -361,25 +340,25 @@ export default function Onboarding() {
       </div>
       <div className="space-y-2">
         <Label htmlFor="malgrupp">{t("onboarding.target_audience")}<RequiredMark /></Label>
-        <Input id="malgrupp" value={formData.malgrupp} onChange={(e) => set("malgrupp", e.target.value)} placeholder="T.ex. ungdomar 16-25 år intresserade av mode" />
+        <Input id="malgrupp" value={formData.malgrupp} onChange={(e) => set("malgrupp", e.target.value)} placeholder={t("onboarding.target_audience_placeholder")} />
         <FieldError id="malgrupp" />
       </div>
       <div className="space-y-2">
         <Label htmlFor="produkt_beskrivning">{t("onboarding.description")}<RequiredMark /></Label>
-        <Textarea id="produkt_beskrivning" value={formData.produkt_beskrivning} onChange={(e) => set("produkt_beskrivning", e.target.value)} placeholder="Beskriv vad ni säljer eller erbjuder..." rows={4} />
+        <Textarea id="produkt_beskrivning" value={formData.produkt_beskrivning} onChange={(e) => set("produkt_beskrivning", e.target.value)} placeholder={t("onboarding.description_placeholder")} rows={4} />
         <FieldError id="produkt_beskrivning" />
       </div>
       <div className="space-y-2">
         <Label htmlFor="malsattning">{t("onboarding.goal")}</Label>
-        <Input id="malsattning" value={formData.malsattning} onChange={(e) => set("malsattning", e.target.value)} placeholder="T.ex. Öka följare, sälja produkter" />
+        <Input id="malsattning" value={formData.malsattning} onChange={(e) => set("malsattning", e.target.value)} placeholder={t("onboarding.goal_placeholder")} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="prisniva">{t("onboarding.price_level")}</Label>
-        <Input id="prisniva" value={formData.prisniva} onChange={(e) => set("prisniva", e.target.value)} placeholder="T.ex. Budget, Premium, Lyx" />
+        <Input id="prisniva" value={formData.prisniva} onChange={(e) => set("prisniva", e.target.value)} placeholder={t("onboarding.price_level_placeholder")} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="nyckelord">{t("onboarding.keywords")}</Label>
-        <Input id="nyckelord" value={formData.nyckelord} onChange={(e) => set("nyckelord", e.target.value)} placeholder="T.ex. ekologisk, handgjord, lokal" />
+        <Input id="nyckelord" value={formData.nyckelord} onChange={(e) => set("nyckelord", e.target.value)} placeholder={t("onboarding.keywords_placeholder")} />
       </div>
     </div>
   );
@@ -389,14 +368,14 @@ export default function Onboarding() {
     <div className="space-y-4">
       <div className="mb-6">
         <h2 className="text-xl font-bold">{t("onboarding.step3_title")}</h2>
-        <p className="text-sm text-muted-foreground mt-1">Valfritt men rekommenderas</p>
+        <p className="text-sm text-muted-foreground mt-1">{t("onboarding.optional_recommended")}</p>
       </div>
       <ConnectionManager />
       <div className="space-y-2">
         <Label htmlFor="tonalitet">{t("onboarding.tonality")}</Label>
         <Select value={formData.tonalitet} onValueChange={(v) => set("tonalitet", v)}>
           <SelectTrigger id="tonalitet">
-            <SelectValue placeholder="Välj tonalitet" />
+            <SelectValue placeholder={t("onboarding.select_tone")} />
           </SelectTrigger>
           <SelectContent position="popper" side="bottom" sideOffset={4}>
             {TONALITY_OPTIONS.map((opt) => (
@@ -407,7 +386,7 @@ export default function Onboarding() {
       </div>
       <div className="space-y-2">
         <Label htmlFor="allman_info">{t("onboarding.general_info")}</Label>
-        <Textarea id="allman_info" value={formData.allman_info} onChange={(e) => set("allman_info", e.target.value)} placeholder="Övrig information som kan hjälpa AI..." rows={3} />
+        <Textarea id="allman_info" value={formData.allman_info} onChange={(e) => set("allman_info", e.target.value)} placeholder={t("onboarding.general_info_placeholder")} rows={3} />
       </div>
     </div>
   );
@@ -468,7 +447,7 @@ export default function Onboarding() {
       <div className="hidden lg:block w-72 flex-shrink-0">
         <div className="sticky top-8">
           <h3 className="text-sm font-semibold text-muted-foreground mb-6 uppercase tracking-wide">
-            Ditt framsteg
+            {t("onboarding.your_progress")}
           </h3>
           <div className="relative">
             {/* Vertical line */}
@@ -524,7 +503,7 @@ export default function Onboarding() {
     return (
       <div className="lg:hidden mb-6">
         <div className="flex justify-between text-xs text-muted-foreground mb-2">
-          <span>Steg {step} av 4</span>
+          <span>{t("onboarding.step_progress", { step })}</span>
           <span>{PROGRESS_LABELS[step - 1]}</span>
         </div>
         <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">

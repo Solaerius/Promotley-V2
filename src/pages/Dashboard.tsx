@@ -199,25 +199,25 @@ const Dashboard = () => {
     if (!user?.id) return;
     const fetchActivity = async () => {
       const activities: { type: string; icon: React.ElementType; label: string; detail: string; time: string }[] = [];
-      const { data: aiMessages } = await supabase
+      const { data: aiMessages, error: activityError } = await supabase
         .from("ai_chat_messages")
         .select("created_at, message")
         .eq("role", "user")
         .order("created_at", { ascending: false })
         .limit(3);
-      if (aiMessages) {
+      if (!activityError && aiMessages) {
         aiMessages.forEach((msg) => {
           activities.push({
             type: "ai",
             icon: Sparkles,
-            label: "AI-förfrågan",
+            label: t('dashboard.activity_ai'),
             detail: msg.message.substring(0, 50) + (msg.message.length > 50 ? "…" : ""),
             time: msg.created_at,
           });
         });
       }
       upcomingPosts.forEach((post) => {
-        activities.push({ type: "post", icon: Calendar, label: "Planerat inlägg", detail: post.title, time: post.date });
+        activities.push({ type: "post", icon: Calendar, label: t('dashboard.activity_post'), detail: post.title, time: post.date });
       });
       activities.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
       setRecentActivity(activities.slice(0, 5));
@@ -247,40 +247,44 @@ const Dashboard = () => {
   // ── Stat card definitions ──────────────────
   const statCards = [
     {
-      label: "Totala följare",
+      label: t('dashboard.total_followers'),
       value: formatNumber(totalFollowers),
-      sub: "Alla plattformar",
+      sub: t('dashboard.all_platforms'),
       icon: Users,
-      accent: "hsl(var(--primary))",
-      bg: "hsl(var(--primary) / 0.5)",
+      accent: "hsl(var(--foreground))",
+      bg: "hsl(var(--primary) / 0.12)",
       border: "hsl(var(--primary) / 0.2)",
+      iconAccent: "hsl(var(--primary))",
     },
     {
-      label: "AI-krediter",
+      label: t('dashboard.ai_credits'),
       value: String(credits?.credits_left ?? 0),
-      sub: "Tillgängliga",
+      sub: t('dashboard.available'),
       icon: Zap,
-      accent: "hsl(var(--accent-brand))",
+      accent: "hsl(var(--foreground))",
       bg: "hsl(38 60% 13% / 0.5)",
       border: "hsl(38 60% 38% / 0.2)",
+      iconAccent: "hsl(var(--accent-brand))",
     },
     {
-      label: "Kommande inlägg",
+      label: t('dashboard.upcoming_posts_stat'),
       value: String(upcomingPosts.length),
-      sub: "Schemalagda",
+      sub: t('dashboard.scheduled'),
       icon: Calendar,
-      accent: "hsl(174 60% 50%)",
+      accent: "hsl(var(--foreground))",
       bg: "hsl(174 40% 11% / 0.5)",
       border: "hsl(174 40% 32% / 0.2)",
+      iconAccent: "hsl(174 60% 50%)",
     },
     {
-      label: "Anslutna konton",
+      label: t('dashboard.connected_accounts'),
       value: String(connections.length),
-      sub: "Plattformar",
+      sub: t('dashboard.platforms'),
       icon: TrendingUp,
-      accent: "hsl(320 65% 62%)",
+      accent: "hsl(var(--foreground))",
       bg: "hsl(320 40% 12% / 0.5)",
       border: "hsl(320 40% 34% / 0.2)",
+      iconAccent: "hsl(320 65% 62%)",
     },
   ];
 
@@ -303,7 +307,7 @@ const Dashboard = () => {
                 <span className="text-2xl select-none" role="img" aria-label="vink">👋</span>
               </div>
               <p className="text-sm" style={{ color: "hsl(0 0% 45%)" }}>
-                Din marknadsföringsöversikt —{" "}
+                {t('dashboard.overview_subtitle')} —{" "}
                 {format(new Date(), "EEEE d MMMM", { locale: sv })}
               </p>
             </div>
@@ -319,14 +323,14 @@ const Dashboard = () => {
                 }}
               >
                 <Zap className="h-3.5 w-3.5" />
-                AI-verktyg
+                {t('dashboard.ai_tools_btn')}
               </Button>
             </Link>
           </motion.div>
 
           {/* ── Stat cards ── */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {statCards.map(({ label, value, sub, icon: Icon, accent, bg, border }, i) => (
+            {statCards.map(({ label, value, sub, icon: Icon, accent, bg, border, iconAccent }, i) => (
               <motion.div
                 key={label}
                 initial={{ opacity: 0, y: 14 }}
@@ -338,7 +342,7 @@ const Dashboard = () => {
                 {/* Left accent bar */}
                 <div
                   className="absolute left-0 top-3.5 bottom-3.5 w-0.5 rounded-r-full"
-                  style={{ background: accent }}
+                  style={{ background: iconAccent }}
                 />
                 <div className="flex items-start justify-between mb-3 pl-2.5">
                   <span
@@ -349,9 +353,9 @@ const Dashboard = () => {
                   </span>
                   <div
                     className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{ background: `color-mix(in srgb, ${accent} 15%, transparent)` }}
+                    style={{ background: `color-mix(in srgb, ${iconAccent} 15%, transparent)` }}
                   >
-                    <Icon className="h-3.5 w-3.5" style={{ color: accent }} />
+                    <Icon className="h-3.5 w-3.5" style={{ color: iconAccent }} />
                   </div>
                 </div>
                 <p className="text-3xl font-bold pl-2.5 leading-none mb-1" style={{ color: accent }}>
