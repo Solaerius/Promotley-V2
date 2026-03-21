@@ -111,7 +111,7 @@ const Demo = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Background like DashboardLayout */}
-      <div className="fixed inset-0 z-0 bg-gradient-to-br from-slate-100 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950" />
+      <div className="fixed inset-0 z-0 bg-background" />
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute w-[600px] h-[600px] rounded-full opacity-20 dark:opacity-15"
           style={{ background: 'radial-gradient(circle, hsl(9 70% 45% / 0.3) 0%, transparent 70%)', filter: 'blur(100px)', top: '10%', right: '-10%' }} />
