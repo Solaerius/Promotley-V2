@@ -2,17 +2,16 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { sv } from "date-fns/locale";
-import { 
-  LayoutDashboard, 
-  BarChart3, 
-  Calendar, 
-  Sparkles,
-  User,
+import {
+  Home,
+  TrendingUp,
+  CalendarDays,
+  Wand2,
+  CircleUser,
   Bell,
   Settings,
   ArrowLeft,
   Move,
-  Home,
   LogOut,
   ChevronRight,
   Trash2
@@ -48,11 +47,11 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const tabs = [
-  { name: "Home", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Statistik", href: "/analytics", icon: BarChart3 },
-  { name: "AI", href: "/ai", icon: Sparkles },
-  { name: "Kalender", href: "/calendar", icon: Calendar },
-  { name: "Konto", href: "/account", icon: User },
+  { name: "Hem", href: "/dashboard", icon: Home },
+  { name: "Statistik", href: "/analytics", icon: TrendingUp },
+  { name: "Verktyg", href: "/ai", icon: Wand2 },
+  { name: "Kalender", href: "/calendar", icon: CalendarDays },
+  { name: "Konto", href: "/account", icon: CircleUser },
 ];
 
 interface DashboardNavbarProps {
@@ -135,7 +134,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
           <div className="flex flex-col items-center gap-1">
             {/* Logo */}
             <Link to="/dashboard" className="p-2 mb-2">
-              <img src={logo} alt="Promotley" className="w-7 h-7" />
+              <img src={logo} alt="Promotley" className="w-7 h-7 dark:invert" />
             </Link>
 
             {/* Navigation tabs */}
@@ -372,7 +371,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                 </Button>
               ) : (
                 <Link to="/dashboard" className="flex items-center gap-2 group">
-                  <img src={logo} alt="Promotley" className="w-7 h-7" />
+                  <img src={logo} alt="Promotley" className="w-7 h-7 dark:invert" />
                   <span className="font-semibold text-sm text-foreground hidden sm:inline">Promotley</span>
                 </Link>
               )}

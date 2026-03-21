@@ -1,22 +1,20 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useTheme } from "next-themes";
 import {
-  LayoutDashboard,
-  BarChart3,
-  Calendar,
-  Sparkles,
-  User,
-  Settings,
   Home,
+  TrendingUp,
+  CalendarDays,
+  Wand2,
+  CircleUser,
+  Settings,
   LogOut,
-  MessageSquare,
-  Coins,
+  BrainCircuit,
   Moon,
   Sun,
-  ChevronUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -51,12 +49,12 @@ import {
 } from "@/components/ui/tooltip";
 
 const navItems = [
-  { title: "Hem", href: "/dashboard", icon: LayoutDashboard },
-  { title: "Statistik", href: "/analytics", icon: BarChart3 },
-  { title: "Verktyg", href: "/ai", icon: Sparkles },
-  { title: "AI-Chat", href: "/ai/chat", icon: MessageSquare },
-  { title: "Kalender", href: "/calendar", icon: Calendar },
-  { title: "Konto", href: "/account", icon: User },
+  { title: "Hem", href: "/dashboard", icon: Home },
+  { title: "Statistik", href: "/analytics", icon: TrendingUp },
+  { title: "Verktyg", href: "/ai", icon: Wand2 },
+  { title: "AI-Chat", href: "/ai/chat", icon: BrainCircuit },
+  { title: "Kalender", href: "/calendar", icon: CalendarDays },
+  { title: "Konto", href: "/account", icon: CircleUser },
 ];
 
 export function AppSidebar() {
@@ -107,16 +105,16 @@ export function AppSidebar() {
   const displayName = activeOrganization?.name || user?.email?.split("@")[0] || "Användare";
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border/50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
+    <Sidebar collapsible="icon" className="border-r border-border/50 bg-background/90 backdrop-blur-md">
       <SidebarHeader className="p-3">
         <Link to="/dashboard" className="flex items-center gap-2.5">
-          <img src="/logo.png" alt="Promotley" className="w-7 h-7 shrink-0 object-contain" />
+          <img src="/logo.png" alt="Promotley" className="w-7 h-7 shrink-0 object-contain dark:invert" />
           {!collapsed && <span className="font-bold text-xs text-foreground tracking-widest uppercase">PROMOTELY</span>}
         </Link>
       </SidebarHeader>
 
-      <SidebarContent>
-        <SidebarGroup>
+      <SidebarContent className="flex flex-col justify-center">
+        <SidebarGroup className="my-auto">
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => {
@@ -127,15 +125,24 @@ export function AppSidebar() {
                       asChild
                       tooltip={item.title}
                       className={cn(
-                        "transition-all duration-150 rounded-none px-3",
+                        "group relative transition-all duration-150 rounded-none px-3 overflow-hidden",
                         active
                           ? "border-l-2 border-primary text-primary font-semibold pl-[calc(0.75rem-2px)]"
-                          : "border-l-2 border-transparent text-muted-foreground hover:text-foreground hover:border-border pl-[calc(0.75rem-2px)]"
+                          : "border-l-2 border-transparent text-muted-foreground hover:text-foreground hover:border-primary/40 pl-[calc(0.75rem-2px)]"
                       )}
                     >
                       <Link to={item.href}>
-                        <item.icon className={cn("h-4 w-4", active && "text-primary")} />
+                        <item.icon className={cn("h-4 w-4 shrink-0", active && "text-primary")} />
                         <span>{item.title}</span>
+                        {/* Hover underline animation */}
+                        {!active && (
+                          <motion.span
+                            className="absolute bottom-0 left-0 h-[2px] w-full bg-primary/60 origin-left"
+                            initial={{ scaleX: 0 }}
+                            whileHover={{ scaleX: 1 }}
+                            transition={{ duration: 0.2 }}
+                          />
+                        )}
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

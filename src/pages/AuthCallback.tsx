@@ -32,6 +32,9 @@ export default function AuthCallback() {
           return;
         }
 
+        // Detect password recovery flow
+        const isRecovery = searchParams.get("type") === "recovery";
+
         // Exchange code for session if present
         const code = searchParams.get("code");
         if (code) {
@@ -44,6 +47,11 @@ export default function AuthCallback() {
               setStatus("error");
               setErrorMessage(exchangeError.message);
             }
+            return;
+          }
+          // Password recovery: redirect to reset form immediately after exchange
+          if (isRecovery) {
+            navigate("/reset-password", { replace: true });
             return;
           }
         }

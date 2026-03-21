@@ -42,12 +42,12 @@ const DashboardLayout = ({ children, pageTitle, hideFooter }: DashboardLayoutPro
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gradient-to-br from-slate-100 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
 
         <div className="flex-1 flex flex-col min-w-0">
           {/* Content header */}
-          <header className="sticky top-0 z-20 h-12 flex items-center justify-between gap-2 px-4 border-b border-border/50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
+          <header className="sticky top-0 z-20 h-12 flex items-center justify-between gap-2 px-4 border-b border-border/40 bg-background/80 backdrop-blur-md">
             <div className="flex items-center gap-2">
               <SidebarTrigger className="h-8 w-8" />
               {pageTitle && (
@@ -137,9 +137,11 @@ const DashboardLayout = ({ children, pageTitle, hideFooter }: DashboardLayoutPro
           {/* Email verification */}
           <EmailVerificationBanner />
 
-          {/* Main content - no motion wrapper */}
+          {/* Main content */}
           <main className="flex-1 p-4 md:p-6">
-            {children}
+            <div className="max-w-7xl mx-auto w-full">
+              {children}
+            </div>
           </main>
 
           {/* Minimal footer */}

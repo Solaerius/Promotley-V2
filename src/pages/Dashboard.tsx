@@ -286,8 +286,7 @@ const Dashboard = () => {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen font-poppins bg-background">
-        <div className="max-w-7xl mx-auto p-5 md:p-7 space-y-5">
+      <div className="space-y-5">
 
           {/* ── Header ── */}
           <motion.div
@@ -720,8 +719,6 @@ const Dashboard = () => {
             ))}
           </div>
 
-        </div>
-      </div>
     </DashboardLayout>
   );
 };
