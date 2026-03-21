@@ -55,7 +55,7 @@ const Pricing = () => {
   const { t } = useTranslation();
 
   return (
-    <section id="pricing" className="relative py-24 md:py-32 px-4 overflow-hidden font-poppins">
+    <section id="pricing" className="relative py-14 md:py-20 px-4 overflow-hidden font-poppins">
       {/* Section accent glow */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 40%, hsl(var(--primary) / 0.12) 0%, transparent 70%)' }} />
 
@@ -72,7 +72,7 @@ const Pricing = () => {
             <Sparkles className="w-4 h-4 text-white" />
             <span className="text-sm font-medium text-white">Priser</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold px-2 leading-tight text-white">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold px-2 leading-tight text-white">
             {t('pricing.title')}, <span className="text-gradient">kraftfulla resultat</span>
           </h2>
           <p className="text-base md:text-lg px-4" style={{ color: 'hsl(0 0% 100% / 0.55)' }}>

@@ -69,6 +69,15 @@
     --outline-subtle-focus: hsl(331 65% 35%);
     --outline-input: hsl(30 30% 62%);
     --outline-input-focus: hsl(331 65% 35%);
+
+    /* Surface tokens */
+    --surface-base: var(--background);
+    --surface-raised: var(--card);
+    --surface-overlay: var(--popover);
+    --surface-elevated: var(--card);
+    --surface-muted: var(--muted);
+    --hero-foreground: var(--foreground);
+    --hero-foreground-muted: var(--muted-foreground);
   }
 
   .dark {
@@ -121,9 +130,19 @@
     --outline-subtle-focus: hsl(9 85% 55%);
     --outline-input: hsl(30 15% 30%);
     --outline-input-focus: hsl(9 85% 55%);
+
+    /* Surface tokens */
+    --surface-base: var(--background);
+    --surface-raised: var(--card);
+    --surface-overlay: var(--popover);
+    --surface-elevated: var(--card);
+    --surface-muted: var(--muted);
+    --hero-foreground: var(--foreground);
+    --hero-foreground-muted: var(--muted-foreground);
   }
 
   html {
+    font-size: 15px;
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

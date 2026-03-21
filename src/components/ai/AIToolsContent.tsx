@@ -102,7 +102,7 @@ const AIToolsContent = () => {
               </div>
               <CardTitle className="text-lg flex items-center justify-between dashboard-heading-dark">
                 {tool.title}
-                <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity text-white" />
+                <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity text-foreground" />
               </CardTitle>
               <CardDescription className="dashboard-subheading-dark">{tool.description}</CardDescription>
             </CardHeader>

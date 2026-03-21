@@ -5,7 +5,7 @@ const ProblemSection = () => {
   const { t } = useTranslation();
 
   return (
-    <section className="relative py-24 md:py-32 px-4 overflow-hidden font-poppins">
+    <section className="relative py-14 md:py-20 px-4 overflow-hidden font-poppins">
       {/* Section accent glow */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 30% 50%, hsl(var(--primary) / 0.1) 0%, transparent 70%)' }} />
 
@@ -20,11 +20,11 @@ const ProblemSection = () => {
               border: '1px solid hsl(var(--primary) / 0.3)',
             }}
           >
-            <AlertCircle className="w-4 h-4 text-white" />
-            <span className="text-sm font-medium text-white">Problemet</span>
+            <AlertCircle className="w-4 h-4 text-foreground" />
+            <span className="text-sm font-medium text-foreground">Problemet</span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold px-2 leading-tight text-balance text-white">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold px-2 leading-tight text-balance text-foreground">
             Du vet känslan när du lägger tid på{" "}
             <span className="text-gradient">content som ingen ser?</span>
           </h2>
@@ -47,7 +47,7 @@ const ProblemSection = () => {
               >
                 <AlertCircle className="w-6 h-6" style={{ color: 'hsl(0 72% 60%)' }} />
               </div>
-              <h3 className="text-2xl md:text-3xl font-bold text-white">Innan Promotley</h3>
+              <h3 className="text-2xl md:text-3xl font-bold text-foreground">Innan Promotley</h3>
             </div>
 
             <ul className="space-y-4">
@@ -58,7 +58,7 @@ const ProblemSection = () => {
                 "Saknar strategi för innehållsplanering",
                 "Osäker på vad som funkar för din bransch",
               ].map((item, idx) => (
-                <li key={idx} className="flex items-start gap-4" style={{ color: 'hsl(0 0% 100% / 0.55)' }}>
+                <li key={idx} className="flex items-start gap-4" style={{ color: 'hsl(var(--muted-foreground))' }}>
                   <span
                     className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-sm font-bold"
                     style={{ background: 'hsl(0 72% 50% / 0.12)', color: 'hsl(0 72% 60%)' }}
@@ -98,7 +98,7 @@ const ProblemSection = () => {
               >
                 <CheckCircle className="w-6 h-6" style={{ color: 'hsl(var(--accent-brand))' }} />
               </div>
-              <h3 className="text-2xl md:text-3xl font-bold text-white">Med Promotley</h3>
+                <h3 className="text-2xl md:text-3xl font-bold text-foreground">Med Promotley</h3>
             </div>
 
             <ul className="space-y-4">
@@ -109,7 +109,7 @@ const ProblemSection = () => {
                 "Komplett innehållskalender varje vecka",
                 "AI-genererat innehåll redo att publicera",
               ].map((item, idx) => (
-                <li key={idx} className="flex items-start gap-4 text-white">
+                <li key={idx} className="flex items-start gap-4 text-foreground">
                   <span
                     className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-sm font-bold"
                     style={{ background: 'hsl(var(--accent-brand) / 0.15)', color: 'hsl(var(--accent-brand))' }}

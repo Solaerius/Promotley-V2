@@ -13,12 +13,12 @@ const FinalCTA = () => {
   const { t } = useTranslation();
 
   return (
-    <section className="relative py-24 md:py-32 overflow-hidden">
+    <section className="relative py-14 md:py-20 overflow-hidden">
       {/* Concentrated radial glow background */}
       <div
         className="absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse 70% 80% at 50% 50%, hsl(var(--primary) / 0.18) 0%, hsl(240 50% 4%) 70%)',
+          background: 'radial-gradient(ellipse 70% 80% at 50% 50%, hsl(var(--primary) / 0.18) 0%, hsl(var(--background)) 70%)',
         }}
       />
 
@@ -32,7 +32,7 @@ const FinalCTA = () => {
         >
           <div
             className="rounded-3xl px-8 py-14 md:py-20 text-center"
-            style={{ background: 'hsl(240 50% 7% / 0.85)' }}
+            style={{ background: 'hsl(var(--card) / 0.85)' }}
           >
             {/* Badge */}
             <div
@@ -42,19 +42,19 @@ const FinalCTA = () => {
                 border: '1px solid hsl(var(--primary) / 0.3)',
               }}
             >
-              <Sparkles className="w-4 h-4 text-white" />
-              <span className="text-sm font-medium text-white">Börja din tillväxtresa idag</span>
+              <Sparkles className="w-4 h-4 text-foreground" />
+              <span className="text-sm font-medium text-foreground">Börja din tillväxtresa idag</span>
             </div>
 
             {/* Headline */}
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6" style={{ textWrap: 'balance' }}>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6" style={{ textWrap: 'balance' }}>
               Nästa virala inlägg <span className="text-gradient">börjar här</span>
             </h2>
 
             {/* Subheadline */}
             <p
               className="text-lg md:text-xl mb-10 max-w-2xl mx-auto"
-              style={{ color: 'hsl(0 0% 100% / 0.7)', textWrap: 'balance' }}
+              style={{ color: 'hsl(var(--muted-foreground))', textWrap: 'balance' }}
             >
               Få din personliga innehållsstrategi - anpassad efter din budget, bransch och tillgängliga tid
             </p>
@@ -71,7 +71,7 @@ const FinalCTA = () => {
             </Link>
 
             {/* Benefits */}
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm" style={{ color: 'hsl(0 0% 100% / 0.6)' }}>
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm" style={{ color: 'hsl(var(--muted-foreground))' }}>
               {benefits.map((benefit, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-green-400" />

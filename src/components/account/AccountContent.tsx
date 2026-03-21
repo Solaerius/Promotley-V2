@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,6 +25,7 @@ import {
 } from "@/components/ui/select";
 
 const AccountContent = () => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const { signOut, user } = useAuth();
   const navigate = useNavigate();
@@ -193,20 +195,20 @@ const AccountContent = () => {
           <div className="w-7 h-7 rounded-lg bg-muted flex items-center justify-center">
             <Zap className="w-3.5 h-3.5 text-muted-foreground" />
           </div>
-          <h2 className="text-base font-medium text-foreground">Plan & Krediter</h2>
+          <h2 className="text-base font-medium text-foreground">{t('account.plan_and_credits')}</h2>
         </div>
         <div className="rounded-xl bg-card shadow-sm p-4 space-y-3">
           <CreditsDisplay variant="full" />
 
           <div className="pt-3 border-t border-border">
             <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
-              <Plus className="w-3.5 h-3.5" /> Fyll pa krediter
+              <Plus className="w-3.5 h-3.5" /> {t('account.top_up_credits')}
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {Object.entries(STRIPE_CREDIT_PACKAGES).map(([key, pkg]) => (
                 <Button key={key} variant="outline" className="flex flex-col h-auto py-2" onClick={() => navigate(`/checkout?package=${key}&type=credits`)}>
                   <span className="text-base font-bold">{pkg.credits}</span>
-                  <span className="text-[10px] text-muted-foreground">krediter</span>
+                  <span className="text-[10px] text-muted-foreground">{t('account.credits')}</span>
                   <span className="text-sm font-semibold text-primary mt-0.5">{pkg.price} kr</span>
                 </Button>
               ))}
@@ -216,22 +218,22 @@ const AccountContent = () => {
           <div className="flex flex-wrap gap-2 pt-3 border-t border-border">
             <Button onClick={() => navigate('/pricing')} size="sm">
               <CreditCard className="w-4 h-4 mr-1.5" />
-              {hasActivePlan ? "Uppgradera plan" : "Välj plan"}
+              {hasActivePlan ? t('account.upgrade_plan') : t('account.choose_plan')}
             </Button>
             {hasActiveStripeSubscription && (
               <Button variant="outline" size="sm" onClick={handleOpenPortal} disabled={isOpeningPortal}>
                 <CreditCard className="w-4 h-4 mr-1.5" />
-                {isOpeningPortal ? "Öppnar..." : "Hantera prenumeration"}
+                {isOpeningPortal ? t('account.opening') : t('account.manage_subscription')}
               </Button>
             )}
             {hasActivePlan && downgradeOptions.length > 0 && (
               <Button variant="outline" size="sm" onClick={() => setShowDowngradeDialog(true)}>
-                <ArrowDown className="w-4 h-4 mr-1.5" /> Nedgradera
+                <ArrowDown className="w-4 h-4 mr-1.5" /> {t('account.downgrade')}
               </Button>
             )}
             {hasActivePlan && (
               <Button variant="outline" size="sm" onClick={() => setShowCancelDialog(true)} className="text-destructive hover:text-destructive">
-                <XCircle className="w-4 h-4 mr-1.5" /> Avsluta
+                <XCircle className="w-4 h-4 mr-1.5" /> {t('account.cancel_plan')}
               </Button>
             )}
           </div>
@@ -244,16 +246,16 @@ const AccountContent = () => {
 
       {/* Profile Images */}
       <section className="space-y-3">
-        <h2 className="text-base font-medium text-foreground">Profilbilder</h2>
+        <h2 className="text-base font-medium text-foreground">{t('account.profile_images')}</h2>
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col items-center p-4 rounded-xl bg-card shadow-sm">
             <User className="h-4 w-4 mb-2 text-muted-foreground" />
-            <p className="font-medium mb-2 text-sm">Profilbild</p>
+            <p className="font-medium mb-2 text-sm">{t('account.profile_picture')}</p>
             {user?.id && <ProfileImageUpload userId={user.id} currentUrl={avatarUrl} type="avatar" onUploadComplete={(url) => setAvatarUrl(url || null)} size="lg" />}
           </div>
           <div className="flex flex-col items-center p-4 rounded-xl bg-card shadow-sm">
             <Building className="h-4 w-4 mb-2 text-muted-foreground" />
-            <p className="font-medium mb-2 text-sm">Företagslogga</p>
+            <p className="font-medium mb-2 text-sm">{t('account.company_logo')}</p>
             {user?.id && <ProfileImageUpload userId={user.id} currentUrl={companyLogoUrl} type="company_logo" onUploadComplete={(url) => setCompanyLogoUrl(url || null)} size="lg" />}
           </div>
         </div>
@@ -261,14 +263,14 @@ const AccountContent = () => {
 
       {/* Account Info */}
       <section className="space-y-3">
-        <h2 className="text-base font-medium text-foreground">Kontoinformation</h2>
+        <h2 className="text-base font-medium text-foreground">{t('account.account_info')}</h2>
         <div className="space-y-3">
           <div>
-            <Label className="text-sm text-muted-foreground">E-post</Label>
+            <Label className="text-sm text-muted-foreground">{t('auth.email')}</Label>
             <p className="font-medium mt-1 text-sm">{user?.email}</p>
           </div>
           <div className="space-y-1">
-            <Label className="text-sm text-muted-foreground">Företagsnamn</Label>
+            <Label className="text-sm text-muted-foreground">{t('onboarding.company_name')}</Label>
             <div className="flex gap-2">
               <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Mitt UF-företag" className="bg-background border-border" />
               <Button onClick={handleSaveCompanyName} disabled={isSavingCompanyName || companyName === originalCompanyName} size="icon" variant="secondary">
@@ -282,8 +284,8 @@ const AccountContent = () => {
       {/* AI Profile */}
       <section className="space-y-3">
         <div>
-          <h2 className="text-base font-medium text-foreground mb-0.5">AI-profil</h2>
-          <p className="text-sm text-muted-foreground">Fyll i alla obligatoriska fält för bästa AI-svar</p>
+          <h2 className="text-base font-medium text-foreground mb-0.5">{t('account.ai_profile')}</h2>
+          <p className="text-sm text-muted-foreground">{t('account.ai_profile_subtitle')}</p>
         </div>
         <AIProfileProgress />
         <div className="space-y-3 mt-2">
@@ -330,7 +332,7 @@ const AccountContent = () => {
             </div>
           ))}
           <Button onClick={handleSaveAIProfile} disabled={isSavingAIProfile} className="w-full sm:w-auto">
-            {isSavingAIProfile ? "Sparar..." : "Spara AI-profil"}
+            {isSavingAIProfile ? t('common.loading') : t('account.save_ai_profile')}
           </Button>
         </div>
       </section>
@@ -339,11 +341,11 @@ const AccountContent = () => {
       <section className="pt-4 border-t border-destructive/20">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-medium text-destructive text-sm">Radera konto</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">Permanent radering av alla data</p>
+            <h3 className="font-medium text-destructive text-sm">{t('account.delete_account')}</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">{t('account.delete_account_desc')}</p>
           </div>
           <Button variant="destructive" size="sm" onClick={() => setShowDeleteDialog(true)}>
-            <Trash2 className="w-4 h-4 mr-1.5" /> Radera
+            <Trash2 className="w-4 h-4 mr-1.5" /> {t('account.delete_btn')}
           </Button>
         </div>
       </section>
@@ -352,12 +354,12 @@ const AccountContent = () => {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Radera konto?</AlertDialogTitle>
-            <AlertDialogDescription>Ditt konto raderas om 30 dagar. Du kan angra dig genom att logga in igen.</AlertDialogDescription>
+            <AlertDialogTitle>{t('account.dialog_delete_title')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('account.dialog_delete_desc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Avbryt</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDeleteAccount} disabled={isDeleting}>{isDeleting ? "Raderar..." : "Radera"}</AlertDialogAction>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteAccount} disabled={isDeleting}>{isDeleting ? t('account.deleting') : t('account.delete_btn')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -365,13 +367,13 @@ const AccountContent = () => {
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Avsluta prenumeration?</AlertDialogTitle>
-            <AlertDialogDescription>Din plan ({credits ? getPlanLabel(credits.plan) : ''}) avslutas.</AlertDialogDescription>
+            <AlertDialogTitle>{t('account.dialog_cancel_title')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('account.dialog_cancel_desc', { plan: credits ? getPlanLabel(credits.plan) : '' })}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Behall plan</AlertDialogCancel>
+            <AlertDialogCancel>{t('account.keep_plan')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleCancelSubscription} disabled={isCancelling} className="bg-destructive hover:bg-destructive/90">
-              {isCancelling ? "Avslutar..." : "Avsluta"}
+              {isCancelling ? t('account.cancelling') : t('account.cancel_plan')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -380,12 +382,12 @@ const AccountContent = () => {
       <AlertDialog open={showDowngradeDialog} onOpenChange={setShowDowngradeDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Nedgradera plan</AlertDialogTitle>
-            <AlertDialogDescription>Välj vilken plan du vill nedgradera till.</AlertDialogDescription>
+            <AlertDialogTitle>{t('account.dialog_downgrade_title')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('account.dialog_downgrade_desc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <div className="py-4">
             <Select value={selectedDowngradePlan || ""} onValueChange={setSelectedDowngradePlan}>
-              <SelectTrigger><SelectValue placeholder="Välj plan" /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder={t('account.choose_plan')} /></SelectTrigger>
               <SelectContent>
                 {downgradeOptions.map(([key, plan]) => (
                   <SelectItem key={key} value={key}>{plan.name} - {plan.credits} krediter ({plan.price} kr)</SelectItem>
@@ -394,9 +396,9 @@ const AccountContent = () => {
             </Select>
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setSelectedDowngradePlan(null)}>Avbryt</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setSelectedDowngradePlan(null)}>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDowngrade} disabled={isDowngrading || !selectedDowngradePlan}>
-              {isDowngrading ? "Nedgraderar..." : "Bekrafta"}
+              {isDowngrading ? t('account.downgrading') : t('common.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

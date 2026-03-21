@@ -28,7 +28,7 @@ const TrustSection = () => {
   const { t } = useTranslation();
 
   return (
-    <section className="relative py-24 md:py-32 overflow-hidden">
+    <section className="relative py-14 md:py-20 overflow-hidden">
       {/* Section accent glow */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 50% at 70% 50%, hsl(var(--primary) / 0.1) 0%, transparent 70%)' }} />
 
@@ -42,14 +42,14 @@ const TrustSection = () => {
               border: '1px solid hsl(var(--primary) / 0.3)',
             }}
           >
-            <Shield className="w-4 h-4 text-white" />
-            <span className="text-sm font-medium text-white">Säkerhet & Integritet</span>
+            <Shield className="w-4 h-4 text-foreground" />
+            <span className="text-sm font-medium text-foreground">Säkerhet & Integritet</span>
           </div>
 
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4" style={{ textWrap: 'balance' }}>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4" style={{ textWrap: 'balance' }}>
             Din data är <span className="text-gradient">trygg hos oss</span>
           </h2>
-          <p className="text-lg max-w-2xl mx-auto" style={{ color: 'hsl(0 0% 100% / 0.55)', textWrap: 'balance' }}>
+          <p className="text-lg max-w-2xl mx-auto" style={{ color: 'hsl(var(--muted-foreground))', textWrap: 'balance' }}>
             Vi tar säkerhet och integritet på största allvar
           </p>
         </div>
@@ -81,10 +81,10 @@ const TrustSection = () => {
                 >
                   <Icon className="w-6 h-6 text-green-400" />
                 </div>
-                <h3 className="font-semibold text-white mb-2">
+                <h3 className="font-semibold text-foreground mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-sm leading-relaxed" style={{ color: 'hsl(0 0% 100% / 0.55)' }}>
+                <p className="text-sm leading-relaxed" style={{ color: 'hsl(var(--muted-foreground))' }}>
                   {feature.description}
                 </p>
               </div>
@@ -101,8 +101,8 @@ const TrustSection = () => {
               border: '1px solid hsl(0 0% 100% / 0.08)',
             }}
           >
-            <Lock className="w-5 h-5 shrink-0" style={{ color: 'hsl(0 0% 100% / 0.55)' }} />
-            <p className="text-sm" style={{ color: 'hsl(0 0% 100% / 0.55)' }}>
+            <Lock className="w-5 h-5 shrink-0" style={{ color: 'hsl(var(--muted-foreground))' }} />
+            <p className="text-sm" style={{ color: 'hsl(var(--muted-foreground))' }}>
               256-bit SSL · Data lagras säkert inom EU · GDPR-kompatibel
             </p>
           </div>

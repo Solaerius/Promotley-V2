@@ -8,7 +8,7 @@ const DemoPreviewSection = () => {
   const { t } = useTranslation();
 
   return (
-    <section id="demo-preview" className="relative py-24 md:py-32 overflow-hidden">
+    <section id="demo-preview" className="relative py-14 md:py-20 overflow-hidden">
       {/* Section accent glow */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 60%, hsl(var(--primary) / 0.1) 0%, transparent 70%)' }} />
 
@@ -22,13 +22,13 @@ const DemoPreviewSection = () => {
               border: '1px solid hsl(var(--primary) / 0.3)',
             }}
           >
-            <Play className="w-4 h-4 text-white" />
-            <span className="text-sm font-medium text-white">Se det i aktion</span>
+            <Play className="w-4 h-4 text-foreground" />
+            <span className="text-sm font-medium text-foreground">Se det i aktion</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight">
             {t('sections.demo.title')}
           </h2>
-          <p className="text-base md:text-lg max-w-2xl mx-auto" style={{ color: 'hsl(0 0% 100% / 0.55)' }}>
+          <p className="text-base md:text-lg max-w-2xl mx-auto" style={{ color: 'hsl(var(--muted-foreground))' }}>
             Testa vår interaktiva demo och se hur AI-driven marknadsföring kan hjälpa ditt UF-företag växa
           </p>
         </div>
@@ -40,7 +40,7 @@ const DemoPreviewSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="relative rounded-2xl overflow-hidden border border-white/20 shadow-2xl"
+            className="relative rounded-2xl overflow-hidden border border-border shadow-2xl"
             style={{
               background: 'linear-gradient(135deg, hsl(0 0% 10% / 0.9) 0%, hsl(0 0% 5% / 0.95) 100%)',
             }}

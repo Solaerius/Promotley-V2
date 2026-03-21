@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   MessageSquare,
   FileText,
@@ -72,6 +73,7 @@ const tools = [
 ];
 
 const AIPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { profile: aiProfile, loading: aiProfileLoading } = useAIProfile();
@@ -95,9 +97,9 @@ const AIPage = () => {
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="border-l-4 border-primary pl-3">
-          <h1 className="text-2xl font-bold text-foreground">AI-verktyg</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('ai.tools_title')}</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Din personliga AI för marknadsföring och innehåll
+            {t('ai.tools_subtitle')}
           </p>
         </div>
 
@@ -106,11 +108,11 @@ const AIPage = () => {
           <Alert variant="destructive" className="border-destructive/30">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Din AI-profil är inte komplett.{" "}
+              {t('ai.profile_incomplete')}{" "}
               <Link to="/account" className="underline font-medium">
-                Fyll i den först
+                {t('ai.profile_fill_first')}
               </Link>{" "}
-              för att använda AI-funktioner.
+              {t('ai.profile_to_use_features')}
             </AlertDescription>
           </Alert>
         )}
@@ -149,9 +151,9 @@ const AIPage = () => {
             <Sparkles className="w-4.5 h-4.5 text-primary" />
           </div>
           <div>
-            <p className="text-sm font-medium text-foreground">AI-profil viktigt!</p>
+            <p className="text-sm font-medium text-foreground">{t('ai.profile_tip_title')}</p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Ju mer du fyller i din AI-profil under Konto, desto bättre svar får du.
+              {t('ai.profile_tip_body')}
             </p>
           </div>
         </div>

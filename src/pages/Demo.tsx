@@ -221,8 +221,8 @@ const Demo = () => {
             {/* Company header */}
             <div className="rounded-2xl p-6 backdrop-blur-xl border border-white/20"
               style={{ background: 'linear-gradient(135deg, hsl(9 90% 55% / 0.2) 0%, hsl(331 70% 45% / 0.15) 100%)' }}>
-              <h2 className="text-2xl font-bold dashboard-heading-dark">{demoCompany.foretagsnamn}</h2>
-              <p className="dashboard-subheading-dark text-sm mt-1">{demoCompany.branch} · {demoCompany.stad}</p>
+              <h2 className="text-2xl font-bold text-foreground">{demoCompany.foretagsnamn}</h2>
+              <p className="text-muted-foreground text-sm mt-1">{demoCompany.branch} · {demoCompany.stad}</p>
               <div className="flex gap-2 mt-3 flex-wrap">
                 {demoCompany.nyckelord.map(k => (
                   <Badge key={k} variant="secondary" className="text-xs">{k}</Badge>
@@ -237,16 +237,15 @@ const Demo = () => {
                 return (
                   <motion.div key={stat.title} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    className="backdrop-blur-xl rounded-2xl p-5 border border-white/20"
-                    style={{ background: 'linear-gradient(135deg, hsl(0 0% 100% / 0.1) 0%, hsl(0 0% 100% / 0.05) 100%)' }}>
+                    className="bg-card rounded-2xl p-5 border border-border/40">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl flex items-center justify-center border border-white/20"
                         style={{ background: 'linear-gradient(135deg, hsl(9 90% 55% / 0.3) 0%, hsl(331 70% 45% / 0.2) 100%)' }}>
-                        <Icon className="w-5 h-5 dashboard-heading-dark" />
+                        <Icon className="w-5 h-5 text-foreground" />
                       </div>
                       <div>
-                        <p className="text-xs dashboard-subheading-dark">{stat.title}</p>
-                        <p className="text-xl font-bold dashboard-heading-dark">{stat.value}</p>
+                        <p className="text-xs text-muted-foreground">{stat.title}</p>
+                        <p className="text-xl font-bold text-foreground">{stat.value}</p>
                       </div>
                     </div>
                   </motion.div>
@@ -255,9 +254,8 @@ const Demo = () => {
             </div>
 
             {/* Chart */}
-            <div className="rounded-2xl p-6 backdrop-blur-xl border border-white/20"
-              style={{ background: 'linear-gradient(135deg, hsl(0 0% 100% / 0.1) 0%, hsl(0 0% 100% / 0.05) 100%)' }}>
-              <h3 className="text-lg font-semibold mb-4 dashboard-heading-dark">Tillväxt senaste 6 veckorna</h3>
+            <div className="rounded-2xl p-6 bg-card border border-border/40">
+              <h3 className="text-lg font-semibold mb-4 text-foreground">Tillväxt senaste 6 veckorna</h3>
               <ResponsiveContainer width="100%" height={200}>
                 <AreaChart data={demoChartData}>
                   <defs>
@@ -278,16 +276,15 @@ const Demo = () => {
             {/* Social platform stats */}
             <div className="grid md:grid-cols-2 gap-4">
               {demoSocialStats.map(platform => (
-                <div key={platform.platform} className="rounded-2xl p-5 backdrop-blur-xl border border-white/20"
-                  style={{ background: 'linear-gradient(135deg, hsl(0 0% 100% / 0.1) 0%, hsl(0 0% 100% / 0.05) 100%)' }}>
-                  <h4 className="font-semibold dashboard-heading-dark capitalize mb-3">
+                <div key={platform.platform} className="rounded-2xl p-5 bg-card border border-border/40">
+                  <h4 className="font-semibold text-foreground capitalize mb-3">
                     {platform.platform === 'instagram' ? '📸 Instagram' : '🎵 TikTok'}
                   </h4>
                   <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div><span className="dashboard-subheading-dark">Följare:</span> <span className="dashboard-heading-dark font-medium">{formatNumber(platform.followers)}</span></div>
-                    <div><span className="dashboard-subheading-dark">Likes:</span> <span className="dashboard-heading-dark font-medium">{formatNumber(platform.likes)}</span></div>
-                    <div><span className="dashboard-subheading-dark">Kommentarer:</span> <span className="dashboard-heading-dark font-medium">{formatNumber(platform.comments)}</span></div>
-                    <div><span className="dashboard-subheading-dark">Räckvidd:</span> <span className="dashboard-heading-dark font-medium">{formatNumber(platform.reach)}</span></div>
+                    <div><span className="text-muted-foreground">Följare:</span> <span className="text-foreground font-medium">{formatNumber(platform.followers)}</span></div>
+                    <div><span className="text-muted-foreground">Likes:</span> <span className="text-foreground font-medium">{formatNumber(platform.likes)}</span></div>
+                    <div><span className="text-muted-foreground">Kommentarer:</span> <span className="text-foreground font-medium">{formatNumber(platform.comments)}</span></div>
+                    <div><span className="text-muted-foreground">Räckvidd:</span> <span className="text-foreground font-medium">{formatNumber(platform.reach)}</span></div>
                   </div>
                 </div>
               ))}
@@ -298,38 +295,37 @@ const Demo = () => {
         {/* ANALYTICS TAB */}
         {activeTab === 'analytics' && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-            <div className="rounded-2xl p-6 backdrop-blur-xl border border-white/20"
-              style={{ background: 'linear-gradient(135deg, hsl(0 0% 100% / 0.1) 0%, hsl(0 0% 100% / 0.05) 100%)' }}>
-              <h3 className="text-lg font-semibold dashboard-heading-dark mb-2">AI-analys av {demoCompany.foretagsnamn}</h3>
-              <p className="dashboard-subheading-dark text-sm mb-4">{demoAIAnalysis.summary}</p>
+            <div className="rounded-2xl p-6 bg-card border border-border/40">
+              <h3 className="text-lg font-semibold text-foreground mb-2">AI-analys av {demoCompany.foretagsnamn}</h3>
+              <p className="text-muted-foreground text-sm mb-4">{demoAIAnalysis.summary}</p>
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-medium dashboard-heading-dark mb-2 flex items-center gap-2">
+                  <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-green-400" /> Styrkor
                   </h4>
                   <ul className="space-y-1">
                     {demoAIAnalysis.strengths.map((s, i) => (
-                      <li key={i} className="text-sm dashboard-subheading-dark">{s}</li>
+                      <li key={i} className="text-sm text-muted-foreground">{s}</li>
                     ))}
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-medium dashboard-heading-dark mb-2 flex items-center gap-2">
+                  <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
                     <TrendingUp className="w-4 h-4 text-yellow-400" /> Förbättringar
                   </h4>
                   <ul className="space-y-1">
                     {demoAIAnalysis.improvements.map((s, i) => (
-                      <li key={i} className="text-sm dashboard-subheading-dark">{s}</li>
+                      <li key={i} className="text-sm text-muted-foreground">{s}</li>
                     ))}
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-medium dashboard-heading-dark mb-2 flex items-center gap-2">
+                  <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
                     <ArrowRight className="w-4 h-4 text-primary" /> Nästa steg
                   </h4>
                   <ul className="space-y-1">
                     {demoAIAnalysis.nextSteps.map((s, i) => (
-                      <li key={i} className="text-sm dashboard-subheading-dark">{s}</li>
+                      <li key={i} className="text-sm text-muted-foreground">{s}</li>
                     ))}
                   </ul>
                 </div>
@@ -347,10 +343,10 @@ const Demo = () => {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             {/* AI sub-tabs like real AIPage */}
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold dashboard-heading-dark">AI-Assistent</h1>
-              <p className="text-sm dashboard-subheading-dark mb-4">Din personliga AI för marknadsföring och innehåll</p>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">AI-Assistent</h1>
+              <p className="text-sm text-muted-foreground mb-4">Din personliga AI för marknadsföring och innehåll</p>
 
-              <div className="inline-flex h-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 p-1 mb-6">
+              <div className="inline-flex h-10 items-center justify-center rounded-full bg-muted/50 backdrop-blur-sm border border-border/40 p-1 mb-6">
                 {[
                   { value: 'chat', label: 'Chat', icon: MessageSquare },
                   { value: 'verktyg', label: 'Verktyg', icon: Wand2 },
@@ -365,8 +361,8 @@ const Demo = () => {
                       className={cn(
                         "flex items-center gap-2 rounded-full px-3 sm:px-4 py-1.5 text-xs sm:text-sm transition-all",
                         active
-                          ? "bg-white/20 text-foreground shadow-sm"
-                          : "text-foreground/60 hover:text-foreground"
+                          ? "bg-primary/15 text-primary shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
                       )}
                     >
                       <Icon className="w-4 h-4" />
@@ -379,9 +375,8 @@ const Demo = () => {
 
             {/* AI Chat sub-tab */}
             {aiSubTab === 'chat' && (
-              <div className="rounded-2xl p-6 backdrop-blur-xl border border-white/20"
-                style={{ background: 'linear-gradient(135deg, hsl(0 0% 100% / 0.1) 0%, hsl(0 0% 100% / 0.05) 100%)' }}>
-                <h3 className="text-lg font-semibold dashboard-heading-dark mb-4 flex items-center gap-2">
+              <div className="rounded-2xl p-6 bg-card border border-border/40">
+                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                   <MessageSquare className="w-5 h-5 text-primary" /> AI-Chatt
                 </h3>
 
@@ -391,8 +386,8 @@ const Demo = () => {
                     <div key={i} className={`flex ${(msg.role as string) === 'user' ? 'justify-end' : 'justify-start'}`}>
                       <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
                         (msg.role as string) === 'user'
-                          ? 'bg-primary/20 dashboard-heading-dark'
-                          : 'backdrop-blur-sm border border-white/10 dashboard-subheading-dark'
+                          ? 'bg-primary/20 text-foreground'
+                          : 'backdrop-blur-sm border border-white/10 text-muted-foreground'
                       }`}>
                         {msg.message}
                       </div>
@@ -402,7 +397,7 @@ const Demo = () => {
 
                 {/* CTA above input */}
                 <div className="text-center mb-3 py-3 rounded-xl border border-primary/20 bg-primary/5">
-                  <p className="text-sm dashboard-heading-dark flex items-center justify-center gap-2 flex-wrap">
+                  <p className="text-sm text-foreground flex items-center justify-center gap-2 flex-wrap">
                     <Lock className="w-4 h-4 text-primary" />
                     AI-Chatten är tillgänglig med ett eget konto.
                     <Link to="/auth?mode=register" className="text-primary hover:underline font-medium">
@@ -417,7 +412,7 @@ const Demo = () => {
                     type="text"
                     disabled
                     placeholder="Skriv ett meddelande..."
-                    className="flex-1 rounded-xl px-4 py-3 text-sm bg-white/5 border border-white/20 dashboard-heading-dark placeholder:text-muted-foreground/50 cursor-not-allowed"
+                    className="flex-1 rounded-xl px-4 py-3 text-sm bg-background border border-border/40 text-foreground placeholder:text-muted-foreground/50 cursor-not-allowed"
                   />
                   <Button variant="gradient" size="icon" disabled>
                     <Send className="w-4 h-4" />
@@ -440,11 +435,11 @@ const Demo = () => {
                         <div className={`w-10 h-10 rounded-xl bg-gradient-to-r ${tool.color} flex items-center justify-center mb-2`}>
                           <tool.icon className="w-6 h-6 text-white" />
                         </div>
-                        <CardTitle className="text-lg flex items-center justify-between dashboard-heading-dark">
+                        <CardTitle className="text-lg flex items-center justify-between text-foreground">
                           {tool.title}
                           <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity text-foreground/60" />
                         </CardTitle>
-                        <CardDescription className="dashboard-subheading-dark">{tool.description}</CardDescription>
+                        <CardDescription className="text-muted-foreground">{tool.description}</CardDescription>
                       </CardHeader>
                     </Card>
                   ))}
@@ -460,15 +455,15 @@ const Demo = () => {
                   </div>
                 )}
 
-                <Card className="liquid-glass-light border-white/30">
+                <Card className="bg-card border border-border/40">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center flex-shrink-0">
                         <Sparkles className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="font-semibold mb-1 dashboard-heading-dark">Lås upp alla AI-verktyg</h3>
-                        <p className="text-sm dashboard-subheading-dark mb-3">
+                        <h3 className="font-semibold mb-1 text-foreground">Lås upp alla AI-verktyg</h3>
+                        <p className="text-sm text-muted-foreground mb-3">
                           Skapa ett konto för att generera innehåll, marknadsplaner och strategier med AI.
                         </p>
                         <Link to="/auth?mode=register">
@@ -485,34 +480,33 @@ const Demo = () => {
 
             {/* AI Analys sub-tab */}
             {aiSubTab === 'analys' && (
-              <div className="rounded-2xl p-6 backdrop-blur-xl border border-white/20"
-                style={{ background: 'linear-gradient(135deg, hsl(0 0% 100% / 0.1) 0%, hsl(0 0% 100% / 0.05) 100%)' }}>
-                <h3 className="text-lg font-semibold dashboard-heading-dark mb-2">AI-analys av {demoCompany.foretagsnamn}</h3>
-                <p className="dashboard-subheading-dark text-sm mb-4">{demoAIAnalysis.summary}</p>
+              <div className="rounded-2xl p-6 bg-card border border-border/40">
+                <h3 className="text-lg font-semibold text-foreground mb-2">AI-analys av {demoCompany.foretagsnamn}</h3>
+                <p className="text-muted-foreground text-sm mb-4">{demoAIAnalysis.summary}</p>
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-medium dashboard-heading-dark mb-2 flex items-center gap-2">
+                    <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-green-400" /> Styrkor
                     </h4>
                     <ul className="space-y-1">
                       {demoAIAnalysis.strengths.map((s, i) => (
-                        <li key={i} className="text-sm dashboard-subheading-dark">{s}</li>
+                        <li key={i} className="text-sm text-muted-foreground">{s}</li>
                       ))}
                     </ul>
                   </div>
                   <div>
-                    <h4 className="font-medium dashboard-heading-dark mb-2 flex items-center gap-2">
+                    <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
                       <TrendingUp className="w-4 h-4 text-yellow-400" /> Förbättringar
                     </h4>
                     <ul className="space-y-1">
                       {demoAIAnalysis.improvements.map((s, i) => (
-                        <li key={i} className="text-sm dashboard-subheading-dark">{s}</li>
+                        <li key={i} className="text-sm text-muted-foreground">{s}</li>
                       ))}
                     </ul>
                   </div>
                 </div>
                 <div className="text-center mt-6 py-3 rounded-xl border border-primary/20 bg-primary/5">
-                  <p className="text-sm dashboard-heading-dark flex items-center justify-center gap-2">
+                  <p className="text-sm text-foreground flex items-center justify-center gap-2">
                     <Lock className="w-4 h-4 text-primary" />
                     Skapa konto för att köra egna AI-analyser.
                     <Link to="/auth?mode=register" className="text-primary hover:underline font-medium">Kom igång →</Link>
@@ -528,13 +522,13 @@ const Demo = () => {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             <Card className="liquid-glass-light border-primary/20">
               <CardContent className="p-5">
-                <p className="dashboard-heading-dark text-sm leading-relaxed">{demoSalesRadar.sammanfattning}</p>
+                <p className="text-foreground text-sm leading-relaxed">{demoSalesRadar.sammanfattning}</p>
               </CardContent>
             </Card>
 
             {/* Leads */}
             <div>
-              <h3 className="text-lg font-semibold mb-3 dashboard-heading-dark flex items-center gap-2">
+              <h3 className="text-lg font-semibold mb-3 text-foreground flex items-center gap-2">
                 <Users className="w-5 h-5 text-primary" /> Leads & Möjligheter
               </h3>
               <div className="grid gap-3 md:grid-cols-2">
@@ -550,14 +544,14 @@ const Demo = () => {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                <h4 className="font-semibold dashboard-heading-dark">{lead.titel}</h4>
+                                <h4 className="font-semibold text-foreground">{lead.titel}</h4>
                                 <Badge variant={lead.prioritet === 'hög' ? 'destructive' : 'default'} className="text-[10px]">{lead.prioritet}</Badge>
                               </div>
-                              <p className="text-sm dashboard-subheading-dark mb-2">{lead.beskrivning}</p>
+                              <p className="text-sm text-muted-foreground mb-2">{lead.beskrivning}</p>
                               <div className="flex items-center gap-1 text-xs text-primary font-medium">
                                 <ArrowRight className="w-3 h-3" /> {lead.action}
                               </div>
-                              <p className="text-xs dashboard-subheading-dark mt-1 italic">Potential: {lead.potential}</p>
+                              <p className="text-xs text-muted-foreground mt-1 italic">Potential: {lead.potential}</p>
                             </div>
                           </div>
                         </CardContent>
@@ -570,7 +564,7 @@ const Demo = () => {
 
             {/* Trends */}
             <div>
-              <h3 className="text-lg font-semibold mb-3 dashboard-heading-dark flex items-center gap-2">
+              <h3 className="text-lg font-semibold mb-3 text-foreground flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-primary" /> Trender & Aktuellt
               </h3>
               <div className="grid gap-3 md:grid-cols-2">
@@ -582,14 +576,14 @@ const Demo = () => {
                         <CardContent className="p-4">
                           <div className="flex items-start gap-3">
                             <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-purple-500/30 to-pink-500/30 border border-white/20 flex items-center justify-center shrink-0">
-                              <Icon className="w-5 h-5 dashboard-heading-dark" />
+                              <Icon className="w-5 h-5 text-foreground" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                <h4 className="font-semibold dashboard-heading-dark">{trend.titel}</h4>
-                                <Badge variant="outline" className="text-[10px] border-white/30">{trend.plattform}</Badge>
+                                <h4 className="font-semibold text-foreground">{trend.titel}</h4>
+                                <Badge variant="outline" className="text-[10px] border-border/40">{trend.plattform}</Badge>
                               </div>
-                              <p className="text-sm dashboard-subheading-dark mb-2">{trend.beskrivning}</p>
+                              <p className="text-sm text-muted-foreground mb-2">{trend.beskrivning}</p>
                               <div className="flex items-center gap-1 text-xs text-primary font-medium">
                                 <ArrowRight className="w-3 h-3" /> {trend.tips}
                               </div>
@@ -613,27 +607,26 @@ const Demo = () => {
         {/* CALENDAR TAB */}
         {activeTab === 'calendar' && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-            <div className="rounded-2xl p-6 backdrop-blur-xl border border-white/20"
-              style={{ background: 'linear-gradient(135deg, hsl(0 0% 100% / 0.1) 0%, hsl(0 0% 100% / 0.05) 100%)' }}>
-              <h3 className="text-lg font-semibold dashboard-heading-dark mb-4 flex items-center gap-2">
+            <div className="rounded-2xl p-6 bg-card border border-border/40">
+              <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-primary" /> Planerade inlägg
               </h3>
               <div className="space-y-3">
                 {demoCalendarPosts.map(post => (
-                  <div key={post.id} className="flex items-center gap-4 p-3 rounded-xl border border-white/10 backdrop-blur-sm">
+                  <div key={post.id} className="flex items-center gap-4 p-3 rounded-xl border border-border/40 bg-background/50">
                     <div className="text-center min-w-[50px]">
-                      <p className="text-xs dashboard-subheading-dark">{new Date(post.date).toLocaleDateString('sv-SE', { weekday: 'short' })}</p>
-                      <p className="text-lg font-bold dashboard-heading-dark">{new Date(post.date).getDate()}</p>
+                      <p className="text-xs text-muted-foreground">{new Date(post.date).toLocaleDateString('sv-SE', { weekday: 'short' })}</p>
+                      <p className="text-lg font-bold text-foreground">{new Date(post.date).getDate()}</p>
                     </div>
                     <div className="flex-1">
-                      <p className="font-medium dashboard-heading-dark text-sm">{post.title}</p>
-                      <p className="text-xs dashboard-subheading-dark">{post.description}</p>
+                      <p className="font-medium text-foreground text-sm">{post.title}</p>
+                      <p className="text-xs text-muted-foreground">{post.description}</p>
                     </div>
                     <Badge variant="outline" className="text-[10px] capitalize">{post.platform}</Badge>
                   </div>
                 ))}
               </div>
-              <p className="text-xs dashboard-subheading-dark mt-4 flex items-center gap-1">
+              <p className="text-xs text-muted-foreground mt-4 flex items-center gap-1">
                 <Lock className="w-3 h-3" />
                 Skapa och redigera inlägg med ett eget konto. <Link to="/auth?mode=register" className="text-primary hover:underline">Kom igång →</Link>
               </p>
@@ -649,10 +642,10 @@ const Demo = () => {
           className="rounded-2xl p-8 text-center border border-white/30"
           style={{ background: 'linear-gradient(135deg, hsl(9 90% 55% / 0.25) 0%, hsl(331 70% 45% / 0.25) 100%)' }}
         >
-          <h3 className="text-2xl font-bold dashboard-heading-dark mb-2">
+          <h3 className="text-2xl font-bold text-foreground mb-2">
             Redo att växa som {demoCompany.foretagsnamn}?
           </h3>
-          <p className="dashboard-subheading-dark mb-5 max-w-md mx-auto">
+          <p className="text-muted-foreground mb-5 max-w-md mx-auto">
             Skapa ditt konto gratis och få tillgång till AI-driven marknadsföring anpassad för ditt företag.
           </p>
           <Link to="/auth?mode=register">

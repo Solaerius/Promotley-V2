@@ -37,7 +37,7 @@ const ResultsSection = () => {
   return (
     <section
       ref={ref as React.RefObject<HTMLElement>}
-      className="relative py-24 md:py-32 overflow-hidden"
+      className="relative py-14 md:py-20 overflow-hidden"
     >
       {/* Section accent glow */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 70% 50%, hsl(var(--primary) / 0.1) 0%, transparent 70%)' }} />
@@ -52,14 +52,14 @@ const ResultsSection = () => {
               border: '1px solid hsl(var(--primary) / 0.3)',
             }}
           >
-            <BarChart3 className="w-4 h-4 text-white" />
-            <span className="text-sm font-medium text-white">Resultat</span>
+            <BarChart3 className="w-4 h-4 text-foreground" />
+            <span className="text-sm font-medium text-foreground">Resultat</span>
           </div>
 
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4" style={{ textWrap: 'balance' }}>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4" style={{ textWrap: 'balance' }}>
             När strategi möter <span className="text-gradient">verkliga resultat</span>
           </h2>
-          <p className="text-lg max-w-2xl mx-auto" style={{ color: 'hsl(0 0% 100% / 0.55)', textWrap: 'balance' }}>
+          <p className="text-lg max-w-2xl mx-auto" style={{ color: 'hsl(var(--muted-foreground))', textWrap: 'balance' }}>
             Resultat från företag som följde sin personliga Promotley-strategi
           </p>
         </div>
@@ -106,13 +106,13 @@ const ResultsSection = () => {
                   <Icon className="w-5 h-5 text-white" />
                 </div>
 
-                <div className="text-sm mb-1" style={{ color: 'hsl(0 0% 100% / 0.55)' }}>
+                <div className="text-sm mb-1" style={{ color: 'hsl(var(--muted-foreground))' }}>
                   {stat.label}
                 </div>
                 <div className="text-4xl md:text-5xl font-bold text-gradient tabular-nums mb-1">
                   {count}{stat.suffix}
                 </div>
-                <p className="text-sm mt-3 leading-relaxed" style={{ color: 'hsl(0 0% 100% / 0.45)' }}>
+                <p className="text-sm mt-3 leading-relaxed" style={{ color: 'hsl(var(--muted-foreground))' }}>
                   {stat.description}
                 </p>
               </div>

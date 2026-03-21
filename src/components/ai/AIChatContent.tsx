@@ -232,7 +232,7 @@ const AIChatContent = ({ prefillMessage, onPrefillConsumed }: AIChatContentProps
               variant="ghost"
               size="sm"
               onClick={() => setShowMobileSidebar(true)}
-              className="text-white/60 hover:text-white text-xs gap-1.5"
+              className="text-foreground/60 hover:text-foreground text-xs gap-1.5"
             >
               <BarChart3 className="w-3.5 h-3.5" />
               Historik
@@ -241,7 +241,7 @@ const AIChatContent = ({ prefillMessage, onPrefillConsumed }: AIChatContentProps
               variant="ghost"
               size="sm"
               onClick={handleNewChat}
-              className="text-white/60 hover:text-white text-xs gap-1.5 ml-auto"
+              className="text-foreground/60 hover:text-foreground text-xs gap-1.5 ml-auto"
             >
               + Ny chatt
             </Button>
@@ -312,9 +312,9 @@ const AIChatContent = ({ prefillMessage, onPrefillConsumed }: AIChatContentProps
                       disabled={loading || hasInsufficientCredits || isSending}
                     >
                       <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                        <cmd.icon className="w-4 h-4 text-white/80" />
+                        <cmd.icon className="w-4 h-4 text-foreground/80" />
                       </div>
-                      <span className="text-xs text-left text-white/80">{cmd.text}</span>
+                      <span className="text-xs text-left text-foreground/80">{cmd.text}</span>
                     </Button>
                   </motion.div>
                 ))}

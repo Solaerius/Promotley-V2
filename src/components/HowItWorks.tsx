@@ -26,7 +26,7 @@ const HowItWorks = () => {
   const { t } = useTranslation();
 
   return (
-    <section id="how-it-works" className="relative py-24 md:py-32 overflow-hidden">
+    <section id="how-it-works" className="relative py-14 md:py-20 overflow-hidden">
       {/* Section accent glow */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 50%, hsl(var(--primary) / 0.1) 0%, transparent 70%)' }} />
 
@@ -40,14 +40,14 @@ const HowItWorks = () => {
               border: '1px solid hsl(var(--primary) / 0.3)',
             }}
           >
-            <Zap className="w-4 h-4 text-white" />
-            <span className="text-sm font-medium text-white">{t('sections.howItWorks.title')}</span>
+            <Zap className="w-4 h-4 text-foreground" />
+            <span className="text-sm font-medium text-foreground">{t('sections.howItWorks.title')}</span>
           </div>
 
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4" style={{ textWrap: 'balance' }}>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4" style={{ textWrap: 'balance' }}>
             Från företagsidé till <span className="text-gradient">färdig strategi</span>
           </h2>
-          <p className="text-lg max-w-2xl mx-auto" style={{ color: 'hsl(0 0% 100% / 0.55)', textWrap: 'balance' }}>
+          <p className="text-lg max-w-2xl mx-auto" style={{ color: 'hsl(var(--muted-foreground))', textWrap: 'balance' }}>
             Få din personliga innehållsplan på under 5 minuter
           </p>
         </div>
@@ -97,15 +97,15 @@ const HowItWorks = () => {
                     border: '1px solid hsl(var(--accent-brand) / 0.2)',
                   }}
                 >
-                  <Icon className="w-6 h-6 text-white" />
+                  <Icon className="w-6 h-6 text-foreground" />
                 </div>
 
                 {/* Content */}
                 <div className="relative z-10">
-                  <h3 className="text-xl font-semibold text-white mb-3">
+                  <h3 className="text-xl font-semibold text-foreground mb-3">
                     {item.title}
                   </h3>
-                  <p className="leading-relaxed" style={{ color: 'hsl(0 0% 100% / 0.55)' }}>
+                  <p className="leading-relaxed" style={{ color: 'hsl(var(--muted-foreground))' }}>
                     {item.description}
                   </p>
                 </div>

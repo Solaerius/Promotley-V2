@@ -32,7 +32,7 @@ const Testimonials = () => {
   const { t } = useTranslation();
 
   return (
-    <section className="relative py-24 md:py-32 overflow-hidden">
+    <section className="relative py-14 md:py-20 overflow-hidden">
       {/* Section accent glow */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 30% 60%, hsl(var(--primary) / 0.1) 0%, transparent 70%)' }} />
 
@@ -46,14 +46,14 @@ const Testimonials = () => {
               border: '1px solid hsl(var(--primary) / 0.3)',
             }}
           >
-            <Star className="w-4 h-4 text-white fill-white" />
-            <span className="text-sm font-medium text-white">Recensioner</span>
+            <Star className="w-4 h-4 text-foreground fill-foreground" />
+            <span className="text-sm font-medium text-foreground">Recensioner</span>
           </div>
 
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4" style={{ textWrap: 'balance' }}>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4" style={{ textWrap: 'balance' }}>
             Vad säger <span className="text-gradient">andra företag?</span>
           </h2>
-          <p className="text-lg max-w-2xl mx-auto" style={{ color: 'hsl(0 0% 100% / 0.55)', textWrap: 'balance' }}>
+          <p className="text-lg max-w-2xl mx-auto" style={{ color: 'hsl(var(--muted-foreground))', textWrap: 'balance' }}>
             Hundratals UF-företag och startups växer redan med oss
           </p>
         </div>
@@ -93,7 +93,7 @@ const Testimonials = () => {
               </div>
 
               {/* Text */}
-              <p className="text-white/90 mb-6 leading-relaxed relative z-10">
+              <p className="text-foreground/90 mb-6 leading-relaxed relative z-10">
                 "{testimonial.text}"
               </p>
 
@@ -112,8 +112,8 @@ const Testimonials = () => {
                   {testimonial.name.charAt(0)}
                 </div>
                 <div>
-                  <div className="font-semibold text-white">{testimonial.name}</div>
-                  <div className="text-sm" style={{ color: 'hsl(0 0% 100% / 0.55)' }}>{testimonial.company}</div>
+                  <div className="font-semibold text-foreground">{testimonial.name}</div>
+                  <div className="text-sm" style={{ color: 'hsl(var(--muted-foreground))' }}>{testimonial.company}</div>
                 </div>
               </div>
             </div>

@@ -94,7 +94,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
+    <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-20">
       {/* Background layer */}
       <div className="absolute inset-0" style={{
         background: "radial-gradient(ellipse 90% 70% at 50% -5%, hsl(var(--gradient-hero-bg)) 0%, hsl(var(--gradient-hero-bg)) 55%, hsl(var(--gradient-hero-bg)) 100%)",
@@ -102,7 +102,7 @@ const Hero = () => {
 
       {/* Ambient orb — violet, top-left */}
       <motion.div
-        className="absolute pointer-events-none"
+        className="absolute pointer-events-none dark:opacity-100 opacity-50"
         animate={{ scale: [1, 1.12, 1], opacity: [0.28, 0.38, 0.28] }}
         transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
         style={{
@@ -118,7 +118,7 @@ const Hero = () => {
 
       {/* Ambient orb — teal, bottom-right */}
       <motion.div
-        className="absolute pointer-events-none"
+        className="absolute pointer-events-none dark:opacity-100 opacity-50"
         animate={{ scale: [1, 1.18, 1], opacity: [0.12, 0.2, 0.12] }}
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 3 }}
         style={{
@@ -169,8 +169,8 @@ const Hero = () => {
               initial={{ opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-              className="text-6xl md:text-7xl xl:text-8xl font-bold tracking-tight mb-6"
-              style={{ lineHeight: 0.95, color: "hsl(0 0% 97%)" }}
+              className="text-4xl md:text-5xl xl:text-6xl font-bold tracking-tight mb-6"
+              style={{ lineHeight: 0.95, color: "hsl(var(--foreground))" }}
             >
               {t('hero.headline')}
               <br />
@@ -191,7 +191,7 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, delay: 0.22 }}
               className="text-lg md:text-xl font-light max-w-md leading-relaxed mb-10"
-              style={{ color: "hsl(0 0% 62%)" }}
+              style={{ color: "hsl(var(--muted-foreground))" }}
             >
               {t('hero.subheadline')}
             </motion.p>
@@ -210,7 +210,7 @@ const Hero = () => {
                   style={{
                     background: "hsl(0 0% 100% / 0.05)",
                     border: "1px solid hsl(0 0% 100% / 0.09)",
-                    color: "hsl(0 0% 68%)",
+                    color: "hsl(var(--muted-foreground))",
                   }}
                 >
                   {pill}
@@ -240,15 +240,15 @@ const Hero = () => {
                   </div>
                 ))}
               </div>
-              <p className="text-xs" style={{ color: "hsl(0 0% 48%)" }}>
-                <span className="font-semibold" style={{ color: "hsl(0 0% 78%)" }}>120+</span>{" "}
+              <p className="text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
+                <span className="font-semibold" style={{ color: "hsl(var(--foreground))" }}>120+</span>{" "}
                 UF-företag använder Promotley
               </p>
             </motion.div>
           </div>
 
           {/* ── RIGHT COLUMN: Auth card ── */}
-          <div className="relative">
+          <div className="relative min-w-0">
             {/* Card glow */}
             <motion.div
               initial={{ opacity: 0 }}
