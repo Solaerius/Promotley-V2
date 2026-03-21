@@ -718,7 +718,7 @@ const Dashboard = () => {
               </Link>
             ))}
           </div>
-
+      </div>
     </DashboardLayout>
   );
 };
