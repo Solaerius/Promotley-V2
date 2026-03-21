@@ -33,6 +33,23 @@ export const Scene2Problem: React.FC = () => {
   const glowIntensity = interpolate(frame, [50, 80, 95], [0, 0.22, 0.14],
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
 
+  // "marketing fails." emphasis — brief scale-up punch at peak visibility (≈frame 62)
+  // gives the key line one moment of weight before the scene exits
+  const failsPulse = interpolate(frame, [62, 68, 76, 84], [1, 1.038, 1.012, 1], {
+    extrapolateLeft: "clamp", extrapolateRight: "clamp",
+  });
+
+  // Slow ambient drift — glow orb moves so the background feels alive, not frozen
+  const glowDriftX = interpolate(frame, [0, durationInFrames], [-40, 80],
+    { extrapolateRight: "clamp" });
+  const glowDriftY = interpolate(frame, [0, durationInFrames], [0, -30],
+    { extrapolateRight: "clamp" });
+  const glowPulse = 1 + 0.05 * Math.sin((frame / fps) * Math.PI);
+
+  // Secondary accent glow (top-left) fades in with the scene
+  const accentGlow = interpolate(frame, [20, 60], [0, 0.12],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+
   return (
     <AbsoluteFill
       style={{
@@ -45,9 +62,16 @@ export const Scene2Problem: React.FC = () => {
         padding: "0 160px",
       }}
     >
+      {/* Primary glow — drifts slowly */}
       <div style={{ position: "absolute", width: 1100, height: 500, borderRadius: "50%",
         background: `hsl(9,90%,40%,${glowIntensity})`, filter: "blur(160px)",
-        top: "50%", left: "50%", transform: "translate(-50%,-50%)", pointerEvents: "none" }} />
+        top: "50%", left: "50%",
+        transform: `translate(calc(-50% + ${glowDriftX}px), calc(-50% + ${glowDriftY}px)) scale(${glowPulse})`,
+        pointerEvents: "none" }} />
+      {/* Accent glow — top left, wine colour */}
+      <div style={{ position: "absolute", width: 600, height: 280, borderRadius: "50%",
+        background: `rgba(149,42,94,${accentGlow})`, filter: "blur(130px)",
+        top: "8%", left: "5%", pointerEvents: "none" }} />
 
       <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column",
         alignItems: "center", textAlign: "center", width: "100%" }}>
@@ -72,7 +96,8 @@ export const Scene2Problem: React.FC = () => {
 
         <h2 style={{ fontFamily: FONT, fontSize: 112, fontWeight: 700, color: C.orange,
           margin: "8px 0 0", lineHeight: 1.02, letterSpacing: "-4px",
-          transform: `translateY(${line3Y}px)`, opacity: line3Spring }}>
+          transform: `translateY(${line3Y}px) scale(${failsPulse})`,
+          opacity: line3Spring }}>
           marketing fails.
         </h2>
       </div>
