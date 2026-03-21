@@ -143,21 +143,22 @@ Overall average: **60-90% token reduction** on common development operations.
 
 
 ## IMPORTANT INSTRUCTIONS
-Before using or writing ANY code that requires external API docs or libraries, you MUST use the Context7 tools you have access to, to pull the lates documentation and ensure your code is up to date and accurate.
 
-For frontend design use the skills and plugins available. Use specifically ui-ux-pro-max skill and the frontend-design.
+- Before writing ANY code using external libraries, use **Context7 MCP tools** to pull latest docs — never assume API shape.
+- For all frontend/UI work, invoke the **`ui-ux-pro-max`** skill and **`frontend-design`** skill.
+- When writing Swedish text, ALWAYS use correct letters: **Å, Ä, Ö** — never substitute with "a" or "o".
+- UI text, toasts, validation errors, and all user-facing copy must be in **Swedish**.
 
-When writing swedish you MUST use the letters "Å", "Ä", "Ö" when the word contains it instead of switching to "o" and "a". 
-
-
+---
 
 ## Commands
 
 ```bash
-npm run dev        # Start dev server on port 8080
-npm run build      # Production build
-npm run lint       # Run ESLint
-npm run preview    # Preview production build
+npm run dev          # Start dev server on port 8080
+npm run build        # Production build
+npm run build:dev    # Dev-mode production build (with source maps)
+npm run lint         # Run ESLint
+npm run preview      # Preview production build
 ```
 
 ## Environment Variables
@@ -170,55 +171,130 @@ VITE_DEV_EMAIL       # Optional: auto-login in dev
 VITE_DEV_PASSWORD    # Optional: auto-login in dev
 ```
 
+---
+
+## Product Domain
+
+Promotely is a SaaS platform for **Swedish UF (Ungdomsföretag)** companies — youth entrepreneurship firms. The AI system provides UF-specific guidance (rules, competition criteria, business plans, sales events). Users are primarily high school students running small companies.
+
+---
+
 ## Architecture
 
-**Stack**: React 18 + TypeScript + Vite, Tailwind CSS + shadcn-ui, Supabase (auth + DB), React Query, Framer Motion.
+**Stack**: React 18 + TypeScript + Vite, Tailwind CSS + shadcn-ui, Supabase (auth + DB + real-time + edge functions), React Query, Framer Motion.
 
-**Path alias**: `@/` maps to `src/`.
+**Path alias**: `@/` → `src/`
 
 ### Routing (`src/App.tsx`)
 
-40+ routes split into three categories:
-- **Public**: `/`, `/auth`, `/pricing`, `/demo`, legal pages
-- **Protected** (`ProtectedRoute` + `RequireVerifiedEmail`): `/dashboard`, `/ai/*`, `/calendar`, `/analytics`, `/account`, `/organization/*`
-- **Admin** (`AdminRoute`): `/admin/*`
+40+ routes in three tiers:
 
-All dashboard/AI routes are lazy-loaded via `React.lazy`.
+| Guard | Routes |
+|-------|--------|
+| Public | `/`, `/auth`, `/pricing`, `/demo`, legal pages |
+| `ProtectedRoute` | `/dashboard`, `/calendar`, `/analytics`, `/account`, `/organization/*` |
+| `ProtectedRoute` + `RequireVerifiedEmail` | `/ai/*` |
+| `AdminRoute` | `/admin/*` |
+
+All dashboard/AI/admin routes are **lazy-loaded** via `React.lazy` + `Suspense`. Public/auth pages are eager.
+
+**Adding a new route**: Create `src/pages/MyPage.tsx` → add `const MyPage = React.lazy(() => import('./pages/MyPage'))` → add `<Route>` in App.tsx with the appropriate guard.
 
 ### Auth (`src/hooks/useAuth.tsx`)
 
-`AuthProvider` context wraps the entire app. Supports email/password and OAuth (Google, Meta/Facebook). Sessions persist via Supabase Auth with localStorage. Route guards: `ProtectedRoute`, `RequireVerifiedEmail`, `AdminRoute`.
+`AuthProvider` wraps the entire app. Email/password + OAuth (Google, Meta/Facebook). Sessions persist via Supabase Auth localStorage. Three route guards: `ProtectedRoute`, `RequireVerifiedEmail`, `AdminRoute`.
+
+OAuth callback handled at `/auth/callback`.
 
 ### AI System
 
 - **Model tiers** (`src/lib/modelTiers.ts`): Fast (Gemini Flash Lite), Standard (Gemini Flash), Premium (Gemini Pro)
-- **Credit system** (`src/lib/creditSystem.ts`): Reserve credits before request → settle after response → rollback on error. Uses idempotent `requestId`. In-memory store (not Redis).
-- **AI hook** (`src/hooks/useAIAssistant.ts`): Manages AI requests with credit lifecycle
-- **Plan config** (`src/lib/planConfig.ts`): Starter/Growth/Pro tiers with credit allowances
+- **Credit flow** (`src/lib/creditSystem.ts`): `reserveCredits()` → call AI → `settleCredits()` or `rollbackReservation()` on error. Uses `requestId` for idempotency.
+- **AI hook** (`src/hooks/useAIAssistant.ts`): Manages messages, sends to edge function, fires `creditUpdateEvent` on completion
+- **Plan config** (`src/lib/planConfig.ts`): Starter/Growth/Pro tiers with credit allowances and model mappings
+
+**Edge function calls**:
+```ts
+supabase.functions.invoke('ai-assistant/chat', { body: { message, requestId, ... } })
+supabase.functions.invoke('calendar', { body: { action: 'context' } })
+supabase.functions.invoke('calendar', { body: { action: 'bulk_create', events: [...] } })
+supabase.functions.invoke('generate-ai-analysis', { body: { category: 'uf_rules', ... } })
+```
+
+### AI Knowledge Base (RAG)
+
+UF-specific AI guidance is stored in the `ai_knowledge` Supabase table (not in code).
+
+- **Table**: `public.ai_knowledge` — columns: `title`, `content`, `category`, `updated_at`
+- **Categories**: `uf_rules`, `competition_criteria`, `annual_report`, `business_plan`, `pitch_requirements`, `sales_events`, `budget_templates`
+- **Storage bucket**: `promotley_knowledgebase` — stores source PDFs/docs
+- Edge functions query this table to build the system prompt before each AI request. See `PROMOTELY_AI_KNOWLEDGE_SETUP.md` for setup guide.
 
 ### Data Layer
 
-- **Supabase client**: `src/integrations/supabase/client.ts` (auto-generated)
-- **DB types**: `src/integrations/supabase/types.ts` (auto-generated — do not edit manually)
+- **Supabase client**: `src/integrations/supabase/client.ts` — auto-generated, do not edit
+- **DB types**: `src/integrations/supabase/types.ts` — auto-generated, do not edit manually
 - **Query wrapper**: `src/hooks/useSupabaseQuery.ts` — prefer this over direct React Query usage
-- React Query for all async state; React Context for Auth, Notifications, Organizations
+- React Query for async state; React Context for Auth, Notifications, Organizations
+
+**Key tables**: `ai_conversations`, `ai_chat_messages`, `calendar_events`, `notifications`, `organizations`, `organization_members`, `ai_knowledge`
+
+Real-time: `useNotifications` subscribes to INSERT on `notifications` table via Supabase channel.
+
+### Key Hooks Reference
+
+| Hook | Purpose |
+|------|---------|
+| `useAuth` | Auth context: sign in/up/out, OAuth, session |
+| `useAIAssistant` | AI chat messages, send, implement plans |
+| `useSupabaseQuery` | Generic Supabase query + loading/error |
+| `useOrganization` | Org/team management, members, invites, credits |
+| `useNotifications` | Real-time notification subscription |
+| `useCalendar` | Calendar events CRUD |
+| `useUserCredits` | Credit balance tracking |
+| `useMarketingPlan` | Marketing plan creation |
+| `useSalesRadar` | Sales radar tracking |
+| `useTikTokData` | TikTok profile/analytics |
+| `useMetaData` | Meta/Facebook platform data |
+| `useFreeTierUsage` | Free tier usage limits |
+| `useAdminStatus` | Admin role check |
+| `useLanguage` | Language/locale state |
+| `useConversations` | AI conversation history |
 
 ### Styling
 
-- Tailwind with CSS variables (HSL-based) defined in `src/index.css`
-- Dark mode via class (`next-themes`)
+- Tailwind + CSS variables (HSL-based) in `src/index.css`
+- Brand color: magenta-pink (`--primary: 326 56% 37%`)
+- Dark mode: wine-based theme (`--background: 347 40% 5%`) via `next-themes` class toggle
 - Custom font: Poppins
 - Surface tokens: `surface-base`, `surface-raised`, `surface-overlay`, `surface-elevated`, `surface-muted`
 - Animation utilities: `fade-in`, `slide-up`, `blur-in`, `bounce-in` (defined in `tailwind.config.ts`)
 
 ### Payment
 
-Swish (Swedish payment method) via `src/lib/swishConfig.ts`. Checkout at `/swish-checkout`. Admin order management at `/admin/swish`.
+- **Stripe**: `src/lib/stripeConfig.ts`, checkout at `/checkout`, admin at `/admin/stripe`
+- **Swish** (Swedish): `src/lib/swishConfig.ts`, admin at `/admin/swish`
 
 ### Localization
 
-UI is in **Swedish**. Toast messages, validation errors, and user-facing text should be in Swedish.
+- i18next with `src/locales/sv.json` (Swedish) and `src/locales/en.json`
+- Default language: Swedish (`sv`), saved to `localStorage` as `i18n_lang`
+- **When adding new UI text**: add key to both `sv.json` and `en.json`, use `useTranslation()` hook
+- All user-facing text must go through i18n — no hardcoded strings in Swedish
 
 ### TypeScript
 
 Config is intentionally lenient (`noImplicitAny: false`, `strictNullChecks: false`). Don't introduce stricter checks without user direction.
+
+---
+
+## Gotchas
+
+- **Credit system is in-memory only** — `creditSystem.ts` uses a JS Map, not Redis. On server restart all reservations are lost. Don't design features that depend on persistent reservation state.
+- **Email verification gate** — `/ai/*` routes require verified email (`RequireVerifiedEmail`). If a user can't access AI tools, check this first.
+- **Auto-generated files** — Never edit `src/integrations/supabase/client.ts` or `types.ts` by hand. Regenerate via Supabase CLI or Lovable Cloud.
+- **Model tier enforcement is server-side** — `planConfig.ts` maps plans to models. The client can select tiers but the edge function validates against the user's plan. Don't rely on client-side enforcement.
+- **Lazy-loading** — All dashboard/AI/admin pages must be lazy-loaded. Forgetting `React.lazy` will bloat the initial bundle.
+- **RTK paths use forward slashes** — When using `rtk` with file paths on Windows, use `/` not `\`.
+- **Supabase RLS** — All new tables need Row Level Security policies. Missing RLS will block queries for authenticated users.
+- **`ai_knowledge` categories must match exactly** — Category strings like `uf_rules` are matched with `.eq()`. A mismatch (e.g. `uf-rules`) silently returns no results, causing generic AI responses.
