@@ -40,8 +40,8 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         scrolled || mobileOpen
-          ? "bg-black/70 backdrop-blur-xl shadow-lg border-b border-white/10"
-          : "bg-transparent"
+          ? "bg-black/80 dark:bg-black/70 backdrop-blur-xl shadow-lg border-b border-white/10 text-white"
+          : "bg-transparent dark:text-white text-gray-900"
       )}
     >
       <div className="container mx-auto px-6 py-4">
@@ -49,18 +49,18 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
             <img src={logo} alt="Promotley" className="h-8 w-8" />
-            <span className="font-bold text-lg text-white">Promotley</span>
+            <span className="font-bold text-lg">Promotley</span>
           </Link>
 
           {/* Desktop nav links */}
           <div className="hidden md:flex items-center gap-8">
-            <Link to="/pricing" className="text-sm text-white/70 hover:text-white transition-colors">
+            <Link to="/pricing" className="text-sm opacity-70 hover:opacity-100 transition-opacity">
               {t('nav.pricing')}
             </Link>
-            <Link to="/demo" className="text-sm text-white/70 hover:text-white transition-colors">
+            <Link to="/demo" className="text-sm opacity-70 hover:opacity-100 transition-opacity">
               {t('nav.demo')}
             </Link>
-            <a href="#om-oss" className="text-sm text-white/70 hover:text-white transition-colors">
+            <a href="#om-oss" className="text-sm opacity-70 hover:opacity-100 transition-opacity">
               {t('nav.about')}
             </a>
           </div>
@@ -78,7 +78,7 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
             ) : (
               <>
                 <Link to="/auth?mode=login">
-                  <Button size="sm" variant="ghost" className="text-white/80 hover:text-white hover:bg-white/10">
+                  <Button size="sm" variant="ghost" className="opacity-80 hover:opacity-100 hover:bg-black/10 dark:hover:bg-white/10">
                     {t('nav.login')}
                   </Button>
                 </Link>
@@ -93,7 +93,7 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
 
           {/* Mobile toggle */}
           <button
-            className="md:hidden p-2 text-white hover:bg-white/10 rounded-lg transition-colors"
+            className="md:hidden p-2 hover:bg-black/10 dark:hover:bg-white/10 rounded-lg transition-colors"
             onClick={() => setMobileOpen(v => !v)}
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -104,16 +104,16 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
         <AnimatePresence>
           {mobileOpen && (
             <motion.div
-              className="md:hidden pt-4 pb-2 border-t border-white/10 mt-4 flex flex-col gap-2"
+              className="md:hidden pt-4 pb-2 border-t border-black/10 dark:border-white/10 mt-4 flex flex-col gap-2"
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.15 }}
             >
-              <Link to="/pricing" className="py-2 text-sm text-white/80 hover:text-white" onClick={() => setMobileOpen(false)}>{t('nav.pricing')}</Link>
-              <Link to="/demo" className="py-2 text-sm text-white/80 hover:text-white" onClick={() => setMobileOpen(false)}>{t('nav.demo')}</Link>
-              <a href="#om-oss" className="py-2 text-sm text-white/80 hover:text-white" onClick={() => setMobileOpen(false)}>{t('nav.about')}</a>
-              <div className="flex flex-col gap-2 pt-3 border-t border-white/10 mt-2">
+              <Link to="/pricing" className="py-2 text-sm opacity-80 hover:opacity-100" onClick={() => setMobileOpen(false)}>{t('nav.pricing')}</Link>
+              <Link to="/demo" className="py-2 text-sm opacity-80 hover:opacity-100" onClick={() => setMobileOpen(false)}>{t('nav.demo')}</Link>
+              <a href="#om-oss" className="py-2 text-sm opacity-80 hover:opacity-100" onClick={() => setMobileOpen(false)}>{t('nav.about')}</a>
+              <div className="flex flex-col gap-2 pt-3 border-t border-black/10 dark:border-white/10 mt-2">
                 {user ? (
                   <Link to="/dashboard" onClick={() => setMobileOpen(false)}>
                     <Button className="w-full bg-white text-black">{t('nav.dashboard')}</Button>
@@ -121,7 +121,7 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
                 ) : (
                   <>
                     <Link to="/auth?mode=login" onClick={() => setMobileOpen(false)}>
-                      <Button variant="ghost" className="w-full text-white hover:bg-white/10">{t('nav.login')}</Button>
+                      <Button variant="ghost" className="w-full hover:bg-black/10 dark:hover:bg-white/10">{t('nav.login')}</Button>
                     </Link>
                     <Link to="/auth?mode=register" onClick={() => setMobileOpen(false)}>
                       <Button className="w-full bg-white text-black">{t('nav.register')}</Button>

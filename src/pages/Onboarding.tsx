@@ -69,6 +69,7 @@ export default function Onboarding() {
 
   // Create flow form data
   const [formData, setFormData] = useState({
+    full_name: "",
     foretagsnamn: "",
     branch: "",
     stad: "",
@@ -172,6 +173,11 @@ export default function Onboarding() {
     if (!user) return;
     setIsSubmitting(true);
     try {
+      // Save full name to Supabase user metadata so dashboard greeting works
+      if (formData.full_name.trim()) {
+        await supabase.auth.updateUser({ data: { full_name: formData.full_name.trim() } });
+      }
+
       const orgId = await createOrganization(formData.foretagsnamn);
       if (!orgId) throw new Error("org_failed");
 
@@ -306,6 +312,10 @@ export default function Onboarding() {
         <h2 className="text-xl font-bold">{t("onboarding.step1_title")}</h2>
       </div>
       <div className="space-y-2">
+        <Label htmlFor="full_name">Ditt namn</Label>
+        <Input id="full_name" value={formData.full_name} onChange={(e) => set("full_name", e.target.value)} placeholder="För- och efternamn" />
+      </div>
+      <div className="space-y-2">
         <Label htmlFor="foretagsnamn">{t("onboarding.company_name")}<RequiredMark /></Label>
         <Input id="foretagsnamn" value={formData.foretagsnamn} onChange={(e) => set("foretagsnamn", e.target.value)} />
         <FieldError id="foretagsnamn" />
@@ -316,7 +326,7 @@ export default function Onboarding() {
           <SelectTrigger id="branch">
             <SelectValue placeholder="Välj bransch" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent position="popper" side="bottom" sideOffset={4}>
             {INDUSTRIES.map((ind) => (
               <SelectItem key={ind} value={ind}>{ind}</SelectItem>
             ))}
@@ -388,7 +398,7 @@ export default function Onboarding() {
           <SelectTrigger id="tonalitet">
             <SelectValue placeholder="Välj tonalitet" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent position="popper" side="bottom" sideOffset={4}>
             {TONALITY_OPTIONS.map((opt) => (
               <SelectItem key={opt} value={opt}>{opt}</SelectItem>
             ))}

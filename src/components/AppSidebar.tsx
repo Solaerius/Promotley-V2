@@ -53,7 +53,7 @@ import {
 const navItems = [
   { title: "Hem", href: "/dashboard", icon: LayoutDashboard },
   { title: "Statistik", href: "/analytics", icon: BarChart3 },
-  { title: "AI", href: "/ai", icon: Sparkles },
+  { title: "Verktyg", href: "/ai", icon: Sparkles },
   { title: "AI-Chat", href: "/ai/chat", icon: MessageSquare },
   { title: "Kalender", href: "/calendar", icon: Calendar },
   { title: "Konto", href: "/account", icon: User },
