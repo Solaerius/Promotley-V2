@@ -5,6 +5,10 @@ import logo from "@/assets/logo.png";
 import { Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
+import { useTranslation } from 'react-i18next';
+import { motion, AnimatePresence } from 'framer-motion';
+import { DarkModeToggle } from './DarkModeToggle';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface NavbarProps {
   logoStripRef?: React.RefObject<HTMLDivElement>;
@@ -12,6 +16,7 @@ interface NavbarProps {
 
 const Navbar = ({ logoStripRef }: NavbarProps) => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -34,7 +39,7 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
     <nav
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled
+        scrolled || mobileOpen
           ? "bg-black/70 backdrop-blur-xl shadow-lg border-b border-white/10"
           : "bg-transparent"
       )}
@@ -50,34 +55,36 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
           {/* Desktop nav links */}
           <div className="hidden md:flex items-center gap-8">
             <Link to="/pricing" className="text-sm text-white/70 hover:text-white transition-colors">
-              Pris
+              {t('nav.pricing')}
             </Link>
             <Link to="/demo" className="text-sm text-white/70 hover:text-white transition-colors">
-              Demo
+              {t('nav.demo')}
             </Link>
             <a href="#om-oss" className="text-sm text-white/70 hover:text-white transition-colors">
-              Om oss
+              {t('nav.about')}
             </a>
           </div>
 
           {/* Desktop auth */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2">
+            <LanguageSwitcher />
+            <DarkModeToggle />
             {user ? (
               <Link to="/dashboard">
                 <Button size="sm" className="bg-white text-black hover:bg-white/90 font-medium">
-                  Dashboard
+                  {t('nav.dashboard')}
                 </Button>
               </Link>
             ) : (
               <>
                 <Link to="/auth?mode=login">
                   <Button size="sm" variant="ghost" className="text-white/80 hover:text-white hover:bg-white/10">
-                    Logga in
+                    {t('nav.login')}
                   </Button>
                 </Link>
                 <Link to="/auth?mode=register">
                   <Button size="sm" className="bg-white text-black hover:bg-white/90 font-medium">
-                    Registrera
+                    {t('nav.register')}
                   </Button>
                 </Link>
               </>
@@ -94,29 +101,41 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
         </div>
 
         {/* Mobile menu */}
-        {mobileOpen && (
-          <div className="md:hidden pt-4 pb-2 border-t border-white/10 mt-4 flex flex-col gap-2">
-            <Link to="/pricing" className="py-2 text-sm text-white/80 hover:text-white" onClick={() => setMobileOpen(false)}>Pris</Link>
-            <Link to="/demo" className="py-2 text-sm text-white/80 hover:text-white" onClick={() => setMobileOpen(false)}>Demo</Link>
-            <a href="#om-oss" className="py-2 text-sm text-white/80 hover:text-white" onClick={() => setMobileOpen(false)}>Om oss</a>
-            <div className="flex flex-col gap-2 pt-3 border-t border-white/10 mt-2">
-              {user ? (
-                <Link to="/dashboard" onClick={() => setMobileOpen(false)}>
-                  <Button className="w-full bg-white text-black">Dashboard</Button>
-                </Link>
-              ) : (
-                <>
-                  <Link to="/auth?mode=login" onClick={() => setMobileOpen(false)}>
-                    <Button variant="ghost" className="w-full text-white hover:bg-white/10">Logga in</Button>
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.div
+              className="md:hidden pt-4 pb-2 border-t border-white/10 mt-4 flex flex-col gap-2"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.15 }}
+            >
+              <Link to="/pricing" className="py-2 text-sm text-white/80 hover:text-white" onClick={() => setMobileOpen(false)}>{t('nav.pricing')}</Link>
+              <Link to="/demo" className="py-2 text-sm text-white/80 hover:text-white" onClick={() => setMobileOpen(false)}>{t('nav.demo')}</Link>
+              <a href="#om-oss" className="py-2 text-sm text-white/80 hover:text-white" onClick={() => setMobileOpen(false)}>{t('nav.about')}</a>
+              <div className="flex flex-col gap-2 pt-3 border-t border-white/10 mt-2">
+                {user ? (
+                  <Link to="/dashboard" onClick={() => setMobileOpen(false)}>
+                    <Button className="w-full bg-white text-black">{t('nav.dashboard')}</Button>
                   </Link>
-                  <Link to="/auth?mode=register" onClick={() => setMobileOpen(false)}>
-                    <Button className="w-full bg-white text-black">Registrera</Button>
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        )}
+                ) : (
+                  <>
+                    <Link to="/auth?mode=login" onClick={() => setMobileOpen(false)}>
+                      <Button variant="ghost" className="w-full text-white hover:bg-white/10">{t('nav.login')}</Button>
+                    </Link>
+                    <Link to="/auth?mode=register" onClick={() => setMobileOpen(false)}>
+                      <Button className="w-full bg-white text-black">{t('nav.register')}</Button>
+                    </Link>
+                  </>
+                )}
+              </div>
+              <div className="flex items-center gap-2 pt-2">
+                <LanguageSwitcher />
+                <DarkModeToggle />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </nav>
   );

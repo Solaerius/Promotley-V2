@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Check, ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion';
 import PricingFAQ from "./PricingFAQ";
 
 const plans = [
@@ -8,10 +10,9 @@ const plans = [
     name: "UF Starter",
     price: "29",
     credits: "50",
-    model: "gpt-4o-mini",
     description: "Perfekt för nya UF-företag som precis börjat",
     features: [
-      "AI-modell: 4o Mini",
+      "AI-modell: Gemini Flash Lite",
       "50 AI-krediter per månad",
       "Enkel strategi (2 poster/vecka)",
       "3 branschtips per månad",
@@ -23,10 +24,9 @@ const plans = [
     name: "UF Growth",
     price: "49",
     credits: "100",
-    model: "gpt-4.1-mini",
     description: "Idealisk för snabbväxande UF-team",
     features: [
-      "AI-modell: 4.1 Mini",
+      "AI-modell: Gemini Flash",
       "100 AI-krediter per månad",
       "Personlig innehållskalender",
       "5 content-idéer per vecka",
@@ -38,12 +38,11 @@ const plans = [
     name: "UF Pro",
     price: "99",
     credits: "200",
-    model: "gpt-4.1-mini + gpt-4o",
     description: "För etablerade företag med stora ambitioner",
     features: [
-      "AI-modell: 4.1 Mini + 4o Premium",
+      "AI-modell: Gemini Pro",
       "200 AI-krediter per månad",
-      "Premium AI för djupanalyser (4o)",
+      "Premium AI för djupanalyser",
       "Komplett strategi + kalender",
       "Konkurrentanalys inkluderad",
       "Premium rapporter & insikter",
@@ -53,10 +52,12 @@ const plans = [
 ];
 
 const Pricing = () => {
+  const { t } = useTranslation();
+
   return (
     <section id="pricing" className="relative py-24 md:py-32 px-4 overflow-hidden font-poppins">
       {/* Section accent glow */}
-      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 40%, hsl(260 60% 14% / 0.5) 0%, transparent 70%)' }} />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 40%, hsl(var(--primary) / 0.12) 0%, transparent 70%)' }} />
 
       <div className="container mx-auto relative z-10">
         {/* Section header */}
@@ -64,15 +65,15 @@ const Pricing = () => {
           <div
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
             style={{
-              background: 'hsl(260 70% 30% / 0.25)',
-              border: '1px solid hsl(260 60% 50% / 0.25)',
+              background: 'hsl(var(--primary) / 0.15)',
+              border: '1px solid hsl(var(--primary) / 0.3)',
             }}
           >
             <Sparkles className="w-4 h-4 text-white" />
             <span className="text-sm font-medium text-white">Priser</span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold px-2 leading-tight text-white">
-            Enkla priser, <span className="text-gradient">kraftfulla resultat</span>
+            {t('pricing.title')}, <span className="text-gradient">kraftfulla resultat</span>
           </h2>
           <p className="text-base md:text-lg px-4" style={{ color: 'hsl(0 0% 100% / 0.55)' }}>
             Välj den plan som passar ditt företags tillväxtfas
@@ -86,29 +87,27 @@ const Pricing = () => {
 
             if (plan.popular) {
               return (
-                /* Popular card: gradient border wrapper */
-                <div
+                <motion.div
                   key={index}
-                  className="relative lg:scale-105 rounded-2xl p-px"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="relative lg:scale-105 rounded-2xl p-px ring-2 ring-primary"
                   style={{
-                    background: 'linear-gradient(135deg, hsl(9 85% 55%), hsl(331 70% 45%))',
+                    background: 'linear-gradient(135deg, hsl(var(--accent-brand)), hsl(var(--primary)))',
                   }}
                 >
                   {/* Most popular badge */}
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                    <span
-                      className="px-4 py-1.5 rounded-full text-xs font-semibold shadow-md text-white whitespace-nowrap"
-                      style={{
-                        background: 'linear-gradient(135deg, hsl(9 85% 55%), hsl(331 70% 45%))',
-                      }}
-                    >
-                      Mest populär
+                    <span className="badge-primary px-4 py-1.5 rounded-full text-xs font-semibold shadow-md text-white whitespace-nowrap">
+                      {t('pricing.badge_popular')}
                     </span>
                   </div>
 
                   {/* Inner dark card */}
                   <div
-                    className="rounded-2xl p-6 md:p-8 h-full"
+                    className="rounded-2xl p-6 md:p-8 h-full bg-primary/5"
                     style={{ background: 'hsl(240 50% 6%)' }}
                   >
                     <div className="space-y-6">
@@ -120,7 +119,7 @@ const Pricing = () => {
                       <div className="pb-4" style={{ borderBottom: '1px solid hsl(0 0% 100% / 0.08)' }}>
                         <div className="flex items-baseline gap-1">
                           <span className="text-4xl md:text-5xl font-bold text-white">{plan.price}</span>
-                          <span style={{ color: 'hsl(0 0% 100% / 0.55)' }}>kr/mån</span>
+                          <span style={{ color: 'hsl(0 0% 100% / 0.55)' }}>kr{t('pricing.per_month')}</span>
                         </div>
                         <div className="flex items-center gap-2 mt-2">
                           <span className="text-2xl font-bold text-gradient">{plan.credits}</span>
@@ -147,24 +146,28 @@ const Pricing = () => {
                           className="w-full text-white font-semibold"
                           size="lg"
                           style={{
-                            background: 'linear-gradient(135deg, hsl(9 85% 55%), hsl(331 70% 45%))',
-                            boxShadow: '0 8px 30px hsl(9 85% 45% / 0.4)',
+                            background: 'linear-gradient(135deg, hsl(var(--accent-brand)), hsl(var(--primary)))',
+                            boxShadow: '0 8px 30px hsl(var(--accent-brand) / 0.4)',
                           }}
                         >
-                          Köp plan
+                          {t('pricing.cta')}
                           <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
                       </Link>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               );
             }
 
             return (
-              <div
+              <motion.div
                 key={index}
-                className="relative rounded-2xl p-6 md:p-8 transition-all duration-300 hover:-translate-y-1"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="relative rounded-2xl p-6 md:p-8 transition-all duration-300 hover:-translate-y-1 bg-card border-border/40"
                 style={{
                   background: 'hsl(0 0% 100% / 0.04)',
                   border: '1px solid hsl(0 0% 100% / 0.08)',
@@ -187,7 +190,7 @@ const Pricing = () => {
                   <div className="pb-4" style={{ borderBottom: '1px solid hsl(0 0% 100% / 0.08)' }}>
                     <div className="flex items-baseline gap-1">
                       <span className="text-4xl md:text-5xl font-bold text-white">{plan.price}</span>
-                      <span style={{ color: 'hsl(0 0% 100% / 0.55)' }}>kr/mån</span>
+                      <span style={{ color: 'hsl(0 0% 100% / 0.55)' }}>kr{t('pricing.per_month')}</span>
                     </div>
                     <div className="flex items-center gap-2 mt-2">
                       <span className="text-2xl font-bold text-gradient">{plan.credits}</span>
@@ -218,12 +221,12 @@ const Pricing = () => {
                         borderColor: 'hsl(0 0% 100% / 0.12)',
                       }}
                     >
-                      Köp plan
+                      {t('pricing.cta')}
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </Link>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>

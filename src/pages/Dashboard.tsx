@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
@@ -61,11 +62,12 @@ const PlatformCard = ({
   isLoading: boolean;
   accentColor: string;
   metrics: { label: string; value: string | number }[];
-}) => (
+}) => {
+  const { t } = useTranslation();
+  return (
   <div
-    className="rounded-2xl overflow-hidden"
+    className="rounded-2xl overflow-hidden bg-card"
     style={{
-      background: "hsl(240 15% 7%)",
       border: "1px solid hsl(0 0% 100% / 0.06)",
     }}
   >
@@ -90,11 +92,11 @@ const PlatformCard = ({
               className="w-1.5 h-1.5 rounded-full"
               style={{ background: "hsl(142 55% 55%)" }}
             />
-            Ansluten
+            {t('dashboard.connected')}
           </span>
         ) : (
           <span className="text-xs" style={{ color: "hsl(0 0% 32%)" }}>
-            Ej ansluten
+            {t('dashboard.not_connected')}
           </span>
         )}
       </div>
@@ -121,7 +123,7 @@ const PlatformCard = ({
           </p>
           <Link to="/account">
             <Button size="sm" variant="outline" className="h-7 text-xs">
-              Anslut konto
+              {t('dashboard.connect_account')}
             </Button>
           </Link>
         </div>
@@ -131,7 +133,7 @@ const PlatformCard = ({
             <div
               key={i}
               className="rounded-xl p-3 animate-pulse"
-              style={{ background: "hsl(240 15% 11%)" }}
+              style={{ background: "hsl(var(--card))" }}
             >
               <div className="h-2.5 rounded w-14 mb-2.5" style={{ background: "hsl(0 0% 100% / 0.07)" }} />
               <div className="h-5 rounded w-10" style={{ background: "hsl(0 0% 100% / 0.07)" }} />
@@ -143,9 +145,8 @@ const PlatformCard = ({
           {metrics.map(({ label, value }) => (
             <div
               key={label}
-              className="rounded-xl p-3"
+              className="rounded-xl p-3 bg-surface-raised"
               style={{
-                background: "hsl(240 15% 10%)",
                 border: "1px solid hsl(0 0% 100% / 0.04)",
               }}
             >
@@ -164,12 +165,14 @@ const PlatformCard = ({
       )}
     </div>
   </div>
-);
+  );
+};
 
 // ─────────────────────────────────────────────
 // Dashboard
 // ─────────────────────────────────────────────
 const Dashboard = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { isConnected, connections, loading: connectionsLoading } = useConnections();
   const tiktokData = useTikTokData({ enabled: !connectionsLoading && isConnected("tiktok") });
@@ -248,16 +251,16 @@ const Dashboard = () => {
       value: formatNumber(totalFollowers),
       sub: "Alla plattformar",
       icon: Users,
-      accent: "hsl(265 70% 64%)",
-      bg: "hsl(265 50% 14% / 0.5)",
-      border: "hsl(265 50% 38% / 0.2)",
+      accent: "hsl(var(--primary))",
+      bg: "hsl(var(--primary) / 0.5)",
+      border: "hsl(var(--primary) / 0.2)",
     },
     {
       label: "AI-krediter",
       value: String(credits?.credits_left ?? 0),
       sub: "Tillgängliga",
       icon: Zap,
-      accent: "hsl(38 90% 60%)",
+      accent: "hsl(var(--accent-brand))",
       bg: "hsl(38 60% 13% / 0.5)",
       border: "hsl(38 60% 38% / 0.2)",
     },
@@ -283,7 +286,7 @@ const Dashboard = () => {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen font-poppins" style={{ background: "hsl(240 20% 4%)" }}>
+      <div className="min-h-screen font-poppins bg-background">
         <div className="max-w-7xl mx-auto p-5 md:p-7 space-y-5">
 
           {/* ── Header ── */}
@@ -296,7 +299,7 @@ const Dashboard = () => {
             <div>
               <div className="flex items-center gap-2 mb-0.5">
                 <h1 className="text-2xl font-bold tracking-tight" style={{ color: "hsl(0 0% 96%)" }}>
-                  Hej, {firstName}
+                  {t('dashboard.greeting', { name: firstName })}
                 </h1>
                 <span className="text-2xl select-none" role="img" aria-label="vink">👋</span>
               </div>
@@ -310,10 +313,10 @@ const Dashboard = () => {
                 size="sm"
                 className="gap-2 h-9 shrink-0 font-medium"
                 style={{
-                  background: "hsl(265 65% 56%)",
+                  background: "hsl(var(--primary))",
                   color: "white",
                   border: "none",
-                  boxShadow: "0 0 20px hsl(265 65% 40% / 0.4)",
+                  boxShadow: "0 0 20px hsl(var(--primary) / 0.4)",
                 }}
               >
                 <Zap className="h-3.5 w-3.5" />
@@ -400,9 +403,8 @@ const Dashboard = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.28, duration: 0.4 }}
-              className="rounded-2xl p-5"
+              className="rounded-2xl p-5 bg-card"
               style={{
-                background: "hsl(240 15% 7%)",
                 border: "1px solid hsl(0 0% 100% / 0.06)",
               }}
             >
@@ -410,17 +412,17 @@ const Dashboard = () => {
                 <div className="flex items-center gap-2.5">
                   <div
                     className="w-6 h-6 rounded-md flex items-center justify-center"
-                    style={{ background: "hsl(265 50% 20%)" }}
+                    style={{ background: "hsl(var(--primary) / 0.3)" }}
                   >
-                    <BarChart3 className="h-3.5 w-3.5" style={{ color: "hsl(265 70% 72%)" }} />
+                    <BarChart3 className="h-3.5 w-3.5" style={{ color: "hsl(var(--primary))" }} />
                   </div>
                   <h2 className="text-sm font-semibold" style={{ color: "hsl(0 0% 88%)" }}>
-                    Följarutveckling
+                    {t('dashboard.follower_history')}
                   </h2>
                 </div>
                 <span
                   className="text-xs px-2.5 py-0.5 rounded-full"
-                  style={{ background: "hsl(265 40% 17%)", color: "hsl(265 65% 72%)" }}
+                  style={{ background: "hsl(var(--primary) / 0.2)", color: "hsl(var(--primary))" }}
                 >
                   {followerHistory.length} datapunkter
                 </span>
@@ -432,8 +434,8 @@ const Dashboard = () => {
                 >
                   <defs>
                     <linearGradient id="followerGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="hsl(265 70% 60%)" stopOpacity={0.4} />
-                      <stop offset="100%" stopColor="hsl(265 70% 60%)" stopOpacity={0} />
+                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                      <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid
@@ -454,22 +456,22 @@ const Dashboard = () => {
                   />
                   <Tooltip
                     contentStyle={{
-                      background: "hsl(240 20% 10%)",
+                      background: "hsl(var(--card))",
                       border: "1px solid hsl(0 0% 100% / 0.1)",
                       borderRadius: 8,
                       fontSize: 12,
                       color: "hsl(0 0% 88%)",
                     }}
-                    cursor={{ stroke: "hsl(265 70% 55% / 0.3)", strokeWidth: 1 }}
+                    cursor={{ stroke: "hsl(var(--primary) / 0.3)", strokeWidth: 1 }}
                   />
                   <Area
                     type="monotone"
                     dataKey="followers"
-                    stroke="hsl(265 70% 62%)"
+                    stroke="hsl(var(--primary))"
                     fill="url(#followerGrad)"
                     strokeWidth={2}
                     dot={false}
-                    activeDot={{ r: 4, fill: "hsl(265 70% 75%)", strokeWidth: 0 }}
+                    activeDot={{ r: 4, fill: "hsl(var(--primary))", strokeWidth: 0 }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -480,9 +482,8 @@ const Dashboard = () => {
           <div className="grid lg:grid-cols-[1fr_320px] gap-3">
             {/* Upcoming posts */}
             <div
-              className="rounded-2xl p-5"
+              className="rounded-2xl p-5 bg-card"
               style={{
-                background: "hsl(240 15% 7%)",
                 border: "1px solid hsl(0 0% 100% / 0.06)",
               }}
             >
@@ -495,15 +496,15 @@ const Dashboard = () => {
                     <Calendar className="h-3.5 w-3.5" style={{ color: "hsl(174 60% 52%)" }} />
                   </div>
                   <h2 className="text-sm font-semibold" style={{ color: "hsl(0 0% 88%)" }}>
-                    Kommande inlägg
+                    {t('dashboard.upcoming_posts')}
                   </h2>
                 </div>
                 <Link
                   to="/calendar"
                   className="text-xs transition-opacity hover:opacity-70"
-                  style={{ color: "hsl(265 60% 65%)" }}
+                  style={{ color: "hsl(var(--primary))" }}
                 >
-                  Visa alla →
+                  {t('dashboard.view_analytics')} →
                 </Link>
               </div>
 
@@ -512,9 +513,8 @@ const Dashboard = () => {
                   {upcomingPosts.map((post) => (
                     <div
                       key={post.id}
-                      className="rounded-xl p-3.5"
+                      className="rounded-xl p-3.5 bg-surface-raised"
                       style={{
-                        background: "hsl(240 15% 10%)",
                         border: "1px solid hsl(0 0% 100% / 0.05)",
                       }}
                     >
@@ -532,8 +532,8 @@ const Dashboard = () => {
                           <span
                             className="text-xs px-2 py-0.5 rounded-full"
                             style={{
-                              background: "hsl(265 40% 18%)",
-                              color: "hsl(265 65% 70%)",
+                              background: "hsl(var(--primary) / 0.2)",
+                              color: "hsl(var(--primary))",
                             }}
                           >
                             {post.platform}
@@ -551,12 +551,12 @@ const Dashboard = () => {
                 </div>
               ) : (
                 <div
-                  className="flex flex-col items-center justify-center py-8 text-center rounded-xl"
-                  style={{ background: "hsl(240 15% 10%)", border: "1px solid hsl(0 0% 100% / 0.04)" }}
+                  className="flex flex-col items-center justify-center py-8 text-center rounded-xl bg-surface-raised"
+                  style={{ border: "1px solid hsl(0 0% 100% / 0.04)" }}
                 >
                   <Calendar className="h-7 w-7 mb-2.5" style={{ color: "hsl(0 0% 22%)" }} />
                   <p className="text-sm font-medium mb-1" style={{ color: "hsl(0 0% 52%)" }}>
-                    Inga kommande inlägg
+                    {t('dashboard.no_posts')}
                   </p>
                   <p className="text-xs mb-4" style={{ color: "hsl(0 0% 33%)" }}>
                     Planera ditt innehåll i kalendern
@@ -573,9 +573,8 @@ const Dashboard = () => {
             {/* Recent activity — timeline */}
             {recentActivity.length > 0 && (
               <div
-                className="rounded-2xl p-5"
+                className="rounded-2xl p-5 bg-card"
                 style={{
-                  background: "hsl(240 15% 7%)",
                   border: "1px solid hsl(0 0% 100% / 0.06)",
                 }}
               >
@@ -584,10 +583,10 @@ const Dashboard = () => {
                     className="w-6 h-6 rounded-md flex items-center justify-center"
                     style={{ background: "hsl(38 50% 13%)" }}
                   >
-                    <Sparkles className="h-3.5 w-3.5" style={{ color: "hsl(38 90% 62%)" }} />
+                    <Sparkles className="h-3.5 w-3.5" style={{ color: "hsl(var(--accent-brand))" }} />
                   </div>
                   <h2 className="text-sm font-semibold" style={{ color: "hsl(0 0% 88%)" }}>
-                    Senaste aktivitet
+                    {t('dashboard.recent_activity')}
                   </h2>
                 </div>
 
@@ -606,15 +605,15 @@ const Dashboard = () => {
                           <div
                             className="absolute -left-5 top-1.5 w-2 h-2 rounded-full border"
                             style={{
-                              background: "hsl(240 20% 10%)",
-                              borderColor: "hsl(265 55% 50%)",
+                              background: "hsl(var(--card))",
+                              borderColor: "hsl(var(--primary))",
                             }}
                           />
                           <div
                             className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0"
-                            style={{ background: "hsl(265 40% 14%)" }}
+                            style={{ background: "hsl(var(--primary) / 0.15)" }}
                           >
-                            <Icon className="h-3 w-3" style={{ color: "hsl(265 65% 70%)" }} />
+                            <Icon className="h-3 w-3" style={{ color: "hsl(var(--primary))" }} />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p
@@ -672,17 +671,16 @@ const Dashboard = () => {
                 desc: "Planera din nästa kampanj med AI",
                 icon: Zap,
                 href: "/ai/campaign",
-                accent: "hsl(265 70% 65%)",
-                iconBg: "hsl(265 40% 14%)",
+                accent: "hsl(var(--primary))",
+                iconBg: "hsl(var(--primary) / 0.15)",
               },
             ].map(({ label, desc, icon: Icon, href, accent, iconBg }) => (
               <Link key={label} to={href}>
                 <motion.div
                   whileHover={{ y: -2 }}
                   transition={{ duration: 0.15, ease: "easeOut" }}
-                  className="rounded-2xl p-4 group cursor-pointer transition-all duration-200"
+                  className="rounded-2xl p-4 group cursor-pointer transition-all duration-200 bg-card"
                   style={{
-                    background: "hsl(240 15% 7%)",
                     border: "1px solid hsl(0 0% 100% / 0.06)",
                   }}
                   onMouseEnter={(e) => {

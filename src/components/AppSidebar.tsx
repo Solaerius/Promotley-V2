@@ -1,5 +1,8 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from './LanguageSwitcher';
+import { useTheme } from "next-themes";
 import {
   LayoutDashboard,
   BarChart3,
@@ -57,6 +60,7 @@ const navItems = [
 ];
 
 export function AppSidebar() {
+  const { t } = useTranslation();
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
@@ -65,18 +69,12 @@ export function AppSidebar() {
   const { activeOrganization } = useOrganization();
   const { credits } = useUserCredits();
   const [userAvatarUrl, setUserAvatarUrl] = useState<string | null>(null);
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-
-  useEffect(() => {
-    const saved = (localStorage.getItem("theme") as "light" | "dark") || "light";
-    setTheme(saved);
-  }, []);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   const toggleTheme = () => {
-    const next = theme === "light" ? "dark" : "light";
-    setTheme(next);
-    localStorage.setItem("theme", next);
-    document.documentElement.classList.toggle("dark", next === "dark");
+    setTheme(theme === "light" ? "dark" : "light");
   };
 
   useEffect(() => {
@@ -154,11 +152,11 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   onClick={toggleTheme}
-                  tooltip={theme === "light" ? "Mörkt läge" : "Ljust läge"}
+                  tooltip={!mounted || theme === "light" ? t('common.dark_mode') : t('common.light_mode')}
                   className="transition-colors rounded-none px-3"
                 >
-                  {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-                  <span>{theme === "light" ? "Mörkt läge" : "Ljust läge"}</span>
+                  {!mounted || theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                  <span>{!mounted || theme === "light" ? t('common.dark_mode') : t('common.light_mode')}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -171,8 +169,8 @@ export function AppSidebar() {
         {!collapsed && credits && (
           <div className="px-1 pb-2">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">Krediter</span>
-              <span className="text-[10px] font-semibold text-foreground">{credits.credits_left} kvar</span>
+              <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">{t('dashboard.credits')}</span>
+              <span className="text-[10px] font-semibold text-foreground">{credits.credits_left} {t('common.credits_left')}</span>
             </div>
             <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
               <div
@@ -180,6 +178,13 @@ export function AppSidebar() {
                 style={{ width: `${creditPct}%` }}
               />
             </div>
+          </div>
+        )}
+
+        {/* Language switcher */}
+        {!collapsed && (
+          <div className="px-1 pb-2">
+            <LanguageSwitcher />
           </div>
         )}
 
@@ -204,7 +209,7 @@ export function AppSidebar() {
                       <Settings className="h-3.5 w-3.5 text-muted-foreground" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="top">Inställningar</TooltipContent>
+                  <TooltipContent side="top">{t('common.settings')}</TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -212,7 +217,7 @@ export function AppSidebar() {
                       <LogOut className="h-3.5 w-3.5 text-muted-foreground" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="top">Logga ut</TooltipContent>
+                  <TooltipContent side="top">{t('common.logout')}</TooltipContent>
                 </Tooltip>
               </div>
             </>

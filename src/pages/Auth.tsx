@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
+import { useTranslation, Trans } from 'react-i18next';
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -25,21 +25,19 @@ import {
 } from "@/components/ui/dialog";
 
 const Auth = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const fromDemo = searchParams.get('from') === 'demo';
-  const joinMode = searchParams.get('mode') === 'join';
   // After login, redirect back to where the user was heading (preserved by ProtectedRoute)
   const redirectTo = (location.state as any)?.from || "/dashboard";
 
   const [isLogin, setIsLogin] = useState(searchParams.get('mode') !== 'register');
-  const [isCreatingCompany, setIsCreatingCompany] = useState(!joinMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [inviteCode, setInviteCode] = useState("");
   const [promoCode, setPromoCode] = useState("");
+  const [showPromoCode, setShowPromoCode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
@@ -175,7 +173,6 @@ const Auth = () => {
       const validation = authSchema.safeParse({
         email,
         password,
-        companyName: isLogin ? undefined : (isCreatingCompany ? companyName : undefined),
       });
 
       if (!validation.success) {
@@ -193,7 +190,7 @@ const Auth = () => {
       // Perform authentication
       const result = isLogin
         ? await signIn(email, password)
-        : await signUp(email, password, isCreatingCompany ? companyName : undefined, !isCreatingCompany && inviteCode ? inviteCode : undefined, { newsletter: emailNewsletter, offers: emailOffers }, promoCode.trim() || undefined);
+        : await signUp(email, password, undefined, undefined, { newsletter: emailNewsletter, offers: emailOffers }, promoCode.trim() || undefined);
 
       if (result.error) {
         // Handle specific error messages
@@ -332,13 +329,44 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-hero px-4 py-12">
-      <Card className="w-full max-w-md p-8 shadow-elegant">
+    <div className="min-h-screen flex">
+      {/* Left brand panel — hidden on mobile */}
+      <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center p-12 bg-gradient-to-br from-[hsl(347,45%,8%)] via-[hsl(326,56%,20%)] to-[hsl(10,84%,30%)] relative overflow-hidden">
+        {/* Decorative orbs */}
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-[hsl(var(--primary)/0.2)] blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-48 h-48 rounded-full bg-[hsl(var(--accent-brand)/0.15)] blur-3xl" />
+        {/* Content */}
+        <div className="relative z-10 text-center text-white">
+          <img src={logo} alt="Promotley" className="w-16 h-16 mx-auto mb-6" />
+          <h2 className="text-3xl font-bold mb-4">Promotley</h2>
+          <p className="text-white/70 text-lg max-w-sm">
+            AI-driven marknadsföring för UF-företag
+          </p>
+          <div className="mt-8 flex flex-col gap-3 text-sm text-white/60">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--accent-brand))]" />
+              <span>Analysera sociala medier med AI</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--accent-brand))]" />
+              <span>Schemalägg och publicera innehåll</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--accent-brand))]" />
+              <span>Väx din publik organiskt</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right form panel */}
+      <div className="flex-1 lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-background">
+        <div className="w-full max-w-md">
         {/* Back button */}
         <Link to="/">
           <Button variant="ghost" size="sm" className="mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Tillbaka till startsidan
+            {t('common.back')}
           </Button>
         </Link>
 
@@ -353,7 +381,7 @@ const Auth = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">
-            {isLogin ? "Välkommen tillbaka" : "Kom igång gratis"}
+            {isLogin ? t('auth.login_title') : t('auth.register_title')}
           </h1>
           <p className="text-muted-foreground">
             {isLogin
@@ -388,77 +416,10 @@ const Auth = () => {
           </Alert>
         )}
 
-        {/* Account type selector for signup */}
-        {!isLogin && (
-          <div className="mb-6">
-            <Label className="text-sm font-medium mb-3 block">Vad vill du göra?</Label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setIsCreatingCompany(true)}
-                className={`p-4 rounded-lg border-2 text-left transition-all ${
-                  isCreatingCompany 
-                    ? 'border-primary bg-primary/10' 
-                    : 'border-border hover:border-primary/50'
-                }`}
-              >
-                <div className="font-medium text-sm">Registrera nytt företag</div>
-                <div className="text-xs text-muted-foreground mt-1">Skapa ditt UF-företag</div>
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsCreatingCompany(false)}
-                className={`p-4 rounded-lg border-2 text-left transition-all ${
-                  !isCreatingCompany 
-                    ? 'border-primary bg-primary/10' 
-                    : 'border-border hover:border-primary/50'
-                }`}
-              >
-                <div className="font-medium text-sm">Gå med i företag</div>
-                <div className="text-xs text-muted-foreground mt-1">Anslut med inbjudningskod</div>
-              </button>
-            </div>
-            
-            {/* Invite code field when joining */}
-            {!isCreatingCompany && (
-              <div className="mt-3 space-y-2">
-                <Label htmlFor="inviteCode">Inbjudningskod <span className="text-xs text-muted-foreground">(valfritt)</span></Label>
-                <Input
-                  id="inviteCode"
-                  type="text"
-                  placeholder="T.ex. AB12CD34"
-                  value={inviteCode}
-                  onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Har du fått en kod? Fyll i den här. Du kan även ange den senare.
-                </p>
-              </div>
-            )}
-          </div>
-        )}
-
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {!isLogin && isCreatingCompany && (
-            <div className="space-y-2">
-              <Label htmlFor="companyName">Företagsnamn</Label>
-              <Input
-                id="companyName"
-                type="text"
-                placeholder="Mitt UF-företag"
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                required={isCreatingCompany}
-              />
-              <p className="text-xs text-muted-foreground">
-                Du kan ändra detta senare i inställningarna.
-              </p>
-            </div>
-          )}
-
           <div className="space-y-2">
-            <Label htmlFor="email">E-post</Label>
+            <Label htmlFor="email">{t('auth.email')}</Label>
             <Input
               id="email"
               type="email"
@@ -474,7 +435,7 @@ const Auth = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Lösenord</Label>
+            <Label htmlFor="password">{t('auth.password')}</Label>
             <div className="relative">
               <Input
                 id="password"
@@ -507,7 +468,7 @@ const Auth = () => {
                       type="button"
                       className="text-sm text-primary hover:underline"
                     >
-                      Glömt lösenord?
+                      {t('auth.forgot_password')}
                     </button>
                   </DialogTrigger>
                   <DialogContent>
@@ -545,7 +506,7 @@ const Auth = () => {
 
           {!isLogin && (
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Bekräfta lösenord</Label>
+              <Label htmlFor="confirmPassword">{t('auth.confirm_password')}</Label>
               <div className="relative">
                 <Input
                   id="confirmPassword"
@@ -573,21 +534,24 @@ const Auth = () => {
 
           {!isLogin && (
             <div className="space-y-2">
-              <Label htmlFor="promoCode" className="text-sm">
-                Kampanjkod <span className="text-xs text-muted-foreground">(valfritt)</span>
-              </Label>
-              <Input
-                id="promoCode"
-                type="text"
-                placeholder="T.ex. FREEUF50"
-                value={promoCode}
-                onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                disabled={isSubmitting}
-                maxLength={50}
-              />
-              <p className="text-xs text-muted-foreground">
-                Har du fått en kod? Den löses in automatiskt efter verifiering.
-              </p>
+              <button
+                type="button"
+                onClick={() => setShowPromoCode(!showPromoCode)}
+                className="text-sm text-primary hover:underline"
+              >
+                {t('auth.promo_code_toggle')}
+              </button>
+              {showPromoCode && (
+                <Input
+                  id="promoCode"
+                  type="text"
+                  placeholder={t('auth.promo_code_placeholder')}
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                  disabled={isSubmitting}
+                  maxLength={50}
+                />
+              )}
             </div>
           )}
 
@@ -603,14 +567,13 @@ const Auth = () => {
                   htmlFor="terms"
                   className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  Jag accepterar{" "}
-                  <Link to="/terms-of-service" className="text-primary hover:underline">
-                    användarvillkoren
-                  </Link>{" "}
-                  och{" "}
-                  <Link to="/privacy-policy" className="text-primary hover:underline">
-                    integritetspolicyn
-                  </Link>
+                  <Trans
+                    i18nKey="auth.terms_accept"
+                    components={{
+                      terms: <Link to="/terms-of-service" className="text-primary hover:underline" />,
+                      privacy: <Link to="/privacy-policy" className="text-primary hover:underline" />,
+                    }}
+                  />
                 </label>
               </div>
               <div className="flex items-start space-x-2">
@@ -620,7 +583,7 @@ const Auth = () => {
                   onCheckedChange={(checked) => setEmailNewsletter(checked as boolean)}
                 />
                 <label htmlFor="newsletter" className="text-sm leading-none">
-                  Nyhetsbrev och tips
+                  {t('auth.newsletter')}
                 </label>
               </div>
               <div className="flex items-start space-x-2">
@@ -643,7 +606,7 @@ const Auth = () => {
             size="lg"
             disabled={isSubmitting || (!isLogin && !acceptedTerms)}
           >
-            {isSubmitting ? "Laddar..." : isLogin ? "Logga in" : "Skapa konto"}
+            {isSubmitting ? "Laddar..." : isLogin ? t('auth.submit_login') : t('auth.submit_register')}
           </Button>
         </form>
 
@@ -654,7 +617,7 @@ const Auth = () => {
           </div>
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-background px-2 text-muted-foreground">
-              Eller fortsätt med
+              {t('auth.or_continue')}
             </span>
           </div>
         </div>
@@ -686,7 +649,7 @@ const Auth = () => {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            Fortsätt med Google
+            {t('auth.google')}
           </Button>
 
           <Button
@@ -697,7 +660,7 @@ const Auth = () => {
             onClick={handleAppleLogin}
           >
             <AppleIcon className="mr-2 h-5 w-5" />
-            Fortsätt med Apple
+            {t('auth.apple')}
           </Button>
         </div>
 
@@ -709,19 +672,20 @@ const Auth = () => {
           >
             {isLogin ? (
               <>
-                Inget konto?{" "}
+                {t('auth.no_account')}{" "}
                 <span className="text-primary font-medium">Registrera dig</span>
               </>
             ) : (
               <>
-                Har redan konto?{" "}
+                {t('auth.has_account')}{" "}
                 <span className="text-primary font-medium">Logga in</span>
               </>
             )}
           </button>
         </div>
 
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

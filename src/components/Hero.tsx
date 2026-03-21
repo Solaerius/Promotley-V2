@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRight } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 // Platform SVG logos
 const TikTokLogo = () => (
@@ -65,7 +66,7 @@ const OAuthButton = ({
 const FEATURE_PILLS = ["AI-driven strategi", "Swish-betalning", "TikTok & Meta", "Svenska UF-företag"];
 
 const AVATAR_COLORS = [
-  "hsl(260 60% 50%)",
+  "hsl(var(--primary))",
   "hsl(200 60% 45%)",
   "hsl(330 55% 50%)",
   "hsl(150 50% 40%)",
@@ -74,6 +75,7 @@ const AVATAR_CHARS = ["A", "S", "E", "L"];
 
 const Hero = () => {
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const handleGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -95,7 +97,7 @@ const Hero = () => {
     <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
       {/* Background layer */}
       <div className="absolute inset-0" style={{
-        background: "radial-gradient(ellipse 90% 70% at 50% -5%, hsl(260 65% 13%) 0%, hsl(240 50% 5%) 55%, hsl(240 50% 3%) 100%)",
+        background: "radial-gradient(ellipse 90% 70% at 50% -5%, hsl(var(--gradient-hero-bg)) 0%, hsl(var(--gradient-hero-bg)) 55%, hsl(var(--gradient-hero-bg)) 100%)",
       }} />
 
       {/* Ambient orb — violet, top-left */}
@@ -109,7 +111,7 @@ const Hero = () => {
           top: -180,
           left: -200,
           borderRadius: "50%",
-          background: "radial-gradient(circle, hsl(260 70% 38%) 0%, transparent 68%)",
+          background: "radial-gradient(circle, hsl(var(--primary)) 0%, transparent 68%)",
           filter: "blur(70px)",
         }}
       />
@@ -125,7 +127,7 @@ const Hero = () => {
           bottom: -80,
           right: "5%",
           borderRadius: "50%",
-          background: "radial-gradient(circle, hsl(185 60% 32%) 0%, transparent 68%)",
+          background: "radial-gradient(circle, hsl(var(--accent-brand)) 0%, transparent 68%)",
           filter: "blur(90px)",
         }}
       />
@@ -143,22 +145,22 @@ const Hero = () => {
               transition={{ duration: 0.45 }}
               className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-8"
               style={{
-                background: "hsl(260 70% 22% / 0.55)",
-                border: "1px solid hsl(260 70% 55% / 0.25)",
+                background: "hsl(var(--primary) / 0.15)",
+                border: "1px solid hsl(var(--primary) / 0.3)",
               }}
             >
               <span className="relative flex h-1.5 w-1.5">
                 <span
                   className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-                  style={{ background: "hsl(260 80% 75%)" }}
+                  style={{ background: "hsl(var(--primary-glow))" }}
                 />
                 <span
                   className="relative inline-flex rounded-full h-1.5 w-1.5"
-                  style={{ background: "hsl(260 80% 72%)" }}
+                  style={{ background: "hsl(var(--primary-glow))" }}
                 />
               </span>
-              <span className="text-xs font-medium" style={{ color: "hsl(260 70% 78%)" }}>
-                Nu med AI-driven innehållsanalys
+              <span className="text-xs font-medium" style={{ color: "hsl(var(--primary-glow))" }}>
+                {t('hero.badge')}
               </span>
             </motion.div>
 
@@ -170,17 +172,16 @@ const Hero = () => {
               className="text-6xl md:text-7xl xl:text-8xl font-bold tracking-tight mb-6"
               style={{ lineHeight: 0.95, color: "hsl(0 0% 97%)" }}
             >
-              Marknads-
+              {t('hero.headline')}
               <br />
               <span
                 style={{
-                  background: "linear-gradient(130deg, hsl(265 75% 78%) 0%, hsl(285 80% 82%) 45%, hsl(310 70% 78%) 100%)",
+                  background: "var(--gradient-text)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
                 }}
               >
-                för nu
               </span>
             </motion.h1>
 
@@ -192,7 +193,7 @@ const Hero = () => {
               className="text-lg md:text-xl font-light max-w-md leading-relaxed mb-10"
               style={{ color: "hsl(0 0% 62%)" }}
             >
-              AI-driven strategi, captions och analys — skräddarsytt för svenska UF-företag. Koppla dina kanaler och börja växa.
+              {t('hero.subheadline')}
             </motion.p>
 
             {/* Feature pills */}
@@ -231,7 +232,7 @@ const Hero = () => {
                     className="w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-semibold"
                     style={{
                       background: AVATAR_COLORS[i],
-                      borderColor: "hsl(240 50% 4%)",
+                      borderColor: "hsl(var(--gradient-hero-bg))",
                       color: "white",
                     }}
                   >
@@ -255,7 +256,7 @@ const Hero = () => {
               transition={{ delay: 0.3, duration: 0.8 }}
               className="absolute inset-0 pointer-events-none"
               style={{
-                background: "radial-gradient(ellipse at center, hsl(260 70% 28% / 0.35) 0%, transparent 70%)",
+                background: "radial-gradient(ellipse at center, hsl(var(--primary) / 0.3) 0%, transparent 70%)",
                 filter: "blur(40px)",
                 transform: "scale(1.25)",
               }}
@@ -282,10 +283,10 @@ const Hero = () => {
                 className="mb-6"
               >
                 <h2 className="text-xl font-bold mb-1" style={{ color: "hsl(0 0% 96%)" }}>
-                  Kom igång gratis
+                  {t('hero.cta_primary')}
                 </h2>
                 <p className="text-sm" style={{ color: "hsl(0 0% 48%)" }}>
-                  Ingen bindningstid. Inget kreditkort.
+                  {t('hero.card_subheader')}
                 </p>
               </motion.div>
 
@@ -346,7 +347,7 @@ const Hero = () => {
                   (e.currentTarget as HTMLAnchorElement).style.borderColor = "hsl(0 0% 100% / 0.07)";
                 }}
               >
-                Registrera med e-post
+                {t('hero.email_register')}
                 <ArrowRight className="h-3.5 w-3.5 opacity-0 group-hover:opacity-60 transition-opacity" />
               </motion.a>
 

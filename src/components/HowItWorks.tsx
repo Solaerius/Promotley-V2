@@ -1,4 +1,5 @@
 import { Link2, BarChart3, Lightbulb, Zap } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 const steps = [
   {
@@ -22,10 +23,12 @@ const steps = [
 ];
 
 const HowItWorks = () => {
+  const { t } = useTranslation();
+
   return (
     <section id="how-it-works" className="relative py-24 md:py-32 overflow-hidden">
       {/* Section accent glow */}
-      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 50%, hsl(260 70% 14% / 0.5) 0%, transparent 70%)' }} />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 50%, hsl(var(--primary) / 0.1) 0%, transparent 70%)' }} />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10 max-w-6xl">
         {/* Section Header */}
@@ -33,12 +36,12 @@ const HowItWorks = () => {
           <div
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
             style={{
-              background: 'hsl(260 70% 30% / 0.25)',
-              border: '1px solid hsl(260 60% 50% / 0.25)',
+              background: 'hsl(var(--primary) / 0.15)',
+              border: '1px solid hsl(var(--primary) / 0.3)',
             }}
           >
             <Zap className="w-4 h-4 text-white" />
-            <span className="text-sm font-medium text-white">Hur det fungerar</span>
+            <span className="text-sm font-medium text-white">{t('sections.howItWorks.title')}</span>
           </div>
 
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4" style={{ textWrap: 'balance' }}>
@@ -82,7 +85,7 @@ const HowItWorks = () => {
                 {index < 2 && (
                   <div
                     className="hidden md:block absolute top-1/2 -right-3 w-6 h-px z-20"
-                    style={{ background: 'linear-gradient(90deg, hsl(9 85% 55% / 0.4), hsl(9 85% 55% / 0.1))' }}
+                    style={{ background: 'linear-gradient(90deg, hsl(var(--accent-brand) / 0.4), hsl(var(--accent-brand) / 0.1))' }}
                   />
                 )}
 
@@ -90,8 +93,8 @@ const HowItWorks = () => {
                 <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 mt-6 relative z-10 transition-transform duration-300 group-hover:scale-110"
                   style={{
-                    background: 'linear-gradient(135deg, hsl(9 85% 55% / 0.2), hsl(331 70% 45% / 0.15))',
-                    border: '1px solid hsl(9 85% 55% / 0.2)',
+                    background: 'linear-gradient(135deg, hsl(var(--accent-brand) / 0.2), hsl(var(--primary) / 0.15))',
+                    border: '1px solid hsl(var(--accent-brand) / 0.2)',
                   }}
                 >
                   <Icon className="w-6 h-6 text-white" />

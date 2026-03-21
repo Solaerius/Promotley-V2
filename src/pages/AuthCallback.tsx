@@ -130,14 +130,28 @@ export default function AuthCallback() {
                 return;
               }
               // Has org — navigate directly
-              setTimeout(() => navigate("/dashboard", { replace: true }), 100);
+              (async () => {
+                const { data: profile } = await supabase
+                  .from('ai_profiles')
+                  .select('onboarding_completed')
+                  .eq('user_id', session.user.id)
+                  .single();
+                navigate(profile?.onboarding_completed ? '/dashboard' : '/onboarding', { replace: true });
+              })();
               return;
             }
 
             // Non-OAuth (email verification) success path
             setStatus("success");
             toast({ title: "E-post verifierad!", description: "Ditt konto är nu aktiverat." });
-            setTimeout(() => navigate("/dashboard", { replace: true }), 2000);
+            setTimeout(async () => {
+              const { data: profile } = await supabase
+                .from('ai_profiles')
+                .select('onboarding_completed')
+                .eq('user_id', session.user.id)
+                .single();
+              navigate(profile?.onboarding_completed ? '/dashboard' : '/onboarding', { replace: true });
+            }, 2000);
           } else {
             // Refresh user to get latest confirmation status
             const { data: { user }, error: refreshError } = await supabase.auth.getUser();
@@ -154,8 +168,13 @@ export default function AuthCallback() {
                 title: "E-post verifierad!",
                 description: "Ditt konto är nu aktiverat.",
               });
-              setTimeout(() => {
-                navigate("/dashboard", { replace: true });
+              setTimeout(async () => {
+                const { data: profile } = await supabase
+                  .from('ai_profiles')
+                  .select('onboarding_completed')
+                  .eq('user_id', user.id)
+                  .single();
+                navigate(profile?.onboarding_completed ? '/dashboard' : '/onboarding', { replace: true });
               }, 2000);
             } else {
               // Still not verified, redirect to verify page
