@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -23,17 +23,12 @@ import CalendarErrorState from "@/components/CalendarErrorState";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 type EventType = "inlagg" | "uf_marknad" | "event" | "deadline" | "ovrigt";
 type SocialPlatform = "instagram" | "tiktok" | "facebook" | "";
 
-const eventTypeLabels: Record<EventType, string> = {
-  inlagg: "Inlägg",
-  uf_marknad: "UF-marknad",
-  event: "Event/aktivitet",
-  deadline: "Deadline",
-  ovrigt: "Övrigt",
-};
+// eventTypeLabels is now built inside the component using t()
 
 const eventTypeColors: Record<EventType, { bg: string; text: string; border: string; dot: string }> = {
   inlagg:    { bg: "bg-pink-500/15",   text: "text-pink-400",   border: "border-pink-500/30",   dot: "bg-pink-500"   },
@@ -57,8 +52,7 @@ const platformIcons: Record<string, React.ComponentType<{ className?: string }>>
   facebook:  Facebook,
 };
 
-const monthNames = ["Januari", "Februari", "Mars", "April", "Maj", "Juni", "Juli", "Augusti", "September", "Oktober", "November", "December"];
-const weekDays = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"];
+// monthNames and weekDays are now built inside the component using t()
 
 type FormData = {
   date: string;
@@ -71,8 +65,20 @@ type FormData = {
 const defaultForm: FormData = { date: "", event_type: "inlagg", title: "", description: "", platform: "" };
 
 const Calendar = () => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const { posts, loading, error, createPost, updatePost, deletePost, fetchPosts, fetchContext } = useCalendar();
+
+  const eventTypeLabels: Record<EventType, string> = useMemo(() => ({
+    inlagg:     t('calendar.type_post'),
+    uf_marknad: t('calendar.type_market'),
+    event:      t('calendar.type_event'),
+    deadline:   t('calendar.type_deadline'),
+    ovrigt:     t('calendar.type_other'),
+  }), [t]);
+
+  const monthNames: string[] = t('calendar.months', { returnObjects: true }) as string[];
+  const weekDays: string[]   = t('calendar.weekdays', { returnObjects: true }) as string[];
   const { profile: aiProfile } = useAIProfile();
   const { createConversation } = useConversations();
 
@@ -118,7 +124,7 @@ const Calendar = () => {
 
   const handleSavePost = async () => {
     if (!formData.date || !formData.event_type || !formData.title) {
-      toast({ title: "Fyll i alla obligatoriska fält", variant: "destructive" });
+      toast({ title: t('calendar.toast_required'), variant: "destructive" });
       return;
     }
     setIsSaving(true);
@@ -168,9 +174,9 @@ const Calendar = () => {
     setGenerationProgress(10);
     try {
       const convId = await createConversation("Marknadsföringsplan");
-      if (!convId) throw new Error("Kunde inte skapa konversation");
+      if (!convId) throw new Error("Kunde inte skapa konversation"); // internal error — not user-facing
       const progressInterval = setInterval(() => setGenerationProgress(prev => Math.min(prev + 8, 85)), 800);
-      const planMessage = "Skapa en marknadsföringsplan för kommande 4 veckor. Svara ENBART med en plan i JSON-format.";
+      const planMessage = "Skapa en marknadsföringsplan för kommande 4 veckor. Svara ENBART med en plan i JSON-format."; // AI prompt — stays Swedish
       await supabase.from('ai_chat_messages').insert({ conversation_id: convId, role: 'user', message: planMessage });
       const contextData = await fetchContext();
       const { data: result, error: invokeError } = await supabase.functions.invoke('ai-assistant/chat', {
@@ -187,11 +193,11 @@ const Calendar = () => {
       await supabase.from('ai_chat_messages').insert({ conversation_id: convId, role: 'assistant', message: result.response, plan: result.plan || null });
       clearInterval(progressInterval);
       setGenerationProgress(100);
-      toast({ title: "Plan skapad!", description: "Kolla AI-chatten för detaljer." });
+      toast({ title: t('calendar.toast_plan_created'), description: t('calendar.toast_plan_created_desc') });
     } catch (err: any) {
       toast({
-        title: "Fel",
-        description: err?.message?.includes('NO_ACTIVE_PLAN') ? "Du behöver ett aktivt paket." : "Kunde inte generera plan.",
+        title: t('calendar.toast_error'),
+        description: err?.message?.includes('NO_ACTIVE_PLAN') ? t('calendar.toast_no_plan') : t('calendar.toast_plan_failed'),
         variant: "destructive"
       });
     } finally {
@@ -216,8 +222,8 @@ const Calendar = () => {
     <DashboardLayout>
       <div className="space-y-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Innehållskalender</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Planera dina inlägg</p>
+          <h1 className="text-2xl font-bold text-foreground">{t('calendar.title')}</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{t('calendar.error_subtitle')}</p>
         </div>
         <CalendarErrorState error={error} onRetry={fetchPosts} />
       </div>
@@ -239,9 +245,9 @@ const Calendar = () => {
               className="text-2xl font-bold"
               style={{ background: "var(--gradient-text)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
             >
-              Innehållskalender
+              {t('calendar.title')}
             </h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Planera dina inlägg och håll koll på din content-strategi</p>
+            <p className="text-sm text-muted-foreground mt-0.5">{t('calendar.subtitle')}</p>
           </div>
 
           <div className="flex flex-col gap-2 items-start lg:items-end">
@@ -249,7 +255,9 @@ const Calendar = () => {
               <Alert variant="default" className="border-warning/50 bg-warning/5 py-2 px-3">
                 <AlertCircle className="h-3.5 w-3.5 text-warning" />
                 <AlertDescription className="text-warning text-xs">
-                  Fyll i din <Link to="/account" className="underline font-medium">AI-profil</Link> för att använda AI.
+                  {t('calendar.ai_profile_required').split(t('calendar.ai_profile_link'))[0]}
+                  <Link to="/account" className="underline font-medium">{t('calendar.ai_profile_link')}</Link>
+                  {t('calendar.ai_profile_required').split(t('calendar.ai_profile_link'))[1]}
                 </AlertDescription>
               </Alert>
             )}
@@ -264,7 +272,7 @@ const Calendar = () => {
                 {isGeneratingPlan
                   ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   : <Sparkles className="w-3.5 h-3.5" />}
-                {isGeneratingPlan ? "Genererar..." : "Skapa plan med AI"}
+                {isGeneratingPlan ? t('calendar.generating') : t('calendar.generate_plan')}
               </Button>
 
               <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) { setEditingPost(null); setFormData(defaultForm); } }}>
@@ -275,20 +283,20 @@ const Calendar = () => {
                     className="gap-1.5 border-border/60"
                     onClick={() => { setEditingPost(null); setFormData(defaultForm); }}
                   >
-                    <Plus className="w-3.5 h-3.5" /> Lägg till
+                    <Plus className="w-3.5 h-3.5" /> {t('calendar.add')}
                   </Button>
                 </DialogTrigger>
 
                 <DialogContent className="max-w-md">
                   <DialogHeader>
                     <DialogTitle className="text-base font-semibold">
-                      {editingPost ? "Redigera händelse" : "Ny händelse"}
+                      {editingPost ? t('calendar.edit_event') : t('calendar.new_event')}
                     </DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4 pt-1">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1.5">
-                        <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Datum *</Label>
+                        <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t('calendar.date_label')}</Label>
                         <Input
                           type="date"
                           value={formData.date}
@@ -297,7 +305,7 @@ const Calendar = () => {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Typ *</Label>
+                        <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t('calendar.type_label')}</Label>
                         <Select value={formData.event_type} onValueChange={(v) => setFormData({ ...formData, event_type: v as EventType })}>
                           <SelectTrigger className="text-sm">
                             <SelectValue />
@@ -317,9 +325,9 @@ const Calendar = () => {
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Titel *</Label>
+                      <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t('calendar.title_label')}</Label>
                       <Input
-                        placeholder="Vad handlar detta om?"
+                        placeholder={t('calendar.title_placeholder')}
                         value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                         className="text-sm"
@@ -327,9 +335,9 @@ const Calendar = () => {
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Beskrivning</Label>
+                      <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t('calendar.desc_label')}</Label>
                       <Textarea
-                        placeholder="Beskriv innehållet (valfritt)"
+                        placeholder={t('calendar.desc_placeholder')}
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         className="text-sm resize-none"
@@ -339,14 +347,14 @@ const Calendar = () => {
 
                     <div className="space-y-1.5">
                       <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        Kanal <span className="normal-case text-muted-foreground/60">(valfritt)</span>
+                        {t('calendar.channel_label')} <span className="normal-case text-muted-foreground/60">{t('calendar.channel_optional')}</span>
                       </Label>
                       <Select value={formData.platform || "__none__"} onValueChange={(v) => setFormData({ ...formData, platform: v === "__none__" ? "" : v as SocialPlatform })}>
                         <SelectTrigger className="text-sm">
-                          <SelectValue placeholder="Ingen specifik kanal" />
+                          <SelectValue placeholder={t('calendar.no_channel')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="__none__">Ingen specifik kanal</SelectItem>
+                          <SelectItem value="__none__">{t('calendar.no_channel')}</SelectItem>
                           <SelectItem value="instagram">
                             <span className="flex items-center gap-2"><Instagram className="w-3.5 h-3.5" /> Instagram</span>
                           </SelectItem>
@@ -362,8 +370,8 @@ const Calendar = () => {
 
                     <Button onClick={handleSavePost} className="w-full" disabled={isSaving} style={{ background: "var(--gradient-primary)" }}>
                       {isSaving
-                        ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />{editingPost ? "Uppdaterar..." : "Skapar..."}</>
-                        : (editingPost ? "Uppdatera händelse" : "Skapa händelse")
+                        ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />{editingPost ? t('calendar.updating') : t('calendar.creating')}</>
+                        : (editingPost ? t('calendar.update_event') : t('calendar.create_event'))
                       }
                     </Button>
                   </div>
@@ -387,7 +395,7 @@ const Calendar = () => {
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-medium flex items-center gap-2">
                     <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
-                    Skapar din marknadsföringsplan...
+                    {t('calendar.generating_plan')}
                   </span>
                   <span className="text-muted-foreground tabular-nums">{Math.round(generationProgress)}%</span>
                 </div>
@@ -411,7 +419,7 @@ const Calendar = () => {
                   onClick={goToToday}
                   className="text-xs text-primary hover:text-primary/80 font-medium transition-colors px-2 py-0.5 rounded-full bg-primary/10 hover:bg-primary/15"
                 >
-                  Idag
+                  {t('calendar.today')}
                 </button>
               )}
             </div>
@@ -524,7 +532,7 @@ const Calendar = () => {
         {/* ── Upcoming posts timeline ── */}
         <div className="rounded-2xl bg-card border border-border/40 p-5">
           <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
-            Kommande händelser
+            {t('calendar.upcoming')}
           </h3>
 
           {upcomingPosts.length === 0 ? (
@@ -537,8 +545,8 @@ const Calendar = () => {
                 <CalendarDays className="w-6 h-6 text-muted-foreground/40" />
               </div>
               <div className="text-center">
-                <p className="text-sm font-medium text-muted-foreground">Inga planerade händelser</p>
-                <p className="text-xs text-muted-foreground/60 mt-0.5">Lägg till din första händelse ovan</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('calendar.no_events')}</p>
+                <p className="text-xs text-muted-foreground/60 mt-0.5">{t('calendar.add_first')}</p>
               </div>
             </motion.div>
           ) : (
@@ -580,7 +588,7 @@ const Calendar = () => {
                         </p>
                         {isThisWeek && (
                           <span className="text-[10px] font-medium text-primary bg-primary/10 px-1.5 py-0 rounded-full">
-                            Snart
+                            {t('calendar.soon')}
                           </span>
                         )}
                       </div>

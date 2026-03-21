@@ -23,35 +23,10 @@ import { useConnections } from "@/hooks/useConnections";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-
-const statConfig = [
-  {
-    key: "Följare",
-    accentBorder: "border-l-primary",
-    iconBg: "bg-primary/15",
-    iconColor: "text-primary",
-  },
-  {
-    key: "Visningar",
-    accentBorder: "border-l-amber-500/50",
-    iconBg: "bg-amber-500/15",
-    iconColor: "text-amber-400",
-  },
-  {
-    key: "Likes",
-    accentBorder: "border-l-emerald-500/50",
-    iconBg: "bg-emerald-500/15",
-    iconColor: "text-emerald-400",
-  },
-  {
-    key: "Kommentarer",
-    accentBorder: "border-l-violet-500/50",
-    iconBg: "bg-violet-500/15",
-    iconColor: "text-violet-400",
-  },
-];
+import { useTranslation } from "react-i18next";
 
 const Analytics = () => {
+  const { t } = useTranslation();
   const { isConnected, connections } = useConnections();
   const metaData = useMetaData();
   const tiktokData = useTikTokData();
@@ -59,19 +34,25 @@ const Analytics = () => {
 
   const hasConnections = connections.length > 0;
 
-  // Calculate stats
+  const statConfig = [
+    { key: t('analytics.stat_followers'), accentBorder: "border-l-primary",          iconBg: "bg-primary/15",       iconColor: "text-primary"       },
+    { key: t('analytics.stat_views'),     accentBorder: "border-l-amber-500/50",     iconBg: "bg-amber-500/15",     iconColor: "text-amber-400"     },
+    { key: t('analytics.stat_likes'),     accentBorder: "border-l-emerald-500/50",   iconBg: "bg-emerald-500/15",   iconColor: "text-emerald-400"   },
+    { key: t('analytics.stat_comments'),  accentBorder: "border-l-violet-500/50",    iconBg: "bg-violet-500/15",    iconColor: "text-violet-400"    },
+  ];
+
   const stats: { title: string; value: string; icon: any }[] = [];
 
   const totalFollowers =
     (isConnected("meta_ig") ? metaData.instagram?.followers_count || 0 : 0) +
     (isConnected("tiktok") ? tiktokData.user?.follower_count || 0 : 0);
 
-  if (totalFollowers > 0) stats.push({ title: "Följare", value: totalFollowers.toLocaleString(), icon: Users });
+  if (totalFollowers > 0) stats.push({ title: t('analytics.stat_followers'), value: totalFollowers.toLocaleString(), icon: Users });
 
   if (isConnected("tiktok") && tiktokData.stats) {
-    if (tiktokData.stats.totalViews > 0) stats.push({ title: "Visningar", value: tiktokData.stats.totalViews.toLocaleString(), icon: Eye });
-    if (tiktokData.stats.totalLikes > 0) stats.push({ title: "Likes", value: tiktokData.stats.totalLikes.toLocaleString(), icon: Heart });
-    if (tiktokData.stats.totalComments > 0) stats.push({ title: "Kommentarer", value: tiktokData.stats.totalComments.toLocaleString(), icon: MessageCircle });
+    if (tiktokData.stats.totalViews > 0)    stats.push({ title: t('analytics.stat_views'),    value: tiktokData.stats.totalViews.toLocaleString(),    icon: Eye });
+    if (tiktokData.stats.totalLikes > 0)    stats.push({ title: t('analytics.stat_likes'),    value: tiktokData.stats.totalLikes.toLocaleString(),    icon: Heart });
+    if (tiktokData.stats.totalComments > 0) stats.push({ title: t('analytics.stat_comments'), value: tiktokData.stats.totalComments.toLocaleString(), icon: MessageCircle });
   }
 
   const getHistoryData = (platform: string) => {
@@ -84,8 +65,8 @@ const Analytics = () => {
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="border-l-4 border-primary pl-3">
-          <h1 className="text-2xl font-bold text-foreground">Statistik</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Översikt av dina sociala medier</p>
+          <h1 className="text-2xl font-bold text-foreground">{t('analytics.title')}</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{t('analytics.subtitle')}</p>
         </div>
 
         {/* No connections */}
@@ -94,10 +75,10 @@ const Analytics = () => {
             <div className="flex items-center justify-center mx-auto mb-4 bg-primary/10 rounded-full w-16 h-16">
               <Users className="w-7 h-7 text-primary" />
             </div>
-            <h3 className="text-base font-semibold mb-1">Inga konton kopplade</h3>
-            <p className="text-sm text-muted-foreground mb-5">Koppla dina sociala medier för att se statistik.</p>
+            <h3 className="text-base font-semibold mb-1">{t('analytics.no_connections_title')}</h3>
+            <p className="text-sm text-muted-foreground mb-5">{t('analytics.no_connections_desc')}</p>
             <Button variant="outline" size="sm" asChild>
-              <Link to="/account?tab=app">Gå till kopplingar</Link>
+              <Link to="/account?tab=app">{t('analytics.go_to_connections')}</Link>
             </Button>
           </div>
         )}
@@ -129,7 +110,7 @@ const Analytics = () => {
         {/* Chart */}
         {hasConnections && analyticsData.some((a) => a.history && Array.isArray(a.history) && (a.history as any[]).length > 0) && (
           <div className="rounded-2xl bg-card border border-border/40 p-5">
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">Historik</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">{t('analytics.history')}</h2>
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={getHistoryData(analyticsData[0]?.platform || "")}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -143,7 +124,7 @@ const Analytics = () => {
                     fontSize: "12px",
                   }}
                 />
-                <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} name="Värde" />
+                <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} name={t('analytics.stat_value')} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -163,10 +144,10 @@ const Analytics = () => {
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
-                    { label: "Följare", value: tiktokData.user.follower_count?.toLocaleString() || "0" },
-                    { label: "Visningar", value: tiktokData.stats.totalViews?.toLocaleString() || "0" },
-                    { label: "Likes", value: tiktokData.stats.totalLikes?.toLocaleString() || "0" },
-                    { label: "Engagemang", value: `${tiktokData.stats.avgEngagementRate || "0"}%` },
+                    { label: t('analytics.stat_followers'),  value: tiktokData.user.follower_count?.toLocaleString() || "0" },
+                    { label: t('analytics.stat_views'),      value: tiktokData.stats.totalViews?.toLocaleString() || "0" },
+                    { label: t('analytics.stat_likes'),      value: tiktokData.stats.totalLikes?.toLocaleString() || "0" },
+                    { label: t('analytics.stat_engagement'), value: `${tiktokData.stats.avgEngagementRate || "0"}%` },
                   ].map((item) => (
                     <div key={item.label} className="rounded-xl bg-muted/30 border border-border/30 p-3">
                       <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{item.label}</p>
@@ -188,10 +169,10 @@ const Analytics = () => {
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
-                    { label: "Följare", value: metaData.instagram.followers_count?.toLocaleString() || "0" },
-                    { label: "Följer", value: metaData.instagram.follows_count?.toLocaleString() || "0" },
-                    { label: "Inlägg", value: metaData.instagram.media_count?.toLocaleString() || "0" },
-                    { label: "Namn", value: metaData.instagram.name || "-" },
+                    { label: t('analytics.stat_followers'), value: metaData.instagram.followers_count?.toLocaleString() || "0" },
+                    { label: t('analytics.stat_following'), value: metaData.instagram.follows_count?.toLocaleString() || "0" },
+                    { label: t('analytics.stat_posts'),     value: metaData.instagram.media_count?.toLocaleString() || "0" },
+                    { label: t('analytics.stat_name'),      value: metaData.instagram.name || "-" },
                   ].map((item) => (
                     <div key={item.label} className="rounded-xl bg-muted/30 border border-border/30 p-3">
                       <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{item.label}</p>
