@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Check, ArrowRight, Sparkles } from "lucide-react";
+import { CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -108,7 +108,7 @@ const Pricing = () => {
                   {/* Inner dark card */}
                   <div
                     className="rounded-2xl p-6 md:p-8 h-full bg-primary/5"
-                    style={{ background: 'hsl(240 50% 6%)' }}
+                    style={{ background: 'hsl(347 40% 8%)' }}
                   >
                     <div className="space-y-6">
                       <div>
@@ -134,7 +134,7 @@ const Pricing = () => {
                               className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5"
                               style={{ background: 'hsl(0 0% 100% / 0.1)' }}
                             >
-                              <Check className="w-3 h-3 text-green-400" />
+                              <CheckCircle2 className="w-3 h-3 text-green-400" />
                             </div>
                             <span className="text-sm text-white/80">{feature}</span>
                           </li>
@@ -205,7 +205,7 @@ const Pricing = () => {
                           className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5"
                           style={{ background: 'hsl(0 0% 100% / 0.1)' }}
                         >
-                          <Check className="w-3 h-3 text-green-400" />
+                          <CheckCircle2 className="w-3 h-3 text-green-400" />
                         </div>
                         <span className="text-sm text-white/80">{feature}</span>
                       </li>

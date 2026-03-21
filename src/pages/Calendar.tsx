@@ -40,7 +40,7 @@ const eventTypeColors: Record<EventType, { bg: string; text: string; border: str
   uf_marknad:{ bg: "bg-emerald-500/15",text: "text-emerald-400",border: "border-emerald-500/30",dot: "bg-emerald-500"},
   event:     { bg: "bg-violet-500/15", text: "text-violet-400", border: "border-violet-500/30", dot: "bg-violet-500" },
   deadline:  { bg: "bg-amber-500/15",  text: "text-amber-400",  border: "border-amber-500/30",  dot: "bg-amber-500"  },
-  ovrigt:    { bg: "bg-slate-500/15",  text: "text-slate-400",  border: "border-slate-500/30",  dot: "bg-slate-500"  },
+  ovrigt:    { bg: "bg-zinc-500/15",   text: "text-zinc-400",   border: "border-zinc-500/30",   dot: "bg-zinc-500"   },
 };
 
 const eventTypeIcons: Record<EventType, React.ComponentType<{ className?: string }>> = {

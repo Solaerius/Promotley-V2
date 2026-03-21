@@ -269,10 +269,10 @@ const Hero = () => {
               transition={{ duration: 0.55, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
               className="relative rounded-2xl p-7"
               style={{
-                background: "hsl(240 30% 7% / 0.75)",
+                background: "hsl(347 40% 7% / 0.75)",
                 border: "1px solid hsl(0 0% 100% / 0.08)",
                 backdropFilter: "blur(24px)",
-                boxShadow: "0 32px 80px hsl(240 50% 2% / 0.6), inset 0 1px 0 hsl(0 0% 100% / 0.06)",
+                boxShadow: "0 32px 80px hsl(347 40% 2% / 0.6), inset 0 1px 0 hsl(0 0% 100% / 0.06)",
               }}
             >
               {/* Card header */}
