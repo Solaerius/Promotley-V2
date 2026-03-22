@@ -12,14 +12,16 @@ import {
   ArrowRight, Sparkles, Radar, Hash, Film, MessageCircle, Star,
   Leaf, Handshake, CalendarDays, Share2, Send, Lock, LogIn,
   LayoutDashboard, User, Wand2, FileText, Image, Target, Lightbulb,
+  ThumbsUp,
 } from 'lucide-react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
+  BarChart, Bar, Cell,
 } from 'recharts';
 import {
   demoCompany, demoStats, demoSocialStats, demoChartData,
   demoCalendarPosts, demoSalesRadar, demoChatMessages,
-  demoAIResponses,
+  demoAIResponses, demoTikTokVideos,
 } from '@/data/demoData';
 import logo from '@/assets/logo.png';
 import { cn } from '@/lib/utils';
@@ -85,6 +87,8 @@ const Demo = () => {
   const [aiSubTab, setAiSubTab] = useState('chat');
   const [aiResponses, setAiResponses] = useState<Record<string, string>>({});
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [sortKey, setSortKey] = useState<'likes' | 'comments' | 'shares' | 'views' | 'rate'>('likes');
+  const [sortAsc, setSortAsc] = useState(false);
 
   const handleDemoClick = useCallback((key: string) => {
     setClickCounts(prev => {
@@ -292,88 +296,260 @@ const Demo = () => {
               })}
             </div>
 
-            {/* Chart */}
-            <div className="rounded-2xl p-6 bg-card border border-border/40">
-              <h3 className="text-lg font-semibold mb-4 text-foreground">{t('demo_page.chart_title')}</h3>
-              <ResponsiveContainer width="100%" height={200}>
-                <AreaChart data={demoChartData}>
-                  <defs>
-                    <linearGradient id="demoGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(9, 90%, 55%)" stopOpacity={0.4} />
-                      <stop offset="95%" stopColor="hsl(331, 70%, 45%)" stopOpacity={0.1} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                  <XAxis dataKey="week" stroke="rgba(255,255,255,0.5)" fontSize={12} />
-                  <YAxis stroke="rgba(255,255,255,0.5)" fontSize={12} />
-                  <RechartsTooltip contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '12px' }} />
-                  <Area type="monotone" dataKey="followers" stroke="hsl(9, 90%, 55%)" strokeWidth={2} fill="url(#demoGrad)" />
-                </AreaChart>
-              </ResponsiveContainer>
+            {/* Panel A: TikTok platform card */}
+            <div className="rounded-2xl overflow-hidden bg-card border border-border">
+              <div className="flex items-center gap-3 px-5 py-3.5 border-b border-border">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
+                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                </svg>
+                <span className="text-sm font-semibold text-foreground">TikTok</span>
+                <span className="ml-auto flex items-center gap-1.5 text-xs text-green-500 font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
+                  Ansluten
+                </span>
+              </div>
+              <div className="p-5 grid grid-cols-2 gap-2.5">
+                {[
+                  { label: "Följare", value: "1 167" },
+                  { label: "Videos", value: "8" },
+                  { label: "Gilla-markeringar", value: "22.8k" },
+                  { label: "Följer", value: "87" },
+                ].map(({ label, value }) => (
+                  <div key={label} className="rounded-xl p-3 bg-surface-raised border border-border/50">
+                    <p className="text-xs mb-1.5 text-muted-foreground">{label}</p>
+                    <p className="text-base font-bold text-foreground">{value}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Social platform stats */}
-            <div className="grid md:grid-cols-2 gap-4">
-              {demoSocialStats.map(platform => (
-                <div key={platform.platform} className="rounded-2xl p-5 bg-card border border-border/40">
-                  <h4 className="font-semibold text-foreground capitalize mb-3">
-                    {platform.platform === 'instagram' ? '📸 Instagram' : '🎵 TikTok'}
-                  </h4>
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div><span className="text-muted-foreground">{t('demo_page.social_followers')}:</span> <span className="text-foreground font-medium">{formatNumber(platform.followers)}</span></div>
-                    <div><span className="text-muted-foreground">{t('demo_page.social_likes')}:</span> <span className="text-foreground font-medium">{formatNumber(platform.likes)}</span></div>
-                    <div><span className="text-muted-foreground">{t('demo_page.social_comments')}:</span> <span className="text-foreground font-medium">{formatNumber(platform.comments)}</span></div>
-                    <div><span className="text-muted-foreground">{t('demo_page.social_reach')}:</span> <span className="text-foreground font-medium">{formatNumber(platform.reach)}</span></div>
+            {/* Panel B: Most Commented + Top Content row */}
+            <div className="grid lg:grid-cols-2 gap-3">
+              {/* Most Commented */}
+              <div className="rounded-2xl p-5 bg-card border border-border">
+                <div className="flex items-center gap-2.5 mb-4">
+                  <div className="w-6 h-6 rounded-md flex items-center justify-center bg-muted/60">
+                    <MessageCircle className="h-3.5 w-3.5" style={{ color: "hsl(210 78% 62%)" }} />
+                  </div>
+                  <h2 className="text-sm font-semibold text-foreground">Mest kommenterade</h2>
+                </div>
+                <div className="space-y-2.5">
+                  {[...demoTikTokVideos]
+                    .sort((a, b) => b.comments - a.comments)
+                    .slice(0, 3)
+                    .map((video) => (
+                      <div key={video.id} className="flex items-center gap-3 rounded-xl p-2.5 bg-surface-raised border border-border/50">
+                        <div className="w-8 h-8 rounded-lg bg-muted flex-shrink-0" />
+                        <p className="text-xs font-medium flex-1 line-clamp-2 leading-tight text-foreground">{video.title || "—"}</p>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          <MessageCircle className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-xs font-semibold" style={{ color: "hsl(210 78% 62%)" }}>
+                            {video.comments}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+
+              {/* Top Content */}
+              {(() => {
+                const topVideo = [...demoTikTokVideos].sort((a, b) => b.likes - a.likes)[0];
+                const engRate = topVideo.views > 0
+                  ? (((topVideo.likes + topVideo.comments) / topVideo.views) * 100).toFixed(1)
+                  : "0.0";
+                return (
+                  <div className="rounded-2xl p-5 bg-card border border-border">
+                    <div className="flex items-center gap-2.5 mb-4">
+                      <div className="w-6 h-6 rounded-md flex items-center justify-center bg-muted/60">
+                        <ThumbsUp className="h-3.5 w-3.5" style={{ color: "hsl(var(--primary))" }} />
+                      </div>
+                      <h2 className="text-sm font-semibold text-foreground">Toppinnehåll</h2>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-16 h-16 rounded-xl bg-muted flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium line-clamp-2 leading-snug mb-2 text-foreground">{topVideo.title || "—"}</p>
+                        <div className="grid grid-cols-2 gap-1.5">
+                          {[
+                            { label: "Gillar", value: topVideo.likes.toLocaleString('sv') },
+                            { label: "Visningar", value: topVideo.views.toLocaleString('sv') },
+                            { label: "Kommentarer", value: topVideo.comments.toLocaleString('sv') },
+                            { label: "Engagemang", value: `${engRate}%` },
+                          ].map(({ label, value }) => (
+                            <div key={label} className="rounded-lg p-1.5 bg-surface-raised border border-border/50">
+                              <p className="text-[10px] text-muted-foreground">{label}</p>
+                              <p className="text-xs font-bold text-foreground">{value}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Panel C: Engagement Sparkline */}
+            {(() => {
+              const sparkData = [...demoTikTokVideos].slice(0, 8).reverse().map((v, i) => ({
+                name: `${i + 1}`,
+                rate: v.views > 0 ? parseFloat((((v.likes + v.comments) / v.views) * 100).toFixed(2)) : 0,
+              }));
+              return (
+                <div className="rounded-2xl p-5 bg-card border border-border">
+                  <div className="flex items-center gap-2.5 mb-4">
+                    <div className="w-6 h-6 rounded-md flex items-center justify-center bg-muted/60">
+                      <BarChart3 className="h-3.5 w-3.5" style={{ color: "hsl(var(--accent-brand))" }} />
+                    </div>
+                    <h2 className="text-sm font-semibold text-foreground">Engagemangstrend</h2>
+                    <span className="ml-auto text-xs text-muted-foreground">Engagemangsgrad</span>
+                  </div>
+                  <div style={{ height: 80 }}>
+                    <ResponsiveContainer width="100%" height={80}>
+                      <BarChart data={sparkData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                        <RechartsTooltip
+                          contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 11 }}
+                          formatter={(val: number) => [`${val}%`, 'Engagemangsgrad']}
+                        />
+                        <Bar dataKey="rate" radius={[3, 3, 0, 0]}>
+                          {sparkData.map((_, idx) => (
+                            <Cell key={idx} fill={`hsl(var(--primary) / ${0.5 + (idx / sparkData.length) * 0.5})`} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
                   </div>
                 </div>
-              ))}
-            </div>
+              );
+            })()}
           </motion.div>
         )}
 
         {/* ANALYTICS TAB */}
         {activeTab === 'analytics' && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-            <div className="rounded-2xl p-6 bg-card border border-border/40">
-              <h3 className="text-lg font-semibold text-foreground mb-2">{t('demo_page.ai_analysis_of', { name: demoCompany.foretagsnamn })}</h3>
-              <p className="text-muted-foreground text-sm mb-4">{t('demo_page.analysis_summary')}</p>
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-green-400" /> {t('demo_page.strengths')}
-                  </h4>
-                  <ul className="space-y-1">
-                    {[t('demo_page.strength_0'), t('demo_page.strength_1'), t('demo_page.strength_2')].map((s, i) => (
-                      <li key={i} className="text-sm text-muted-foreground">{s}</li>
+            {/* Most Liked Analysis */}
+            {(() => {
+              const top5 = [...demoTikTokVideos].sort((a, b) => b.likes - a.likes).slice(0, 5);
+              const avgDur = top5.filter(v => v.duration).reduce((s, v) => s + (v.duration || 0), 0) / (top5.filter(v => v.duration).length || 1);
+              const dayCounts: Record<number, number> = {};
+              top5.forEach(v => { if (v.created_at) { const d = new Date(v.created_at).getDay(); dayCounts[d] = (dayCounts[d] || 0) + 1; } });
+              const dayNames = ['Sön', 'Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör'];
+              const bestDay = Object.entries(dayCounts).sort((a, b) => +b[1] - +a[1])[0];
+              const bestDayName = bestDay ? dayNames[parseInt(bestDay[0])] : '–';
+              const avgVPL = top5.filter(v => v.likes > 0).reduce((s, v) => s + v.views / v.likes, 0) / (top5.filter(v => v.likes > 0).length || 1);
+              const stopWords = new Set(['och','en','ett','den','det','de','som','är','på','i','att']);
+              const wordFreq: Record<string, number> = {};
+              top5.forEach(v => {
+                (v.title || '').toLowerCase().replace(/[^a-zåäö0-9\s]/g, '').split(/\s+/).forEach(w => {
+                  if (w.length >= 4 && !stopWords.has(w)) wordFreq[w] = (wordFreq[w] || 0) + 1;
+                });
+              });
+              const keywords = Object.entries(wordFreq).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([w]) => w);
+              const insights = [
+                { label: "Genomsnittlig längd (topp 5)", value: avgDur > 0 ? `${Math.round(avgDur)}s` : '–', color: "hsl(var(--primary))" },
+                { label: "Bästa dag att posta", value: bestDayName, color: "hsl(174 60% 50%)" },
+                { label: "Visningar per gilla", value: avgVPL > 0 ? `${Math.round(avgVPL)}x` : '–', color: "hsl(var(--accent-brand))" },
+                { label: "Vanliga nyckelord", value: keywords.length > 0 ? keywords.join(', ') : '–', color: "hsl(320 65% 62%)" },
+              ];
+              return (
+                <div className="rounded-xl bg-card shadow-sm p-5">
+                  <h3 className="text-sm font-medium text-foreground mb-4">Analys av mest gillade videor</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {insights.map(({ label, value, color }) => (
+                      <div key={label} className="rounded-xl p-3 bg-surface-raised border border-border/50">
+                        <p className="text-[11px] text-muted-foreground leading-tight mb-2">{label}</p>
+                        <p className="text-base font-bold text-foreground" style={{ color }}>{value}</p>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-yellow-400" /> {t('demo_page.improvements')}
-                  </h4>
-                  <ul className="space-y-1">
-                    {[t('demo_page.improvement_0'), t('demo_page.improvement_1'), t('demo_page.improvement_2')].map((s, i) => (
-                      <li key={i} className="text-sm text-muted-foreground">{s}</li>
-                    ))}
-                  </ul>
+              );
+            })()}
+
+            {/* Engagement Breakdown Chart */}
+            {(() => {
+              const breakdownData = [...demoTikTokVideos].slice(0, 8).reverse().map((v, i) => ({
+                name: v.title ? v.title.substring(0, 12) + '…' : `#${i+1}`,
+                likes: v.likes, comments: v.comments, shares: v.shares,
+              }));
+              return (
+                <div className="rounded-xl bg-card shadow-sm p-5">
+                  <h3 className="text-sm font-medium text-foreground mb-4">Engagemangsfördelning</h3>
+                  <div style={{ height: 200 }}>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <BarChart data={breakdownData} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                        <XAxis dataKey="name" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                        <RechartsTooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 11 }} />
+                        <Bar dataKey="likes" stackId="a" fill="hsl(var(--primary))" />
+                        <Bar dataKey="comments" stackId="a" fill="hsl(210 78% 62%)" />
+                        <Bar dataKey="shares" stackId="a" fill="hsl(174 60% 50%)" radius={[3, 3, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
-                    <ArrowRight className="w-4 h-4 text-primary" /> {t('demo_page.next_steps')}
-                  </h4>
-                  <ul className="space-y-1">
-                    {[t('demo_page.next_step_0'), t('demo_page.next_step_1'), t('demo_page.next_step_2')].map((s, i) => (
-                      <li key={i} className="text-sm text-muted-foreground">{s}</li>
-                    ))}
-                  </ul>
+              );
+            })()}
+
+            {/* Content Performance Table */}
+            {(() => {
+              const fmt = (n: number) => n >= 1000 ? (n/1000).toFixed(1)+'k' : String(n);
+              const tableData = [...demoTikTokVideos].map(v => ({
+                ...v,
+                rate: v.views > 0 ? parseFloat((((v.likes + v.comments) / v.views) * 100).toFixed(1)) : 0,
+              })).sort((a, b) => {
+                const va = a[sortKey === 'rate' ? 'rate' : sortKey] as number;
+                const vb = b[sortKey === 'rate' ? 'rate' : sortKey] as number;
+                return sortAsc ? va - vb : vb - va;
+              });
+              const handleSort = (key: typeof sortKey) => {
+                if (sortKey === key) setSortAsc(p => !p);
+                else { setSortKey(key); setSortAsc(false); }
+              };
+              return (
+                <div className="rounded-xl bg-card shadow-sm overflow-hidden">
+                  <div className="px-5 py-4 border-b border-border">
+                    <h3 className="text-sm font-medium text-foreground">Innehållsprestanda</h3>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-muted/40">
+                        <tr>
+                          <th className="text-left text-[11px] font-medium text-muted-foreground px-3 py-2">Titel</th>
+                          {(['likes','comments','shares','views','rate'] as const).map(col => (
+                            <th key={col} onClick={() => handleSort(col)}
+                              className="text-right text-[11px] font-medium text-muted-foreground px-3 py-2 cursor-pointer select-none hover:text-foreground">
+                              {col === 'likes' ? 'Gillar' : col === 'comments' ? 'Kommentarer' : col === 'shares' ? 'Delningar' : col === 'views' ? 'Visningar' : 'Engagemang'}
+                              {sortKey === col ? (sortAsc ? ' ↑' : ' ↓') : ''}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tableData.map((v, i) => (
+                          <tr key={v.id} className={`border-t border-border/40 ${i % 2 === 0 ? '' : 'bg-muted/20'}`}>
+                            <td className="px-3 py-2.5 max-w-[180px]">
+                              <div className="flex items-center gap-2">
+                                <div className="w-7 h-7 rounded bg-muted flex-shrink-0" />
+                                <span className="text-xs text-foreground line-clamp-1">{v.title || '–'}</span>
+                              </div>
+                            </td>
+                            <td className="text-right px-3 py-2.5 text-xs font-medium text-foreground">{fmt(v.likes)}</td>
+                            <td className="text-right px-3 py-2.5 text-xs text-foreground">{fmt(v.comments)}</td>
+                            <td className="text-right px-3 py-2.5 text-xs text-foreground">{fmt(v.shares)}</td>
+                            <td className="text-right px-3 py-2.5 text-xs text-foreground">{fmt(v.views)}</td>
+                            <td className="text-right px-3 py-2.5 text-xs font-semibold" style={{ color: "hsl(var(--primary))" }}>{v.rate}%</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-              </div>
-              <Button variant="gradient" className="mt-4 gap-2" onClick={() => handleDemoClick('analysis')}>
-                <Sparkles className="w-4 h-4" />
-                {isLimited('analysis') ? t('demo_page.new_analysis_locked') : t('demo_page.new_analysis')}
-              </Button>
-            </div>
+              );
+            })()}
           </motion.div>
         )}
 
