@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useOrganization } from "@/hooks/useOrganization";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import { Settings, Users, Link as LinkIcon, Copy, Mail, Loader2, Shield, Crown, 
 import { ProfileImageUpload } from "@/components/ProfileImageUpload";
 
 const OrganizationContent = () => {
+  const { t } = useTranslation();
   const { activeOrganization, membership, members, invites, updateOrganization, createEmailInvite, removeMember } = useOrganization();
   const { user } = useAuth();
 
@@ -39,14 +41,14 @@ const OrganizationContent = () => {
   const handleCopyInviteCode = () => {
     if (activeOrganization?.invite_code) {
       navigator.clipboard.writeText(activeOrganization.invite_code);
-      toast.success("Inbjudningskod kopierad!");
+      toast.success(t('org.invite_copied'));
     }
   };
 
   const handleCopyInviteLink = () => {
     if (activeOrganization?.invite_code) {
       navigator.clipboard.writeText(`${window.location.origin}/join/${activeOrganization.invite_code}`);
-      toast.success("Inbjudningslank kopierad!");
+      toast.success(t('org.invite_link_copied'));
     }
   };
 
@@ -54,10 +56,10 @@ const OrganizationContent = () => {
     if (!activeOrganization?.invite_code) return;
     const link = `${window.location.origin}/join/${activeOrganization.invite_code}`;
     if (navigator.share) {
-      try { await navigator.share({ title: `Ga med i ${activeOrganization.name}`, url: link }); } catch {}
+      try { await navigator.share({ title: t('org.join_heading', { name: activeOrganization.name }), url: link }); } catch {}
     } else {
       navigator.clipboard.writeText(link);
-      toast.success("Inbjudningslank kopierad!");
+      toast.success(t('org.invite_link_copied'));
     }
   };
 
@@ -81,9 +83,9 @@ const OrganizationContent = () => {
   const isAdmin = membership.role === "admin" || isFounder;
 
   const tabs = [
-    { key: "general" as const, label: "Allmant", icon: Settings },
-    { key: "members" as const, label: "Medlemmar", icon: Users },
-    { key: "invites" as const, label: "Inbjudningar", icon: Mail },
+    { key: "general" as const, label: t('org.tab_general'), icon: Settings },
+    { key: "members" as const, label: t('org.tab_members'), icon: Users },
+    { key: "invites" as const, label: t('org.tab_invitations'), icon: Mail },
   ];
 
   return (
@@ -108,11 +110,11 @@ const OrganizationContent = () => {
       {activeTab === "general" && (
         <div className="space-y-4">
           <section className="space-y-3">
-            <h3 className="text-base font-medium text-foreground">Organisationsdetaljer</h3>
+            <h3 className="text-base font-medium text-foreground">{t('org.details_heading')}</h3>
             <div className="flex items-start gap-5 rounded-xl bg-card shadow-sm p-5">
               <ProfileImageUpload userId={activeOrganization.id} currentUrl={activeOrganization.logo_url} type="company_logo" onUploadComplete={(url) => updateOrganization({ logo_url: url })} size="lg" />
               <div className="flex-1 space-y-2">
-                <Label className="text-sm">Organisationsnamn</Label>
+                <Label className="text-sm">{t('org.org_name_label')}</Label>
                 <div className="flex gap-2">
                   <Input value={orgName} onChange={(e) => setOrgName(e.target.value)} className="bg-background border-border" />
                   <Button onClick={handleSaveSettings} disabled={isSaving || orgName === activeOrganization.name} size="icon" variant="secondary">
@@ -125,13 +127,13 @@ const OrganizationContent = () => {
 
           <section className="space-y-3">
             <h3 className="text-base font-medium text-foreground flex items-center gap-2">
-              <LinkIcon className="h-4 w-4 text-muted-foreground" /> Inbjudningsinstallningar
+              <LinkIcon className="h-4 w-4 text-muted-foreground" /> {t('org.invite_settings')}
             </h3>
             <div className="rounded-xl bg-card shadow-sm p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium">Inbjudningslank aktiv</p>
-                  <p className="text-xs text-muted-foreground">Tillat nya medlemmar via lank</p>
+                  <p className="text-sm font-medium">{t('org.invite_link_active')}</p>
+                  <p className="text-xs text-muted-foreground">{t('org.allow_new_members')}</p>
                 </div>
                 <Switch checked={inviteLinkEnabled} onCheckedChange={(checked) => { setInviteLinkEnabled(checked); updateOrganization({ invite_link_enabled: checked }); }} />
               </div>
@@ -139,10 +141,10 @@ const OrganizationContent = () => {
                 <div className="pt-3 border-t border-border space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs text-muted-foreground">Kod</p>
+                      <p className="text-xs text-muted-foreground">{t('org.code_label')}</p>
                       <p className="font-mono text-sm">{activeOrganization.invite_code}</p>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={handleCopyInviteCode}><Copy className="h-4 w-4 mr-1" /> Kopiera</Button>
+                    <Button variant="ghost" size="sm" onClick={handleCopyInviteCode}><Copy className="h-4 w-4 mr-1" /> {t('org.copy')}</Button>
                   </div>
                   <div className="flex items-center justify-between">
                     <div>
@@ -150,7 +152,7 @@ const OrganizationContent = () => {
                       <p className="text-xs text-muted-foreground truncate max-w-[200px]">{window.location.origin}/join/{activeOrganization.invite_code}</p>
                     </div>
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="sm" onClick={handleCopyInviteLink}><Copy className="h-4 w-4 mr-1" /> Kopiera</Button>
+                      <Button variant="ghost" size="sm" onClick={handleCopyInviteLink}><Copy className="h-4 w-4 mr-1" /> {t('org.copy')}</Button>
                       <Button variant="ghost" size="sm" onClick={handleShareInviteLink}><Share2 className="h-4 w-4 mr-1" /> Dela</Button>
                     </div>
                   </div>
