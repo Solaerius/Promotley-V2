@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import {
   Plus, Sparkles, Trash2, Edit, Loader2, AlertCircle,
   PenLine, Store, CalendarDays, Flag, LayoutGrid,
-  ChevronLeft, ChevronRight, Instagram, Facebook, Music2,
+  ChevronLeft, ChevronRight, Instagram, Facebook, Music2, CalendarCheck,
 } from "lucide-react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useToast } from "@/hooks/use-toast";
@@ -283,7 +283,7 @@ const Calendar = () => {
                     className="gap-1.5 border-border/60"
                     onClick={() => { setEditingPost(null); setFormData(defaultForm); }}
                   >
-                    <Plus className="w-3.5 h-3.5" /> {t('calendar.add')}
+                    <Plus className="w-3.5 h-3.5" /> {t('calendar.add_event')}
                   </Button>
                 </DialogTrigger>
 
@@ -415,12 +415,14 @@ const Calendar = () => {
                 <span className="text-muted-foreground font-normal">{currentDate.getFullYear()}</span>
               </h2>
               {!isCurrentMonth && (
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={goToToday}
-                  className="text-xs text-primary hover:text-primary/80 font-medium transition-colors px-2 py-0.5 rounded-full bg-primary/10 hover:bg-primary/15"
+                  className="h-7 text-xs gap-0 px-2"
                 >
-                  {t('calendar.today')}
-                </button>
+                  <CalendarCheck className="w-4 h-4 mr-1.5" />{t('calendar.go_to_today')}
+                </Button>
               )}
             </div>
             <div className="flex items-center gap-1">
@@ -532,7 +534,7 @@ const Calendar = () => {
         {/* ── Upcoming posts timeline ── */}
         <div className="rounded-2xl bg-card border border-border/40 p-5">
           <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
-            {t('calendar.upcoming')}
+            {t('calendar.upcoming_events')}
           </h3>
 
           {upcomingPosts.length === 0 ? (
@@ -546,7 +548,7 @@ const Calendar = () => {
               </div>
               <div className="text-center">
                 <p className="text-sm font-medium text-muted-foreground">{t('calendar.no_events')}</p>
-                <p className="text-xs text-muted-foreground/60 mt-0.5">{t('calendar.add_first')}</p>
+                <p className="text-xs text-muted-foreground/60 mt-0.5">{t('calendar.add_first_event')}</p>
               </div>
             </motion.div>
           ) : (
