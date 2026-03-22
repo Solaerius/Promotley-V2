@@ -19,6 +19,7 @@ import TikTokIcon from "@/components/icons/TikTokIcon";
 import { useAuth } from "@/hooks/useAuth";
 import { formatDistanceToNow, format } from "date-fns";
 import { sv } from "date-fns/locale";
+import { enUS } from "date-fns/locale/en-US";
 import {
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
   AreaChart, Area,
@@ -172,7 +173,8 @@ const PlatformCard = ({
 // Dashboard
 // ─────────────────────────────────────────────
 const Dashboard = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language === 'sv' ? sv : enUS;
   const { user } = useAuth();
   const { isConnected, connections, loading: connectionsLoading } = useConnections();
   const tiktokData = useTikTokData({ enabled: !connectionsLoading && isConnected("tiktok") });
@@ -235,7 +237,7 @@ const Dashboard = () => {
         .order("updated_at");
       if (data && data.length >= 2) {
         const mapped = data.map((row) => ({
-          date: format(new Date(row.updated_at), "d MMM", { locale: sv }),
+          date: format(new Date(row.updated_at), "d MMM", { locale: dateLocale }),
           followers: row.followers || 0,
         }));
         setFollowerHistory(mapped);
@@ -308,7 +310,7 @@ const Dashboard = () => {
               </div>
               <p className="text-sm" style={{ color: "hsl(0 0% 45%)" }}>
                 {t('dashboard.overview_subtitle')} —{" "}
-                {format(new Date(), "EEEE d MMMM", { locale: sv })}
+                {format(new Date(), "EEEE d MMMM", { locale: dateLocale })}
               </p>
             </div>
             <Link to="/ai">
@@ -529,7 +531,7 @@ const Dashboard = () => {
                             color: "hsl(174 60% 55%)",
                           }}
                         >
-                          {format(new Date(post.date), "d MMM", { locale: sv })}
+                          {format(new Date(post.date), "d MMM", { locale: dateLocale })}
                         </span>
                         {post.platform && (
                           <span
