@@ -433,7 +433,7 @@ const ChatWidget = () => {
 
     if (error) {
       console.error("Error sending message:", error);
-      setSendError("Kunde inte skicka meddelande");
+      setSendError(t('chat_widget.send_error'));
       
       // Remove optimistic message on error
       setMessages((prev) => prev.filter(m => m.id !== tempId));
@@ -517,14 +517,14 @@ const ChatWidget = () => {
       return (
         <div className="flex items-center gap-1 text-xs text-yellow-500">
           <RefreshCw className="w-3 h-3 animate-spin" />
-          <span>Ansluter...</span>
+          <span>{t('chat_widget.connecting')}</span>
         </div>
       );
     } else {
       return (
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
           <WifiOff className="w-3 h-3" />
-          <span>Uppdaterar var 4s</span>
+          <span>{t('chat_widget.update_interval')}</span>
         </div>
       );
     }
@@ -541,7 +541,7 @@ const ChatWidget = () => {
             navbarPosition === 'right' ? 'bottom-6 right-20' :
             'bottom-6 right-6'
           }`}
-          aria-label="Öppna chat"
+          aria-label={t('chat_widget.open_chat')}
         >
           <MessageCircle className="w-6 h-6 group-hover:rotate-12 transition-transform" />
           {hasUnread && (
