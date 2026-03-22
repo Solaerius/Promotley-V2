@@ -1,4 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { SettingsPopup } from "@/components/SettingsPopup";
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from 'react-i18next';
@@ -175,18 +176,20 @@ export function AppSidebar() {
       <SidebarFooter className="p-2 border-t border-border/30">
         {/* Credit bar */}
         {!collapsed && credits && (
-          <div className="px-1 pb-2">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">{t('dashboard.credits')}</span>
-              <span className="text-[10px] font-semibold text-foreground">{credits.credits_left} {t('common.credits_left')}</span>
+          <Link to="/settings/credits" className="block cursor-pointer hover:opacity-80 transition-opacity rounded-md -mx-1 px-1 py-0.5" title="Credits & billing">
+            <div className="px-1 pb-2">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">{t('dashboard.credits')}</span>
+                <span className="text-[10px] font-semibold text-foreground">{credits.credits_left} {t('common.credits_left')}</span>
+              </div>
+              <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+                <div
+                  className={cn("h-full rounded-full transition-all", creditColor)}
+                  style={{ width: `${creditPct}%` }}
+                />
+              </div>
             </div>
-            <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
-              <div
-                className={cn("h-full rounded-full transition-all", creditColor)}
-                style={{ width: `${creditPct}%` }}
-              />
-            </div>
-          </div>
+          </Link>
         )}
 
         {/* Language switcher */}
@@ -198,37 +201,41 @@ export function AppSidebar() {
 
         {/* Profile with quick buttons */}
         <div className="flex items-center gap-2">
-          <Avatar className="h-7 w-7 shrink-0">
-            <AvatarImage src={userAvatarUrl || undefined} />
-            <AvatarFallback className="text-[10px] bg-primary/20 text-primary">
-              {displayName.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          {!collapsed && (
-            <>
+          <Link to="/settings/profile" className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity rounded-lg p-1 -m-1 flex-1 min-w-0" title="Profile settings">
+            <Avatar className="h-7 w-7 shrink-0">
+              <AvatarImage src={userAvatarUrl || undefined} />
+              <AvatarFallback className="text-[10px] bg-primary/20 text-primary">
+                {displayName.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            {!collapsed && (
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium truncate text-foreground">{displayName}</p>
                 <p className="text-[10px] text-muted-foreground truncate">{user?.email}</p>
               </div>
-              <div className="flex items-center gap-0.5 shrink-0">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate("/account")}>
+            )}
+          </Link>
+          {!collapsed && (
+            <div className="flex items-center gap-0.5 shrink-0">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <SettingsPopup>
+                    <Button variant="ghost" size="icon" className="h-7 w-7">
                       <Settings className="h-3.5 w-3.5 text-muted-foreground" />
                     </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="top">{t('common.settings')}</TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleSignOut}>
-                      <LogOut className="h-3.5 w-3.5 text-muted-foreground" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="top">{t('common.logout')}</TooltipContent>
-                </Tooltip>
-              </div>
-            </>
+                  </SettingsPopup>
+                </TooltipTrigger>
+                <TooltipContent side="top">{t('common.settings')}</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleSignOut}>
+                    <LogOut className="h-3.5 w-3.5 text-muted-foreground" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">{t('common.logout')}</TooltipContent>
+              </Tooltip>
+            </div>
           )}
         </div>
       </SidebarFooter>

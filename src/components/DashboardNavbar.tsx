@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { SettingsPopup } from "@/components/SettingsPopup";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { sv } from "date-fns/locale";
@@ -324,11 +325,13 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                     </Button>
                   </div>
                 </div>
-                <DropdownMenuItem asChild>
-                  <Link to="/account" className="cursor-pointer text-sm">
-                    <Settings className="mr-2 h-3.5 w-3.5" />
-                    {t('nav.settings')}
-                  </Link>
+                <DropdownMenuItem asChild onSelect={(e) => e.preventDefault()}>
+                  <SettingsPopup>
+                    <button className="flex w-full items-center cursor-pointer text-sm px-2 py-1.5 rounded-sm hover:bg-accent hover:text-accent-foreground">
+                      <Settings className="mr-2 h-3.5 w-3.5" />
+                      {t('nav.settings')}
+                    </button>
+                  </SettingsPopup>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/" className="cursor-pointer text-sm">
@@ -561,11 +564,13 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                       </Button>
                     </div>
                   </div>
-                  <DropdownMenuItem asChild>
-                    <Link to="/account" className="cursor-pointer text-sm">
-                      <Settings className="mr-2 h-3.5 w-3.5" />
-                      {t('nav.settings')}
-                    </Link>
+                  <DropdownMenuItem asChild onSelect={(e) => e.preventDefault()}>
+                    <SettingsPopup>
+                      <button className="flex w-full items-center cursor-pointer text-sm px-2 py-1.5 rounded-sm hover:bg-accent hover:text-accent-foreground">
+                        <Settings className="mr-2 h-3.5 w-3.5" />
+                        {t('nav.settings')}
+                      </button>
+                    </SettingsPopup>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/" className="cursor-pointer text-sm">
