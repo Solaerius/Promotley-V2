@@ -136,7 +136,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
           <div className="flex flex-col items-center gap-1">
             {/* Logo */}
             <Link to="/dashboard" className="p-2 mb-2">
-              <img src={logo} alt="Promotley" className="w-7 h-7 dark:invert" />
+              <img src={logo} alt="Promotley" className="w-7 h-7" />
             </Link>
 
             {/* Navigation tabs */}
@@ -373,7 +373,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                 </Button>
               ) : (
                 <Link to="/dashboard" className="flex items-center gap-2 group">
-                  <img src={logo} alt="Promotley" className="w-7 h-7 dark:invert" />
+                  <img src={logo} alt="Promotley" className="w-7 h-7" />
                   <span className="font-semibold text-sm text-foreground hidden sm:inline">Promotley</span>
                 </Link>
               )}

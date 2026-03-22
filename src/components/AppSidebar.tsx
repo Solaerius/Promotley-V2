@@ -109,7 +109,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-r border-border/50 bg-background/90 backdrop-blur-md">
       <SidebarHeader className="p-3">
         <Link to="/" className="flex items-center gap-2.5">
-          <img src="/logo.png" alt="Promotley" className="w-7 h-7 shrink-0 object-contain dark:invert" />
+          <img src="/logo.png" alt="Promotley" className="w-7 h-7 shrink-0 object-contain" />
           {!collapsed && <span className="font-bold text-xs text-foreground tracking-widest uppercase">PROMOTELY</span>}
         </Link>
       </SidebarHeader>
