@@ -1191,7 +1191,18 @@
     "invite_link_active": "Invite link active",
     "allow_new_members": "Allow new members via link",
     "code_label": "Code",
-    "copy": "Copy"
+    "copy": "Copy",
+    "link": "Link",
+    "share": "Share",
+    "members_heading": "Members",
+    "role_founder": "Founder",
+    "remove_member_confirm": "Remove member?",
+    "cancel": "Cancel",
+    "remove": "Remove",
+    "invite_by_email": "Invite via email",
+    "send": "Send",
+    "pending_invitations": "Pending invitations",
+    "pending": "Pending"
   },
   "demo_page": {
     "banner": "You are viewing a demo of {{name}}",
@@ -1467,7 +1478,11 @@
     "automated": "Automated message",
     "from_support": "From support",
     "sending": "Sending...",
-    "message_placeholder": "Write a message..."
+    "message_placeholder": "Write a message...",
+    "send_error": "Could not send message",
+    "connecting": "Connecting...",
+    "update_interval": "Updates every 4s",
+    "open_chat": "Open chat"
   },
   "tutorial": {
     "step1_content": "Here you see a quick overview of your most important metrics – weekly progress, followers, scheduled posts and AI credits.",

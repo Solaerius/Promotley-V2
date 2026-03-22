@@ -1191,7 +1191,18 @@
     "invite_link_active": "Inbjudningslänk aktiv",
     "allow_new_members": "Tillåt nya medlemmar via länk",
     "code_label": "Kod",
-    "copy": "Kopiera"
+    "copy": "Kopiera",
+    "link": "Länk",
+    "share": "Dela",
+    "members_heading": "Medlemmar",
+    "role_founder": "Grundare",
+    "remove_member_confirm": "Ta bort medlem?",
+    "cancel": "Avbryt",
+    "remove": "Ta bort",
+    "invite_by_email": "Bjud in via e-post",
+    "send": "Skicka",
+    "pending_invitations": "Väntande inbjudningar",
+    "pending": "Väntande"
   },
   "demo_page": {
     "banner": "Du tittar på en demo av {{name}}",
@@ -1467,7 +1478,11 @@
     "automated": "Automatiserat meddelande",
     "from_support": "Från support",
     "sending": "Skickar...",
-    "message_placeholder": "Skriv ett meddelande..."
+    "message_placeholder": "Skriv ett meddelande...",
+    "send_error": "Kunde inte skicka meddelande",
+    "connecting": "Ansluter...",
+    "update_interval": "Uppdaterar var 4s",
+    "open_chat": "Öppna chat"
   },
   "tutorial": {
     "step1_content": "Här ser du en snabb översikt av dina viktigaste mätvärden – veckoframsteg, följare, planerade inlägg och AI-krediter.",
