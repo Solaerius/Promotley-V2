@@ -88,7 +88,7 @@ const LogoStrip = forwardRef<HTMLDivElement>((_, ref) => {
               <img
                 src={logo.img}
                 alt={logo.name}
-                className={`h-5 w-auto object-contain${'grayscale' in logo && logo.grayscale ? ' grayscale' : ''}`}
+                className={`h-5 w-auto object-contain${logo.name === 'Meta' ? ' dark:invert dark:brightness-150' : ''}${'grayscale' in logo && logo.grayscale ? ' grayscale' : ''}`}
               />
             ) : (
               logo.svg
