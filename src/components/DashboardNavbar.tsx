@@ -128,7 +128,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
     return (
       <nav className={getNavbarPositionClasses()}>
         <div 
-          className="rounded-2xl border border-white/20 dark:border-white/15 backdrop-blur-xl p-2"
+          className="rounded-2xl border border-border backdrop-blur-xl p-2"
           style={{
             background: 'linear-gradient(180deg, hsl(var(--primary) / 0.12) 0%, hsl(var(--secondary) / 0.1) 50%, hsl(var(--accent) / 0.12) 100%)',
           }}
@@ -353,7 +353,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
   return (
     <nav className={getNavbarPositionClasses()}>
       <div 
-        className="rounded-2xl border border-white/20 dark:border-white/15 backdrop-blur-xl"
+        className="rounded-2xl border border-border backdrop-blur-xl"
         style={{
           background: 'linear-gradient(135deg, hsl(var(--primary) / 0.12) 0%, hsl(var(--secondary) / 0.1) 50%, hsl(var(--accent) / 0.12) 100%)',
         }}
