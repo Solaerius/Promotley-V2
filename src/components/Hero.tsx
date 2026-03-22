@@ -58,13 +58,49 @@ const OAuthButton = ({
 );
 
 
-const AVATAR_COLORS = [
-  "hsl(var(--primary))",
-  "hsl(200 60% 45%)",
-  "hsl(330 55% 50%)",
-  "hsl(150 50% 40%)",
-];
-const AVATAR_CHARS = ["A", "S", "E", "L"];
+// SVG wordmark logos for Swedish UF companies shown in social proof strip
+const NordicHoodiesLogo = () => (
+  <svg width="80" height="28" viewBox="0 0 80 28" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-label="NordicHoodies">
+    {/* N crossbar */}
+    <rect x="0" y="4" width="2.5" height="18" />
+    <rect x="9" y="4" width="2.5" height="18" />
+    <polygon points="0,4 2.5,4 11.5,22 9,22" />
+    {/* H left post */}
+    <rect x="15" y="4" width="2.5" height="18" />
+    <rect x="15" y="12.5" width="9" height="2.5" />
+    <rect x="21.5" y="4" width="2.5" height="18" />
+    {/* wordmark */}
+    <text x="28" y="20" fontFamily="system-ui,sans-serif" fontSize="9" fontWeight="500" letterSpacing="0.5" opacity="0.65">NordicHoodies</text>
+  </svg>
+);
+
+const GreenTechLogo = () => (
+  <svg width="80" height="28" viewBox="0 0 80 28" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-label="GreenTech UF">
+    {/* Leaf shape */}
+    <path d="M6 22 C6 22 2 16 4 10 C6 4 12 3 14 6 C16 9 14 16 10 19 C8 21 6 22 6 22Z" opacity="0.9" />
+    {/* Stem */}
+    <line x1="6" y1="22" x2="10" y2="13" stroke="currentColor" strokeWidth="1.5" />
+    <text x="19" y="20" fontFamily="system-ui,sans-serif" fontSize="9" fontWeight="500" letterSpacing="0.5" opacity="0.65">GreenTech UF</text>
+  </svg>
+);
+
+const StreetStyleLogo = () => (
+  <svg width="80" height="28" viewBox="0 0 80 28" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-label="StreetStyle">
+    {/* Bold oblique S */}
+    <text x="0" y="20" fontFamily="system-ui,sans-serif" fontSize="18" fontWeight="900" fontStyle="italic" letterSpacing="-1">SS</text>
+    <text x="26" y="20" fontFamily="system-ui,sans-serif" fontSize="8" fontWeight="600" letterSpacing="2" opacity="0.6">STYLE</text>
+  </svg>
+);
+
+const FoodieBoxLogo = () => (
+  <svg width="80" height="28" viewBox="0 0 80 28" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-label="FoodieBox">
+    {/* Box outline */}
+    <rect x="1" y="7" width="16" height="14" rx="2" fill="none" stroke="currentColor" strokeWidth="1.8" />
+    {/* Box lid flaps */}
+    <path d="M1 11 L5 7 L13 7 L17 11" fill="none" stroke="currentColor" strokeWidth="1.5" />
+    <text x="22" y="20" fontFamily="system-ui,sans-serif" fontSize="9" fontWeight="500" letterSpacing="0.5" opacity="0.65">FoodieBox</text>
+  </svg>
+);
 
 const Hero = () => {
   const { toast } = useToast();
@@ -187,20 +223,17 @@ const Hero = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="flex items-center gap-3"
+              className="flex flex-col gap-3"
             >
-              <div className="flex -space-x-2">
-                {AVATAR_CHARS.map((char, i) => (
+              {/* UF company wordmark logos */}
+              <div className="flex flex-wrap items-center gap-4">
+                {[NordicHoodiesLogo, GreenTechLogo, StreetStyleLogo, FoodieBoxLogo].map((Logo, i) => (
                   <div
                     key={i}
-                    className="w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-semibold"
-                    style={{
-                      background: AVATAR_COLORS[i],
-                      borderColor: "hsl(var(--gradient-hero-bg))",
-                      color: "white",
-                    }}
+                    className="opacity-40 hover:opacity-75 transition-opacity duration-300 grayscale hover:grayscale-0"
+                    style={{ color: "hsl(var(--foreground))" }}
                   >
-                    {char}
+                    <Logo />
                   </div>
                 ))}
               </div>
