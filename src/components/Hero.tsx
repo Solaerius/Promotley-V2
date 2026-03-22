@@ -1,9 +1,12 @@
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRight } from "lucide-react";
 import { useTranslation } from 'react-i18next';
+import { Link } from "react-router-dom";
+import logo from "@/assets/logo.png";
 
 // Platform SVG logos
 const TikTokLogo = () => (
@@ -108,6 +111,22 @@ const Hero = () => {
   const { resolvedTheme } = useTheme();
   const isLight = resolvedTheme === 'light';
 
+  // Scroll-linked animation — tracks first 600px of page scroll
+  const { scrollY } = useScroll();
+  const smoothScrollY = useSpring(scrollY, { stiffness: 300, damping: 40, restDelta: 0.001 });
+
+  const heroHeight = useTransform(smoothScrollY, [0, 600], ["100vh", "64px"]);
+  const overlayOpacity = useTransform(smoothScrollY, [0, 500], [0, 0.65]);
+  const contentOpacity = useTransform(smoothScrollY, [0, 300], [1, 0]);
+  const contentY = useTransform(smoothScrollY, [0, 300], [0, -40]);
+  const cardScale = useTransform(smoothScrollY, [0, 350], [1, 0.75]);
+  const cardOpacity = useTransform(smoothScrollY, [0, 320], [1, 0]);
+  const wordmarkOpacity = useTransform(smoothScrollY, [0, 280], [1, 0]);
+  const wordmarkX = useTransform(smoothScrollY, [0, 280], [0, -14]);
+  const logoScale = useTransform(smoothScrollY, [0, 400], [1, 1.2]);
+  const navOpacity = useTransform(smoothScrollY, [350, 560], [0, 1]);
+  const navPointerEvents = useTransform(smoothScrollY, [350, 360], ["none", "auto"]);
+
   const handleGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -125,7 +144,22 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-20">
+    <motion.section
+      className="relative overflow-hidden flex items-center"
+      style={{
+        height: heroHeight,
+        position: "sticky",
+        top: 0,
+        zIndex: 50,
+        willChange: "transform",
+      }}
+    >
+      {/* Dark scroll overlay */}
+      <motion.div
+        className="absolute inset-0 bg-black pointer-events-none"
+        style={{ opacity: overlayOpacity, zIndex: 1 }}
+      />
+
       {/* Background layer */}
       <div className="absolute inset-0" style={{
         background: "radial-gradient(ellipse 90% 70% at 50% -5%, hsl(var(--gradient-hero-bg)) 0%, hsl(var(--gradient-hero-bg)) 55%, hsl(var(--gradient-hero-bg)) 100%)",
@@ -164,11 +198,35 @@ const Hero = () => {
       />
 
       {/* Content */}
-      <div className="container mx-auto px-6 relative z-10 py-12">
+      <motion.div
+        className="container mx-auto px-6 relative py-12"
+        style={{ opacity: contentOpacity, y: contentY, zIndex: 2 }}
+      >
         <div className="grid lg:grid-cols-[1fr_400px] xl:grid-cols-[1fr_440px] gap-14 xl:gap-24 items-center">
 
           {/* ── LEFT COLUMN ── */}
           <div>
+            {/* Brand logo + wordmark */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.04, ease: [0.22, 1, 0.36, 1] }}
+              className="flex items-center gap-3 mb-8"
+            >
+              <motion.img
+                style={{ scale: logoScale }}
+                src={logo}
+                alt="Promotley"
+                className="w-16 h-16"
+              />
+              <motion.span
+                style={{ opacity: wordmarkOpacity, x: wordmarkX }}
+                className="text-2xl font-bold text-foreground"
+              >
+                Promotley
+              </motion.span>
+            </motion.div>
+
             {/* Main heading */}
             <motion.h1
               initial={{ opacity: 0, y: 28 }}
@@ -264,12 +322,14 @@ const Hero = () => {
               initial={{ opacity: 0, x: 24, y: 8 }}
               animate={{ opacity: 1, x: 0, y: 0 }}
               transition={{ duration: 0.55, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-              className="relative rounded-2xl p-7 border border-border dark:border-white/8"
               style={{
+                scale: cardScale,
+                opacity: cardOpacity,
                 background: "hsl(var(--card) / 0.85)",
                 backdropFilter: "blur(24px)",
                 boxShadow: "0 32px 80px hsl(347 40% 2% / 0.6), inset 0 1px 0 hsl(0 0% 100% / 0.06)",
               }}
+              className="relative rounded-2xl p-7 border border-border dark:border-white/8"
             >
               {/* Card header */}
               <motion.div
@@ -355,8 +415,58 @@ const Hero = () => {
             </motion.div>
           </div>
         </div>
-      </div>
-    </section>
+      </motion.div>
+
+      {/* Collapsed navbar — fades in as hero scrolls away */}
+      <motion.nav
+        className="absolute inset-x-0 top-0 h-16 px-6 flex items-center justify-between"
+        style={{
+          opacity: navOpacity,
+          pointerEvents: navPointerEvents,
+          background: "hsl(var(--card) / 0.85)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          borderBottom: "1px solid hsl(var(--border))",
+          zIndex: 3,
+        }}
+      >
+        {/* Logo + wordmark */}
+        <Link to="/" className="flex items-center gap-2 font-bold text-lg shrink-0">
+          <img src={logo} alt="Promotley" className="w-8 h-8" />
+          <span className="text-foreground">Promotley</span>
+        </Link>
+
+        {/* Nav links — desktop only */}
+        <div className="hidden md:flex items-center gap-6">
+          {[
+            { label: t('nav.pricing'), href: "/#pricing" },
+            { label: t('nav.demo'), href: "/demo" },
+            { label: t('nav.about'), href: "/about" },
+          ].map(({ label, href }) => (
+            <Link key={href} to={href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              {label}
+            </Link>
+          ))}
+        </div>
+
+        {/* CTA buttons */}
+        <div className="flex items-center gap-2">
+          <Link to="/auth">
+            <button className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors px-3 py-1.5">
+              {t('nav.login')}
+            </button>
+          </Link>
+          <Link to="/auth?mode=register">
+            <button
+              className="text-sm font-medium px-4 py-1.5 rounded-lg"
+              style={{ background: "hsl(var(--primary))", color: "white" }}
+            >
+              {t('hero.cta_primary')}
+            </button>
+          </Link>
+        </div>
+      </motion.nav>
+    </motion.section>
   );
 };
 

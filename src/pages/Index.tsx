@@ -1,6 +1,5 @@
 import { useRef } from "react";
 import { useTheme } from "next-themes";
-import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import LogoStrip from "@/components/LogoStrip";
 import ProblemSection from "@/components/ProblemSection";
@@ -31,7 +30,6 @@ const Index = () => {
           zIndex: 0,
         }}
       />
-      <Navbar logoStripRef={logoStripRef} />
       <Hero />
       <LogoStrip ref={logoStripRef} />
       
