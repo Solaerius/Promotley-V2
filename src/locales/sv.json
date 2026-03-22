@@ -11,7 +11,16 @@
     "home": "Hem",
     "tools": "Verktyg",
     "ai_chat": "AI-Chat",
-    "calendar": "Kalender"
+    "calendar": "Kalender",
+    "notifications": "Notiser",
+    "mark_all_read": "Markera alla som lästa",
+    "clear_all": "Rensa alla",
+    "credits_label": "Krediter",
+    "buy_credits": "Köp",
+    "settings": "Inställningar",
+    "to_home": "Till startsidan",
+    "sign_out": "Logga ut",
+    "move_position": "Flytta:"
   },
   "hero": {
     "badge": "AI-driven marknadsföring",
@@ -315,7 +324,13 @@
       "tab_analytics": "Statistik",
       "tab_ai": "AI & Verktyg",
       "tab_radar": "Säljradar",
-      "tab_calendar": "Kalender"
+      "tab_calendar": "Kalender",
+      "engagement": "Engagemang",
+      "ai_credits": "AI-krediter",
+      "growth": "Tillväxt",
+      "sample_question": "Hur kan jag öka min räckvidd på TikTok?",
+      "sample_response": "Baserat på din profil rekommenderar jag att posta Reels kl 18:00 på vardagar...",
+      "try_demo": "Testa demo"
     },
     "trust": {
       "title": "Tusentals UF-företag litar på Promotley"
@@ -331,7 +346,9 @@
     "terms": "Användarvillkor",
     "contact": "Kontakt",
     "rights": "Alla rättigheter förbehållna.",
-    "email_copied": "E-post kopierad till urklipp"
+    "email_copied": "E-post kopierad till urklipp",
+    "privacy_policy": "Integritetspolicy",
+    "terms_link": "Villkor"
   },
   "cookies": {
     "banner_title": "Vi använder cookies",
@@ -547,7 +564,11 @@
     "toast_plan_created_desc": "Kolla AI-chatten för detaljer.",
     "toast_error": "Fel",
     "toast_no_plan": "Du behöver ett aktivt paket.",
-    "toast_plan_failed": "Kunde inte generera plan."
+    "toast_plan_failed": "Kunde inte generera plan.",
+    "upcoming_events": "Kommande händelser",
+    "add_first_event": "Lägg till din första händelse ovan",
+    "go_to_today": "Gå till idag",
+    "add_event": "Lägg till händelse"
   },
   "freetier": {
     "title": "Gratis plan – begränsad användning",
@@ -1133,6 +1154,17 @@
     "invite_error": "Kunde inte skapa inbjudan",
     "must_be_logged_in_invite": "Du måste vara inloggad för att skicka inbjudningar"
   },
+  "profile": {
+    "change_avatar": "Ändra profilbild",
+    "change_logo": "Ändra logga",
+    "only_images": "Endast bilder är tillåtna",
+    "max_5mb": "Bilden får max vara 5MB",
+    "avatar_updated": "Profilbild uppdaterad",
+    "logo_updated": "Företagslogga uppdaterad",
+    "upload_error": "Kunde inte ladda upp bilden",
+    "image_deleted": "Bild borttagen",
+    "delete_error": "Kunde inte ta bort bilden"
+  },
   "org": {
     "switch_success": "Bytte till {{name}}",
     "switch_error": "Kunde inte byta organisation",
@@ -1146,7 +1178,20 @@
     "welcome": "Välkommen till {{name}}!",
     "join_error": "Kunde inte gå med i organisationen",
     "member_removed": "Medlem borttagen",
-    "remove_member_error": "Kunde inte ta bort member"
+    "remove_member_error": "Kunde inte ta bort member",
+    "invite_copied": "Inbjudningskod kopierad!",
+    "invite_link_copied": "Inbjudningslänk kopierad!",
+    "join_heading": "Gå med i {{name}}",
+    "tab_general": "Allmänt",
+    "tab_members": "Medlemmar",
+    "tab_invitations": "Inbjudningar",
+    "details_heading": "Organisationsdetaljer",
+    "org_name_label": "Organisationsnamn",
+    "invite_settings": "Inbjudningsinställningar",
+    "invite_link_active": "Inbjudningslänk aktiv",
+    "allow_new_members": "Tillåt nya medlemmar via länk",
+    "code_label": "Kod",
+    "copy": "Kopiera"
   },
   "demo_page": {
     "banner": "Du tittar på en demo av {{name}}",
@@ -1411,7 +1456,18 @@
   "chat_widget": {
     "auto_reply": "Tack för ditt meddelande! Vi kan vara upptagna just nu, så svarstiden kan variera beroende på hur många som chattar. Vi återkommer så snart vi kan!",
     "filtered_content": "Meddelandet innehöll olämpligt innehåll som har filtrerats.",
-    "close_aria": "Stäng chat"
+    "close_aria": "Stäng chat",
+    "support_title": "Promotely Support",
+    "chat_closed_heading": "Chatten har avslutats",
+    "chat_closed_message": "Support har avslutat denna chatt. Du kan starta en ny chatt om du har fler frågor.",
+    "close_chat": "Stäng chatt",
+    "start_new_chat": "Starta ny chatt",
+    "greeting": "Hej!",
+    "greeting_message": "Skriv ett meddelande så återkommer vi så snart vi kan!",
+    "automated": "Automatiserat meddelande",
+    "from_support": "Från support",
+    "sending": "Skickar...",
+    "message_placeholder": "Skriv ett meddelande..."
   },
   "tutorial": {
     "step1_content": "Här ser du en snabb översikt av dina viktigaste mätvärden – veckoframsteg, följare, planerade inlägg och AI-krediter.",
@@ -1437,6 +1493,14 @@
     "step1_title": "Dina siffror",
     "step3_desc": "Hoppa direkt till Statistik, AI-Chat eller Kalender med ett klick.",
     "step5_title": "AI-Assistent"
+  },
+  "settings": {
+    "profile": "Profil",
+    "company": "Företag",
+    "organisation": "Organisation",
+    "credits_billing": "Krediter & Fakturering",
+    "app": "Appinställningar",
+    "company_information": "Företagsinformation"
   },
   "app_settings": {
     "disconnected": "Frånkopplad",

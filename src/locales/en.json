@@ -11,7 +11,16 @@
     "home": "Home",
     "tools": "Tools",
     "ai_chat": "AI Chat",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "notifications": "Notifications",
+    "mark_all_read": "Mark all as read",
+    "clear_all": "Clear all",
+    "credits_label": "Credits",
+    "buy_credits": "Buy",
+    "settings": "Settings",
+    "to_home": "Back to home",
+    "sign_out": "Sign out",
+    "move_position": "Move:"
   },
   "hero": {
     "badge": "AI-powered marketing",
@@ -315,7 +324,13 @@
       "tab_analytics": "Analytics",
       "tab_ai": "AI & Tools",
       "tab_radar": "Sales Radar",
-      "tab_calendar": "Calendar"
+      "tab_calendar": "Calendar",
+      "engagement": "Engagement",
+      "ai_credits": "AI credits",
+      "growth": "Growth",
+      "sample_question": "How can I increase my reach on TikTok?",
+      "sample_response": "Based on your profile, I recommend posting Reels at 6pm on weekdays...",
+      "try_demo": "Try demo"
     },
     "trust": {
       "title": "Thousands of UF companies trust Promotley"
@@ -331,7 +346,9 @@
     "terms": "Terms of Service",
     "contact": "Contact",
     "rights": "All rights reserved.",
-    "email_copied": "Email copied to clipboard"
+    "email_copied": "Email copied to clipboard",
+    "privacy_policy": "Privacy policy",
+    "terms_link": "Terms"
   },
   "cookies": {
     "banner_title": "We use cookies",
@@ -547,7 +564,11 @@
     "toast_plan_created_desc": "Check the AI chat for details.",
     "toast_error": "Error",
     "toast_no_plan": "You need an active subscription.",
-    "toast_plan_failed": "Could not generate plan."
+    "toast_plan_failed": "Could not generate plan.",
+    "upcoming_events": "Upcoming events",
+    "add_first_event": "Add your first event above",
+    "go_to_today": "Go to today",
+    "add_event": "Add event"
   },
   "freetier": {
     "title": "Free plan – limited usage",
@@ -1133,6 +1154,17 @@
     "invite_error": "Could not create invitation",
     "must_be_logged_in_invite": "You must be logged in to send invitations"
   },
+  "profile": {
+    "change_avatar": "Change profile picture",
+    "change_logo": "Change logo",
+    "only_images": "Only images are allowed",
+    "max_5mb": "Image must be under 5MB",
+    "avatar_updated": "Profile picture updated",
+    "logo_updated": "Company logo updated",
+    "upload_error": "Could not upload image",
+    "image_deleted": "Image removed",
+    "delete_error": "Could not remove image"
+  },
   "org": {
     "switch_success": "Switched to {{name}}",
     "switch_error": "Could not switch organisation",
@@ -1146,7 +1178,20 @@
     "welcome": "Welcome to {{name}}!",
     "join_error": "Could not join the organisation",
     "member_removed": "Member removed",
-    "remove_member_error": "Could not remove member"
+    "remove_member_error": "Could not remove member",
+    "invite_copied": "Invite code copied!",
+    "invite_link_copied": "Invite link copied!",
+    "join_heading": "Join {{name}}",
+    "tab_general": "General",
+    "tab_members": "Members",
+    "tab_invitations": "Invitations",
+    "details_heading": "Organisation details",
+    "org_name_label": "Organisation name",
+    "invite_settings": "Invite settings",
+    "invite_link_active": "Invite link active",
+    "allow_new_members": "Allow new members via link",
+    "code_label": "Code",
+    "copy": "Copy"
   },
   "demo_page": {
     "banner": "You are viewing a demo of {{name}}",
@@ -1411,7 +1456,18 @@
   "chat_widget": {
     "auto_reply": "Thank you for your message! We may be busy right now, so response time may vary depending on how many are chatting. We'll get back to you as soon as we can!",
     "filtered_content": "The message contained inappropriate content that has been filtered.",
-    "close_aria": "Close chat"
+    "close_aria": "Close chat",
+    "support_title": "Promotely Support",
+    "chat_closed_heading": "Chat ended",
+    "chat_closed_message": "Support has ended this chat. You can start a new one if you have more questions.",
+    "close_chat": "Close chat",
+    "start_new_chat": "Start new chat",
+    "greeting": "Hello!",
+    "greeting_message": "Send us a message and we'll get back to you as soon as we can!",
+    "automated": "Automated message",
+    "from_support": "From support",
+    "sending": "Sending...",
+    "message_placeholder": "Write a message..."
   },
   "tutorial": {
     "step1_content": "Here you see a quick overview of your most important metrics – weekly progress, followers, scheduled posts and AI credits.",
@@ -1437,6 +1493,14 @@
     "step1_title": "Your numbers",
     "step3_desc": "Jump directly to Analytics, AI Chat or Calendar with one click.",
     "step5_title": "AI Assistant"
+  },
+  "settings": {
+    "profile": "Profile",
+    "company": "Company",
+    "organisation": "Organisation",
+    "credits_billing": "Credits & Billing",
+    "app": "App settings",
+    "company_information": "Company information"
   },
   "app_settings": {
     "disconnected": "Disconnected",
