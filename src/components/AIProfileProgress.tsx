@@ -15,11 +15,11 @@ export const AIProfileProgress = ({ compact = false }: AIProfileProgressProps) =
   if (loading) return null;
 
   const fields = [
-    { key: "foretagsnamn", label: t('ai_profile_progress.field_company_name') },
-    { key: "branch", label: t('ai_profile_progress.field_industry') },
-    { key: "stad", label: t('ai_profile_progress.field_city') },
-    { key: "postnummer", label: t('ai_profile_progress.field_postcode') },
-    { key: "malgrupp", label: t('ai_profile_progress.field_target') },
+    { key: "foretagsnamn", label: t('ai_profile_progress.field_company') },
+    { key: "branch",       label: t('ai_profile_progress.field_industry') },
+    { key: "stad",         label: t('ai_profile_progress.field_city') },
+    { key: "postnummer",   label: t('ai_profile_progress.field_postal') },
+    { key: "malgrupp",     label: t('ai_profile_progress.field_audience') },
     { key: "produkt_beskrivning", label: t('ai_profile_progress.field_description') },
   ];
 
