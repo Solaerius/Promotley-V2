@@ -63,7 +63,7 @@ const FinalCTA = () => {
             <Link to="/auth">
               <Button
                 size="lg"
-                className="text-lg px-10 py-7 bg-white text-accent hover:bg-white/90 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] mb-8 font-semibold"
+                className="text-lg px-10 py-7 bg-primary text-primary-foreground hover:bg-primary/90 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] mb-8 font-semibold"
               >
                 {t('sections.finalCta.button')}
                 <ArrowRight className="ml-2 h-5 w-5" />
