@@ -47,6 +47,13 @@ const CaptionGenerator = () => {
       icon={FileText}
       gradient="from-orange-500 to-red-500"
     >
+      {/* Loading progress bar */}
+      {loading && (
+        <div className="h-1 w-full bg-border rounded-full overflow-hidden">
+          <div className="h-full bg-primary rounded-full animate-pulse" style={{ width: '60%' }} />
+        </div>
+      )}
+
       {/* Input */}
       <Card className="liquid-glass-light">
         <CardContent className="p-5 space-y-4">

@@ -58,6 +58,13 @@ const HashtagSuggestions = () => {
       icon={Hash}
       gradient="from-blue-500 to-cyan-500"
     >
+      {/* Loading progress bar */}
+      {loading && (
+        <div className="h-1 w-full bg-border rounded-full overflow-hidden">
+          <div className="h-full bg-primary rounded-full animate-pulse" style={{ width: '60%' }} />
+        </div>
+      )}
+
       <Card className="liquid-glass-light">
         <CardContent className="p-5 space-y-4">
           <div className="space-y-1.5">

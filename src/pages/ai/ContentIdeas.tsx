@@ -60,6 +60,13 @@ const ContentIdeas = () => {
       icon={Image}
       gradient="from-purple-500 to-pink-500"
     >
+      {/* Loading progress bar */}
+      {loading && (
+        <div className="h-1 w-full bg-border rounded-full overflow-hidden">
+          <div className="h-full bg-primary rounded-full animate-pulse" style={{ width: '60%' }} />
+        </div>
+      )}
+
       <Card className="liquid-glass-light">
         <CardContent className="p-5 space-y-4">
           <div className="grid grid-cols-2 gap-3">
