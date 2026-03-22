@@ -8,6 +8,7 @@ import {
   MessageSquare, CheckCircle2, Sparkles, ChevronRight,
   ExternalLink, MessageCircle, ThumbsUp,
 } from "lucide-react";
+import { demoTikTokVideos, demoStats } from "@/data/demoData";
 import { useConnections } from "@/hooks/useConnections";
 import { useTikTokData } from "@/hooks/useTikTokData";
 import { useUserCredits } from "@/hooks/useUserCredits";
@@ -168,10 +169,6 @@ const Dashboard = () => {
 
   const upcomingPosts = posts?.filter((p) => new Date(p.date) >= new Date()).slice(0, 4) || [];
 
-  const totalFollowers = isConnected("tiktok")
-    ? (tiktokData.user?.follower_count || 0)
-    : 0;
-
   const firstName =
     user?.user_metadata?.full_name?.split(" ")[0] ||
     user?.email?.split("@")[0] ||
@@ -225,6 +222,18 @@ const Dashboard = () => {
     };
     fetchFollowerHistory();
   }, [user?.id]);
+
+  const isExampleMode = !isConnected("tiktok") && tiktokData.videos.length === 0;
+  const effectiveVideos = isExampleMode ? demoTikTokVideos : tiktokData.videos;
+  const effectiveTikTokUser = isExampleMode
+    ? { follower_count: demoStats.followers, video_count: demoTikTokVideos.length, likes_count: demoStats.likes, following_count: 87 }
+    : tiktokData.user;
+
+  const totalFollowers = isConnected("tiktok")
+    ? (tiktokData.user?.follower_count || 0)
+    : isExampleMode
+      ? demoStats.followers
+      : 0;
 
   // ── Stat card definitions ──────────────────
   const statCards = [
@@ -310,6 +319,14 @@ const Dashboard = () => {
             </Link>
           </motion.div>
 
+          {isExampleMode && (
+            <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-sm text-muted-foreground">
+              <Sparkles className="h-4 w-4 text-primary shrink-0" />
+              <span>Exempeldata — koppla TikTok för att se dina riktiga insikter</span>
+              <Link to="/settings?tab=app" className="ml-auto text-xs font-medium text-primary hover:underline shrink-0">Koppla TikTok</Link>
+            </div>
+          )}
+
           {/* ── Stat cards ── */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {statCards.map(({ label, value, sub, icon: Icon, accent, bg, border, iconAccent }, i) => (
@@ -352,21 +369,21 @@ const Dashboard = () => {
             title="TikTok"
             icon={<TikTokIcon className="h-4 w-4" style={{ color: "white" }} />}
             iconBg="hsl(0 0% 50% / 0.15)"
-            isConnected={isConnected("tiktok")}
+            isConnected={isConnected("tiktok") || isExampleMode}
             isLoading={tiktokData.loading}
             accentColor="hsl(var(--foreground))"
             metrics={[
-              { label: t('dashboard.metric_followers'), value: formatNumber(tiktokData.user?.follower_count ?? 0) },
-              { label: t('dashboard.metric_videos'), value: tiktokData.user?.video_count ?? 0 },
-              { label: t('dashboard.metric_likes'), value: formatNumber(tiktokData.user?.likes_count ?? 0) },
-              { label: t('dashboard.metric_following'), value: tiktokData.user?.following_count ?? 0 },
+              { label: t('dashboard.metric_followers'), value: formatNumber(effectiveTikTokUser?.follower_count ?? 0) },
+              { label: t('dashboard.metric_videos'), value: effectiveTikTokUser?.video_count ?? 0 },
+              { label: t('dashboard.metric_likes'), value: formatNumber(effectiveTikTokUser?.likes_count ?? 0) },
+              { label: t('dashboard.metric_following'), value: effectiveTikTokUser?.following_count ?? 0 },
             ]}
           />
 
           {/* ── Most Commented + Top Content row ── */}
           <div className="grid lg:grid-cols-2 gap-3">
             {/* Most Commented */}
-            {isConnected("tiktok") && tiktokData.videos.length > 0 && (
+            {(isConnected("tiktok") || isExampleMode) && effectiveVideos.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -382,7 +399,7 @@ const Dashboard = () => {
                   </h2>
                 </div>
                 <div className="space-y-2.5">
-                  {[...tiktokData.videos]
+                  {[...effectiveVideos]
                     .sort((a, b) => b.comments - a.comments)
                     .slice(0, 3)
                     .map((video) => (
@@ -417,8 +434,8 @@ const Dashboard = () => {
             )}
 
             {/* Top Content */}
-            {isConnected("tiktok") && tiktokData.videos.length > 0 && (() => {
-              const topVideo = [...tiktokData.videos].sort((a, b) => b.likes - a.likes)[0];
+            {(isConnected("tiktok") || isExampleMode) && effectiveVideos.length > 0 && (() => {
+              const topVideo = [...effectiveVideos].sort((a, b) => b.likes - a.likes)[0];
               const engRate = topVideo.views > 0
                 ? (((topVideo.likes + topVideo.comments) / topVideo.views) * 100).toFixed(1)
                 : "0.0";
@@ -466,8 +483,8 @@ const Dashboard = () => {
           </div>
 
           {/* ── Engagement Sparkline ── */}
-          {isConnected("tiktok") && tiktokData.videos.length >= 3 && (() => {
-            const sparkData = [...tiktokData.videos]
+          {(isConnected("tiktok") || isExampleMode) && effectiveVideos.length >= 3 && (() => {
+            const sparkData = [...effectiveVideos]
               .slice(0, 8)
               .reverse()
               .map((v, i) => ({
