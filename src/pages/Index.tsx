@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useTheme } from "next-themes";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import LogoStrip from "@/components/LogoStrip";
@@ -17,14 +18,16 @@ import AnimatedSection from "@/components/AnimatedSection";
 import Footer from "@/components/Footer";
 const Index = () => {
   const logoStripRef = useRef<HTMLDivElement>(null);
+  const { resolvedTheme } = useTheme();
+  const isLight = resolvedTheme === 'light';
+  const gridColor = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.04)';
   return <div className="min-h-screen relative bg-[hsl(var(--gradient-hero-bg))]">
       {/* Single continuous grid texture for the whole page */}
       <div
         className="fixed inset-0 pointer-events-none"
         style={{
-          backgroundImage: 'linear-gradient(hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)',
+          backgroundImage: `linear-gradient(${gridColor} 1px, transparent 1px), linear-gradient(90deg, ${gridColor} 1px, transparent 1px)`,
           backgroundSize: '60px 60px',
-          opacity: 0.025,
           zIndex: 0,
         }}
       />

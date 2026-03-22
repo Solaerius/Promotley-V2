@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRight } from "lucide-react";
@@ -68,6 +69,8 @@ const AVATAR_CHARS = ["A", "S", "E", "L"];
 const Hero = () => {
   const { toast } = useToast();
   const { t } = useTranslation();
+  const { resolvedTheme } = useTheme();
+  const isLight = resolvedTheme === 'light';
 
   const handleGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -94,8 +97,8 @@ const Hero = () => {
 
       {/* Ambient orb — violet, top-left */}
       <motion.div
-        className="absolute pointer-events-none dark:opacity-100 opacity-50"
-        animate={{ scale: [1, 1.12, 1], opacity: [0.28, 0.38, 0.28] }}
+        className="absolute pointer-events-none"
+        animate={{ scale: [1, 1.12, 1], opacity: isLight ? [0.06, 0.08, 0.06] : [0.28, 0.38, 0.28] }}
         transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
         style={{
           width: 680,
@@ -110,8 +113,8 @@ const Hero = () => {
 
       {/* Ambient orb — teal, bottom-right */}
       <motion.div
-        className="absolute pointer-events-none dark:opacity-100 opacity-50"
-        animate={{ scale: [1, 1.18, 1], opacity: [0.12, 0.2, 0.12] }}
+        className="absolute pointer-events-none"
+        animate={{ scale: [1, 1.18, 1], opacity: isLight ? [0.04, 0.06, 0.04] : [0.12, 0.2, 0.12] }}
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 3 }}
         style={{
           width: 520,
