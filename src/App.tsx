@@ -59,6 +59,11 @@ const OrganizationOnboarding = lazy(() => import("./pages/OrganizationOnboarding
 const OrganizationSettings = lazy(() => import("./pages/OrganizationSettings"));
 const CreateOrganization = lazy(() => import("./pages/CreateOrganization"));
 const JoinOrganization = lazy(() => import("./pages/JoinOrganization"));
+// Settings pages
+const ProfileSettings = lazy(() => import("./pages/settings/ProfileSettings"));
+const CompanySettings = lazy(() => import("./pages/settings/CompanySettings"));
+const CreditsSettings = lazy(() => import("./pages/settings/CreditsSettings"));
+const AppSettings = lazy(() => import("./pages/settings/AppSettings"));
 
 const DevAutoLogin = import.meta.env.DEV
   ? lazy(() => import("./pages/DevAutoLogin"))
@@ -152,16 +157,16 @@ const App = () => (
             {/* Redirects for old routes */}
             <Route path="/ai-chat" element={<Navigate to="/ai" replace />} />
             <Route path="/ai-dashboard" element={<Navigate to="/ai" replace />} />
-            <Route 
-              path="/account" 
-              element={
-                <ProtectedRoute>
-                  <AccountPage />
-                </ProtectedRoute>
-              } 
+            <Route
+              path="/account"
+              element={<Navigate to="/settings/profile" replace />}
             />
-            {/* Redirect old settings route */}
-            <Route path="/settings" element={<Navigate to="/account" replace />} />
+            {/* Settings pages */}
+            <Route path="/settings" element={<Navigate to="/settings/profile" replace />} />
+            <Route path="/settings/profile" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
+            <Route path="/settings/company" element={<ProtectedRoute><CompanySettings /></ProtectedRoute>} />
+            <Route path="/settings/credits" element={<ProtectedRoute><CreditsSettings /></ProtectedRoute>} />
+            <Route path="/settings/app" element={<ProtectedRoute><AppSettings /></ProtectedRoute>} />
             <Route 
               path="/admin" 
               element={
