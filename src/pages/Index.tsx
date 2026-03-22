@@ -15,6 +15,7 @@ import ChatWidget from "@/components/ChatWidget";
 import BackToTop from "@/components/BackToTop";
 import AnimatedSection from "@/components/AnimatedSection";
 import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 const Index = () => {
   const logoStripRef = useRef<HTMLDivElement>(null);
   const { resolvedTheme } = useTheme();
@@ -30,6 +31,7 @@ const Index = () => {
           zIndex: 0,
         }}
       />
+      <Navbar logoStripRef={logoStripRef} />
       <Hero />
       <LogoStrip ref={logoStripRef} />
       

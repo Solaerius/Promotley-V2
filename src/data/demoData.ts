@@ -163,6 +163,17 @@ export const demoChatMessages = [
 
 export const DEMO_LIMIT_MESSAGE = 'Detta är en demo – skapa ett konto för att låsa upp alla funktioner.';
 
+export const demoTikTokVideos = [
+  { id: "demo-1", title: "Ny kollektion: Arctic Hoodie Drop 🧊", views: 18400, likes: 1820, shares: 243, comments: 87, created_at: new Date(Date.now() - 86400000 * 2).toISOString(), duration: 22 },
+  { id: "demo-2", title: "Bakom kulisserna – screentryck i Malmö", views: 31200, likes: 3340, shares: 512, comments: 194, created_at: new Date(Date.now() - 86400000 * 5).toISOString(), duration: 38 },
+  { id: "demo-3", title: "Kundreaction på Nordic Hoodie #streetwear", views: 9700, likes: 760, shares: 98, comments: 55, created_at: new Date(Date.now() - 86400000 * 8).toISOString(), duration: 15 },
+  { id: "demo-4", title: "Outfit of the day ft. Midnight Hoodie", views: 44100, likes: 5210, shares: 780, comments: 312, created_at: new Date(Date.now() - 86400000 * 11).toISOString(), duration: 18 },
+  { id: "demo-5", title: "Skandinavisk design – vad betyder det för oss?", views: 12800, likes: 1030, shares: 145, comments: 76, created_at: new Date(Date.now() - 86400000 * 14).toISOString(), duration: 45 },
+  { id: "demo-6", title: "Limited keps – 50 exemplar kvar!", views: 27600, likes: 2950, shares: 430, comments: 228, created_at: new Date(Date.now() - 86400000 * 18).toISOString(), duration: 12 },
+  { id: "demo-7", title: "#ScandiStreet challenge – delta nu", views: 61000, likes: 7820, shares: 1240, comments: 510, created_at: new Date(Date.now() - 86400000 * 22).toISOString(), duration: 28 },
+  { id: "demo-8", title: "Vinterkollektion lansering – swipe up", views: 8300, likes: 590, shares: 67, comments: 41, created_at: new Date(Date.now() - 86400000 * 26).toISOString(), duration: 20 },
+];
+
 export const demoAIResponses: Record<string, string> = {
   caption: `✨ Caption för @stockholmskaffet:\n\n"Måndag smakar bättre med rätt kaffe ☕ Vi har precis fått in vår nya single origin från Etiopien — blommig, ljus och helt underbar. Kom in och prova, vi bjuder på det första provsmakat hela måndag förmiddag!\n\n#stockholmskaffet #nytkaffe #etiopiskkaffe #specialtykaffe #stockholm #kaffeälskare #mondaymood #lokalkaffe"`,
 
