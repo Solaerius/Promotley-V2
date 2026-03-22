@@ -63,6 +63,7 @@ const CreateOrganization = lazy(() => import("./pages/CreateOrganization"));
 const JoinOrganization = lazy(() => import("./pages/JoinOrganization"));
 // Settings pages
 const Settings = lazy(() => import("./pages/Settings"));
+const Tutorial = lazy(() => import("./pages/Tutorial"));
 
 const DevAutoLogin = import.meta.env.DEV
   ? lazy(() => import("./pages/DevAutoLogin"))
@@ -123,6 +124,16 @@ function AppRoutes() {
             element={
               <ProtectedRoute>
                 <PageTransition><Calendar /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tutorial"
+            element={
+              <ProtectedRoute>
+                <PageTransition>
+                  <Tutorial />
+                </PageTransition>
               </ProtectedRoute>
             }
           />
