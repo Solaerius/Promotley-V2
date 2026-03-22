@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
@@ -46,21 +47,22 @@ import logo from "@/assets/logo.png";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-const tabs = [
-  { name: "Hem", href: "/dashboard", icon: Home },
-  { name: "Statistik", href: "/analytics", icon: TrendingUp },
-  { name: "Verktyg", href: "/ai", icon: Wand2 },
-  { name: "Kalender", href: "/calendar", icon: CalendarDays },
-  { name: "Konto", href: "/account", icon: CircleUser },
-];
-
 interface DashboardNavbarProps {
   showBackButton?: boolean;
   title?: string;
 }
 
 export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps) {
+  const { t } = useTranslation();
   const location = useLocation();
+
+  const tabs = [
+    { name: t('nav.home'), href: "/dashboard", icon: Home },
+    { name: t('nav.analytics'), href: "/analytics", icon: TrendingUp },
+    { name: t('nav.tools'), href: "/ai", icon: Wand2 },
+    { name: t('nav.calendar'), href: "/calendar", icon: CalendarDays },
+    { name: t('nav.account'), href: "/account", icon: CircleUser },
+  ];
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { activeOrganization } = useOrganization();
@@ -238,7 +240,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                 <ScrollArea className="h-[250px]">
                   {notifications.length === 0 ? (
                     <div className="p-4 text-center text-muted-foreground text-sm">
-                      Inga notiser
+                      {t('common.no_notifications')}
                     </div>
                   ) : (
                     notifications.map((notification) => (
@@ -475,7 +477,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                   <ScrollArea className="h-[250px]">
                     {notifications.length === 0 ? (
                       <div className="p-4 text-center text-muted-foreground text-sm">
-                        Inga notiser
+                        {t('common.no_notifications')}
                       </div>
                     ) : (
                       notifications.map((notification) => (

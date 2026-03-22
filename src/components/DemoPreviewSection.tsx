@@ -81,9 +81,9 @@ const DemoPreviewSection = () => {
               {/* Stats row */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                  { icon: Users, label: "Följare", value: "2.4k", delay: 0.4 },
+                  { icon: Users, label: t('demo_preview.followers'), value: "2.4k", delay: 0.4 },
                   { icon: TrendingUp, label: "Engagemang", value: "5.8%", delay: 0.5 },
-                  { icon: BarChart3, label: "Räckvidd", value: "12.3k", delay: 0.6 },
+                  { icon: BarChart3, label: t('demo_preview.reach'), value: "12.3k", delay: 0.6 },
                   { icon: Zap, label: "AI-krediter", value: "47", delay: 0.7 },
                 ].map((stat) => {
                   const Icon = stat.icon;

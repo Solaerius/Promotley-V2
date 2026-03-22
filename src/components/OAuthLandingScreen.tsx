@@ -1,8 +1,10 @@
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Building2, Users } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 export default function OAuthLandingScreen() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
@@ -13,8 +15,8 @@ export default function OAuthLandingScreen() {
       </div>
 
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold mb-2">Välkommen!</h1>
-        <p className="text-muted-foreground">Hur vill du komma igång?</p>
+        <h1 className="text-2xl font-bold mb-2">{t('onboarding.oauth_welcome')}</h1>
+        <p className="text-muted-foreground">{t('onboarding.oauth_subtitle')}</p>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4 w-full max-w-lg">
@@ -27,9 +29,9 @@ export default function OAuthLandingScreen() {
             <Building2 className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <p className="font-semibold text-sm mb-1">Registrera ett företag</p>
+            <p className="font-semibold text-sm mb-1">{t('onboarding.register_company')}</p>
             <p className="text-xs text-muted-foreground">
-              Skapa och anpassa din organisation
+              {t('onboarding.create_customize_org')}
             </p>
           </div>
         </button>
@@ -43,9 +45,9 @@ export default function OAuthLandingScreen() {
             <Users className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <p className="font-semibold text-sm mb-1">Anslut till ett företag</p>
+            <p className="font-semibold text-sm mb-1">{t('onboarding.join_company')}</p>
             <p className="text-xs text-muted-foreground">
-              Gå med i ett befintligt team med en inbjudningskod
+              {t('onboarding.join_company_desc')}
             </p>
           </div>
         </button>

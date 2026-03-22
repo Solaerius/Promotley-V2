@@ -1,4 +1,5 @@
 import { ReactNode, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useOrganization } from "@/hooks/useOrganization";
@@ -28,6 +29,7 @@ interface DashboardLayoutProps {
 }
 
 const DashboardLayout = ({ children, pageTitle, hideFooter }: DashboardLayoutProps) => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { needsOnboarding, loading: orgLoading } = useOrganization();
   const { notifications, unreadCount, markAsRead, markAllAsRead, clearAll } = useNotifications();
@@ -98,7 +100,7 @@ const DashboardLayout = ({ children, pageTitle, hideFooter }: DashboardLayoutPro
                 </div>
                 <ScrollArea className="h-[250px]">
                   {notifications.length === 0 ? (
-                    <div className="p-4 text-center text-muted-foreground text-sm">Inga notiser</div>
+                    <div className="p-4 text-center text-muted-foreground text-sm">{t('common.no_notifications')}</div>
                   ) : (
                     notifications.map((n) => (
                       <DropdownMenuItem

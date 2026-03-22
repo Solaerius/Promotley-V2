@@ -59,12 +59,12 @@ const AccountContent = () => {
     try {
       const { data, error } = await supabase.functions.invoke('stripe-portal', { body: {} });
       if (error || !data?.url) {
-        toast({ title: "Ingen aktiv prenumeration hittades", variant: "destructive" });
+        toast({ title: t('account.no_subscription'), variant: "destructive" });
         return;
       }
       window.location.href = data.url;
     } catch {
-      toast({ title: "Fel", description: "Kunde inte öppna prenumerationshanteringen.", variant: "destructive" });
+      toast({ title: t('common.error'), description: t('account.cant_open_billing'), variant: "destructive" });
     } finally {
       setIsOpeningPortal(false);
     }
@@ -118,8 +118,8 @@ const AccountContent = () => {
       const { error } = await supabase.from('users').update({ company_name: companyName.trim() }).eq('id', user.id);
       if (error) throw error;
       setOriginalCompanyName(companyName);
-      toast({ title: "Namn uppdaterat" });
-    } catch { toast({ title: "Fel", variant: "destructive" }); }
+      toast({ title: t('account.name_updated') });
+    } catch { toast({ title: t('common.error'), variant: "destructive" }); }
     finally { setIsSavingCompanyName(false); }
   };
 
@@ -132,8 +132,8 @@ const AccountContent = () => {
         foretagsnamn: companyName.trim() || foretagsnamn,
         nyckelord: nyckelord ? nyckelord.split(",").map((k) => k.trim()).filter(Boolean) : undefined,
       });
-      toast({ title: "AI-profil sparad" });
-    } catch { toast({ title: "Fel", variant: "destructive" }); }
+      toast({ title: t('account.ai_profile_saved') });
+    } catch { toast({ title: t('common.error'), variant: "destructive" }); }
     finally { setIsSavingAIProfile(false); }
   };
 
@@ -143,10 +143,10 @@ const AccountContent = () => {
     try {
       const { error } = await supabase.from('users').update({ plan: 'free_trial', max_credits: 1, credits_left: 0, renewal_date: null }).eq('id', user.id);
       if (error) throw error;
-      toast({ title: "Prenumeration avslutad" });
+      toast({ title: t('account.subscription_cancelled') });
       refetchCredits();
       setShowCancelDialog(false);
-    } catch { toast({ title: "Fel", variant: "destructive" }); }
+    } catch { toast({ title: t('common.error'), variant: "destructive" }); }
     finally { setIsCancelling(false); }
   };
 
@@ -161,11 +161,11 @@ const AccountContent = () => {
         credits_left: Math.min(credits?.credits_left || 0, plan.credits),
       }).eq('id', user.id);
       if (error) throw error;
-      toast({ title: "Plan nedgraderad" });
+      toast({ title: t('account.plan_downgraded') });
       refetchCredits();
       setShowDowngradeDialog(false);
       setSelectedDowngradePlan(null);
-    } catch { toast({ title: "Fel", variant: "destructive" }); }
+    } catch { toast({ title: t('common.error'), variant: "destructive" }); }
     finally { setIsDowngrading(false); }
   };
 
@@ -175,10 +175,10 @@ const AccountContent = () => {
     try {
       const { error } = await supabase.rpc('soft_delete_user_account', { _user_id: user.id });
       if (error) throw error;
-      toast({ title: "Konto raderat", description: "Du har 30 dagar att angra dig." });
+      toast({ title: t('account.account_deleted'), description: t('account.account_deleted_desc') });
       await signOut();
     } catch {
-      toast({ title: "Fel", variant: "destructive" });
+      toast({ title: t('common.error'), variant: "destructive" });
       setIsDeleting(false);
     }
   };
@@ -272,7 +272,7 @@ const AccountContent = () => {
           <div className="space-y-1">
             <Label className="text-sm text-muted-foreground">{t('onboarding.company_name')}</Label>
             <div className="flex gap-2">
-              <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Mitt UF-företag" className="bg-background border-border" />
+              <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder={t('account.my_company_placeholder')} className="bg-background border-border" />
               <Button onClick={handleSaveCompanyName} disabled={isSavingCompanyName || companyName === originalCompanyName} size="icon" variant="secondary">
                 <Save className="w-4 h-4" />
               </Button>
@@ -291,14 +291,14 @@ const AccountContent = () => {
         <div className="space-y-3 mt-2">
           <div className="grid grid-cols-2 gap-2">
             {[
-              { key: "branch", label: "Bransch", placeholder: "t.ex. E-handel", required: true },
-              { key: "stad", label: "Stad", placeholder: "t.ex. Stockholm", required: true },
-              { key: "postnummer", label: "Postnummer", placeholder: "t.ex. 114 52", required: true },
-              { key: "land", label: "Land", placeholder: "Sverige" },
-              { key: "malgrupp", label: "Målgrupp", placeholder: "t.ex. 18-25 år", required: true },
-              { key: "malsattning", label: "Målsättning", placeholder: "t.ex. Öka synlighet" },
-              { key: "prisniva", label: "Prisniva", placeholder: "t.ex. Budget" },
-              { key: "tonalitet", label: "Ton", placeholder: "t.ex. Lekfull, professionell" },
+              { key: "branch", label: t('account.branch_label'), placeholder: t('account.branch_placeholder'), required: true },
+              { key: "stad", label: t('account.city_label'), placeholder: t('account.city_placeholder'), required: true },
+              { key: "postnummer", label: t('account.postal_label'), placeholder: t('account.postal_placeholder'), required: true },
+              { key: "land", label: t('account.country_label'), placeholder: t('account.country_placeholder') },
+              { key: "malgrupp", label: t('account.target_audience_label'), placeholder: t('account.target_audience_placeholder'), required: true },
+              { key: "malsattning", label: t('account.goal_label'), placeholder: t('account.goal_placeholder') },
+              { key: "prisniva", label: t('account.price_label'), placeholder: t('account.price_placeholder') },
+              { key: "tonalitet", label: t('account.tone_label'), placeholder: t('account.tone_placeholder') },
             ].map(({ key, label, placeholder, required }) => (
               <div key={key} className="space-y-1">
                 <Label className="text-sm">{label} {required && <span className="text-destructive">*</span>}</Label>
@@ -311,14 +311,14 @@ const AccountContent = () => {
               </div>
             ))}
             <div className="space-y-1 col-span-2">
-              <Label className="text-sm">Era grundprinciper</Label>
-              <Input value={aiFormData.nyckelord} onChange={(e) => setAiFormData(p => ({ ...p, nyckelord: e.target.value }))} placeholder="hållbarhet, handgjort (separera med komma)" className="bg-background border-border" />
+              <Label className="text-sm">{t('account.principles_label')}</Label>
+              <Input value={aiFormData.nyckelord} onChange={(e) => setAiFormData(p => ({ ...p, nyckelord: e.target.value }))} placeholder={t('account.keywords_placeholder')} className="bg-background border-border" />
             </div>
           </div>
           {[
-            { key: "produkt_beskrivning", label: "Företagsbeskrivning", placeholder: "Beskriv din produkt/tjänst...", required: true },
-            { key: "marknadsplan", label: "Marknadsplan", placeholder: "Nuvarande marknadsföringsstrategi..." },
-            { key: "allman_info", label: "Allmän information", placeholder: "Berätta mer om ert företag..." },
+            { key: "produkt_beskrivning", label: t('account.description_label'), placeholder: t('account.description_placeholder'), required: true },
+            { key: "marknadsplan", label: t('account.marketing_plan_label'), placeholder: t('account.marketing_plan_placeholder') },
+            { key: "allman_info", label: t('account.general_info_label'), placeholder: t('account.general_info_placeholder') },
           ].map(({ key, label, placeholder, required }) => (
             <div key={key} className="space-y-1">
               <Label className="text-sm">{label} {required && <span className="text-destructive">*</span>}</Label>

@@ -4,6 +4,9 @@ import { useTranslation } from 'react-i18next';
 const ProblemSection = () => {
   const { t } = useTranslation();
 
+  const beforeItems = t('problem.before_items', { returnObjects: true }) as string[];
+  const afterItems = t('problem.after_items', { returnObjects: true }) as string[];
+
   return (
     <section className="relative py-14 md:py-20 px-4 overflow-hidden font-poppins">
       {/* Section accent glow */}
@@ -21,12 +24,12 @@ const ProblemSection = () => {
             }}
           >
             <AlertCircle className="w-4 h-4 text-foreground" />
-            <span className="text-sm font-medium text-foreground">Problemet</span>
+            <span className="text-sm font-medium text-foreground">{t('problem.badge')}</span>
           </div>
 
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold px-2 leading-tight text-balance text-foreground">
-            Du vet känslan när du lägger tid på{" "}
-            <span className="text-gradient">content som ingen ser?</span>
+            {t('problem.heading')}{" "}
+            <span className="text-gradient">{t('problem.heading_strong')}</span>
           </h2>
         </div>
 
@@ -47,17 +50,11 @@ const ProblemSection = () => {
               >
                 <AlertCircle className="w-6 h-6" style={{ color: 'hsl(0 72% 60%)' }} />
               </div>
-              <h3 className="text-2xl md:text-3xl font-bold text-foreground">Innan Promotley</h3>
+              <h3 className="text-2xl md:text-3xl font-bold text-foreground">{t('problem.before_title')}</h3>
             </div>
 
             <ul className="space-y-4">
-              {[
-                "Vet inte när eller hur ofta du ska posta",
-                "Ingen koll på budget för marknadsföring",
-                "Låga visningar och engagemang",
-                "Saknar strategi för innehållsplanering",
-                "Osäker på vad som funkar för din bransch",
-              ].map((item, idx) => (
+              {beforeItems.map((item, idx) => (
                 <li key={idx} className="flex items-start gap-4" style={{ color: 'hsl(var(--muted-foreground))' }}>
                   <span
                     className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-sm font-bold"
@@ -87,7 +84,7 @@ const ProblemSection = () => {
                   background: 'linear-gradient(135deg, hsl(var(--accent-brand)), hsl(var(--primary)))',
                 }}
               >
-                Rekommenderat
+                {t('problem.recommended')}
               </span>
             </div>
 
@@ -98,17 +95,11 @@ const ProblemSection = () => {
               >
                 <CheckCircle className="w-6 h-6" style={{ color: 'hsl(var(--accent-brand))' }} />
               </div>
-                <h3 className="text-2xl md:text-3xl font-bold text-foreground">Med Promotley</h3>
+                <h3 className="text-2xl md:text-3xl font-bold text-foreground">{t('problem.after_title')}</h3>
             </div>
 
             <ul className="space-y-4">
-              {[
-                "Personlig postningsstrategi",
-                "Budgetanpassad innehållsplan",
-                "Skräddarsytt för din bransch och målgrupp",
-                "Komplett innehållskalender varje vecka",
-                "AI-genererat innehåll redo att publicera",
-              ].map((item, idx) => (
+              {afterItems.map((item, idx) => (
                 <li key={idx} className="flex items-start gap-4 text-foreground">
                   <span
                     className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-sm font-bold"

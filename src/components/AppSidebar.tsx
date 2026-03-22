@@ -103,7 +103,7 @@ export function AppSidebar() {
 
   const creditPct = credits?.max_credits ? (credits.credits_left / credits.max_credits) * 100 : 0;
   const creditColor = creditPct > 50 ? "bg-green-500" : creditPct > 20 ? "bg-yellow-500" : "bg-destructive";
-  const displayName = activeOrganization?.name || user?.email?.split("@")[0] || "Användare";
+  const displayName = activeOrganization?.name || user?.email?.split("@")[0] || t('common.user_fallback');
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border/50 bg-background/90 backdrop-blur-md">

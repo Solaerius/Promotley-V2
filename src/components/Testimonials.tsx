@@ -1,35 +1,35 @@
 import { Star } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 
-const testimonials = [
-  {
-    name: "Emma Andersson",
-    company: "GreenTech UF",
-    text: "Promotley skapade en postningsplan som passade vår budget perfekt. Vi gick från 300 till 12 000 visningar på två veckor!",
-    rating: 5,
-  },
-  {
-    name: "Oscar Nilsson",
-    company: "StreetStyle AB",
-    text: "Äntligen vet jag exakt när och hur ofta jag ska posta. Ingen gissning längre - bara en strategi som funkar!",
-    rating: 5,
-  },
-  {
-    name: "Lisa Bergström",
-    company: "FoodieBox UF",
-    text: "De anpassade strategin efter vår bransch och budget på 400 kr/mån. Vårt engagemang har mer än fördubblats!",
-    rating: 5,
-  },
-  {
-    name: "Viktor Larsson",
-    company: "TechHub Startup",
-    text: "Komplett innehållskalender varje vecka, anpassad efter hur mycket tid vi har. Sparat oss timmar av planering!",
-    rating: 5,
-  },
-];
-
 const Testimonials = () => {
   const { t } = useTranslation();
+
+  const testimonials = [
+    {
+      name: "Emma Andersson",
+      company: "GreenTech UF",
+      text: t('testimonials.t1_quote'),
+      rating: 5,
+    },
+    {
+      name: "Oscar Nilsson",
+      company: "StreetStyle AB",
+      text: t('testimonials.t2_quote'),
+      rating: 5,
+    },
+    {
+      name: "Lisa Bergström",
+      company: "FoodieBox UF",
+      text: t('testimonials.t3_quote'),
+      rating: 5,
+    },
+    {
+      name: "Viktor Larsson",
+      company: "TechHub Startup",
+      text: t('testimonials.t4_quote'),
+      rating: 5,
+    },
+  ];
 
   return (
     <section className="relative py-14 md:py-20 overflow-hidden">
@@ -47,14 +47,14 @@ const Testimonials = () => {
             }}
           >
             <Star className="w-4 h-4 text-foreground fill-foreground" />
-            <span className="text-sm font-medium text-foreground">Recensioner</span>
+            <span className="text-sm font-medium text-foreground">{t('testimonials.badge')}</span>
           </div>
 
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4" style={{ textWrap: 'balance' }}>
-            Vad säger <span className="text-gradient">andra företag?</span>
+            {t('testimonials.title')} <span className="text-gradient">{t('testimonials.title_strong')}</span>
           </h2>
           <p className="text-lg max-w-2xl mx-auto" style={{ color: 'hsl(var(--muted-foreground))', textWrap: 'balance' }}>
-            Hundratals UF-företag och startups växer redan med oss
+            {t('testimonials.subtitle')}
           </p>
         </div>
 

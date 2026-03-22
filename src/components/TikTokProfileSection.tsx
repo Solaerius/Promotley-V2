@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -59,6 +60,7 @@ const VideoCard = ({ video }: { video: TikTokVideo }) => {
 };
 
 const TikTokProfileSection = () => {
+  const { t } = useTranslation();
   const { user, stats, videos, pagination, scopeInfo, loading, loadingMore, error, limited_access, scope_message, refetch, loadMoreVideos } = useTikTokData();
 
   if (loading) {
@@ -191,7 +193,7 @@ const TikTokProfileSection = () => {
             </div>
           ) : (
             <div className="text-center py-6">
-              <p className="text-sm text-muted-foreground">Inga publika videor hittades</p>
+              <p className="text-sm text-muted-foreground">{t('common.no_public_videos')}</p>
             </div>
           )
         ) : (

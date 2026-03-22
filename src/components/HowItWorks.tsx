@@ -1,29 +1,29 @@
 import { Link2, BarChart3, Lightbulb, Zap } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 
-const steps = [
-  {
-    icon: Link2,
-    number: "01",
-    title: "Berätta om ditt företag",
-    description: "Budget, bransch, målgrupp och hur mycket tid du har. Promotley anpassar strategin efter just dig.",
-  },
-  {
-    icon: BarChart3,
-    number: "02",
-    title: "Koppla dina sociala medier",
-    description: "AI:n analyserar dina konton och konkurrenterna för att hitta de bästa möjligheterna.",
-  },
-  {
-    icon: Lightbulb,
-    number: "03",
-    title: "Få din personliga strategi",
-    description: "Komplett plan med exakt när, hur ofta och vad du ska posta - anpassat efter din budget och tid.",
-  },
-];
-
 const HowItWorks = () => {
   const { t } = useTranslation();
+
+  const steps = [
+    {
+      icon: Link2,
+      number: "01",
+      title: t('how_it_works.step1_title'),
+      description: t('how_it_works.step1_desc'),
+    },
+    {
+      icon: BarChart3,
+      number: "02",
+      title: t('how_it_works.step2_title'),
+      description: t('how_it_works.step2_desc'),
+    },
+    {
+      icon: Lightbulb,
+      number: "03",
+      title: t('how_it_works.step3_title'),
+      description: t('how_it_works.step3_desc'),
+    },
+  ];
 
   return (
     <section id="how-it-works" className="relative py-14 md:py-20 overflow-hidden">
@@ -45,10 +45,10 @@ const HowItWorks = () => {
           </div>
 
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4" style={{ textWrap: 'balance' }}>
-            Från företagsidé till <span className="text-gradient">färdig strategi</span>
+            {t('how_it_works.heading1')} <span className="text-gradient">{t('how_it_works.heading2')}</span>
           </h2>
           <p className="text-lg max-w-2xl mx-auto" style={{ color: 'hsl(var(--muted-foreground))', textWrap: 'balance' }}>
-            Få din personliga innehållsplan på under 5 minuter
+            {t('how_it_works.subtitle')}
           </p>
         </div>
 

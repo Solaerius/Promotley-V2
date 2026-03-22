@@ -241,7 +241,7 @@ const Hero = () => {
               </div>
               <p className="text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
                 <span className="font-semibold" style={{ color: "hsl(var(--foreground))" }}>120+</span>{" "}
-                UF-företag använder Promotley
+                {t('hero.social_proof')}
               </p>
             </motion.div>
           </div>
@@ -294,19 +294,19 @@ const Hero = () => {
                 <OAuthButton
                   onClick={() => (window.location.href = "/auth")}
                   logo={<TikTokLogo />}
-                  label="Fortsätt med TikTok"
+                  label={t('hero.continue_tiktok')}
                   delay={0.42}
                 />
                 <OAuthButton
                   onClick={handleGoogle}
                   logo={<GoogleLogo />}
-                  label="Fortsätt med Google"
+                  label={t('hero.continue_google')}
                   delay={0.52}
                 />
                 <OAuthButton
                   onClick={handleApple}
                   logo={<AppleLogo />}
-                  label="Fortsätt med Apple"
+                  label={t('hero.continue_apple')}
                   delay={0.62}
                 />
               </div>
@@ -320,7 +320,7 @@ const Hero = () => {
               >
                 <div className="flex-1 h-px" style={{ background: "hsl(0 0% 100% / 0.07)" }} />
                 <span className="text-xs font-medium" style={{ color: "hsl(0 0% 38%)" }}>
-                  eller
+                  {t('hero.or_divider')}
                 </span>
                 <div className="flex-1 h-px" style={{ background: "hsl(0 0% 100% / 0.07)" }} />
               </motion.div>
@@ -358,7 +358,7 @@ const Hero = () => {
                 className="text-center text-xs mt-4 leading-relaxed"
                 style={{ color: "hsl(0 0% 33%)" }}
               >
-                Genom att registrera dig godkänner du våra{" "}
+                {t('hero.terms_text')}{" "}
                 <a
                   href="/terms-of-service"
                   className="underline underline-offset-2 transition-colors"
@@ -366,7 +366,7 @@ const Hero = () => {
                   onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "hsl(0 0% 65%)")}
                   onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "hsl(0 0% 45%)")}
                 >
-                  användarvillkor
+                  {t('hero.terms_link')}
                 </a>
               </motion.p>
             </motion.div>

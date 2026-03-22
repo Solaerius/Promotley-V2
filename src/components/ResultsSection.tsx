@@ -3,36 +3,36 @@ import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { useCountUp } from "@/hooks/useCountUp";
 import { useTranslation } from 'react-i18next';
 
-const stats = [
-  {
-    icon: TrendingUp,
-    value: 87,
-    suffix: "%",
-    label: "Förbättrat engagemang",
-    description: "Genomsnittlig ökning för företag som följer strategin",
-  },
-  {
-    icon: Users,
-    value: 2400,
-    suffix: "+",
-    label: "Nya följare i snitt",
-    description: "Per företag under de första 3 månaderna",
-  },
-  {
-    icon: Clock,
-    value: 5,
-    suffix: "h",
-    label: "Sparad tid per vecka",
-    description: "Genom automatiserad innehållsplanering",
-  },
-];
-
 const ResultsSection = () => {
   const { t } = useTranslation();
   const { ref, isVisible } = useIntersectionObserver({
     threshold: 0.2,
     triggerOnce: true,
   });
+
+  const stats = [
+    {
+      icon: TrendingUp,
+      value: 87,
+      suffix: "%",
+      label: t('results.stat1_label'),
+      description: t('results.stat1_desc'),
+    },
+    {
+      icon: Users,
+      value: 2400,
+      suffix: "+",
+      label: t('results.stat2_label'),
+      description: t('results.stat2_desc'),
+    },
+    {
+      icon: Clock,
+      value: 5,
+      suffix: "h",
+      label: t('results.stat3_label'),
+      description: t('results.stat3_desc'),
+    },
+  ];
 
   return (
     <section
@@ -53,14 +53,14 @@ const ResultsSection = () => {
             }}
           >
             <BarChart3 className="w-4 h-4 text-foreground" />
-            <span className="text-sm font-medium text-foreground">Resultat</span>
+            <span className="text-sm font-medium text-foreground">{t('results.badge')}</span>
           </div>
 
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4" style={{ textWrap: 'balance' }}>
-            När strategi möter <span className="text-gradient">verkliga resultat</span>
+            {t('results.title')} <span className="text-gradient">{t('results.title_strong')}</span>
           </h2>
           <p className="text-lg max-w-2xl mx-auto" style={{ color: 'hsl(var(--muted-foreground))', textWrap: 'balance' }}>
-            Resultat från företag som följde sin personliga Promotley-strategi
+            {t('results.subtitle')}
           </p>
         </div>
 

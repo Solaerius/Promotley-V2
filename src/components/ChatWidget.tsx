@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { filterMessage } from "@/lib/contentFilter";
+import { useTranslation } from "react-i18next";
 
 interface Message {
   id: string;
@@ -19,6 +20,7 @@ interface Message {
 }
 
 const ChatWidget = () => {
+  const { t } = useTranslation();
   const { position: navbarPosition } = useNavbarPosition();
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -265,7 +267,7 @@ const ChatWidget = () => {
     const autoMessage: Message = {
       id: `auto-${Date.now()}`,
       session_id: sessionId,
-      message: "Tack för ditt meddelande! Vi kan vara upptagna just nu, så svarstiden kan variera beroende på hur många som chattar. Vi återkommer så snart vi kan!",
+      message: t('chat_widget.auto_reply'),
       sender_type: "admin",
       created_at: new Date().toISOString(),
       read: false,
@@ -391,7 +393,7 @@ const ChatWidget = () => {
     const { filtered, wasCensored } = filterMessage(inputValue);
     
     if (wasCensored) {
-      setSendError("Meddelandet innehöll olämpligt innehåll som har filtrerats.");
+      setSendError(t('chat_widget.filtered_content'));
     }
 
     setIsLoading(true);
@@ -594,7 +596,7 @@ const ChatWidget = () => {
             <button
               onClick={handleClose}
               className="hover:bg-hero-foreground/20 rounded-full p-2 transition-colors"
-              aria-label="Stäng chat"
+              aria-label={t('chat_widget.close_aria')}
             >
               <X className="w-5 h-5" />
             </button>

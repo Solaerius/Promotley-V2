@@ -1,31 +1,31 @@
 import { Shield, Lock, Eye, FileCheck } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 
-const trustFeatures = [
-  {
-    icon: Lock,
-    title: "AES-256 Kryptering",
-    description: "All din data krypteras med samma standard som banker använder.",
-  },
-  {
-    icon: Eye,
-    title: "Du äger din data",
-    description: "Vi delar aldrig din information. Du kan radera allt när som helst.",
-  },
-  {
-    icon: Shield,
-    title: "GDPR-kompatibelt",
-    description: "Full transparens och kontroll enligt EU:s integritetslagar.",
-  },
-  {
-    icon: FileCheck,
-    title: "Säkra anslutningar",
-    description: "OAuth-integration med Meta & TikTok - inga lösenord sparas.",
-  },
-];
-
 const TrustSection = () => {
   const { t } = useTranslation();
+
+  const trustFeatures = [
+    {
+      icon: Lock,
+      title: t('trust.feature1_title'),
+      description: t('trust.feature1_desc'),
+    },
+    {
+      icon: Eye,
+      title: t('trust.feature2_title'),
+      description: t('trust.feature2_desc'),
+    },
+    {
+      icon: Shield,
+      title: t('trust.feature3_title'),
+      description: t('trust.feature3_desc'),
+    },
+    {
+      icon: FileCheck,
+      title: t('trust.feature4_title'),
+      description: t('trust.feature4_desc'),
+    },
+  ];
 
   return (
     <section className="relative py-14 md:py-20 overflow-hidden">
@@ -43,14 +43,14 @@ const TrustSection = () => {
             }}
           >
             <Shield className="w-4 h-4 text-foreground" />
-            <span className="text-sm font-medium text-foreground">Säkerhet & Integritet</span>
+            <span className="text-sm font-medium text-foreground">{t('trust.badge')}</span>
           </div>
 
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4" style={{ textWrap: 'balance' }}>
-            Din data är <span className="text-gradient">trygg hos oss</span>
+            {t('trust.title')} <span className="text-gradient">{t('trust.title_strong')}</span>
           </h2>
           <p className="text-lg max-w-2xl mx-auto" style={{ color: 'hsl(var(--muted-foreground))', textWrap: 'balance' }}>
-            Vi tar säkerhet och integritet på största allvar
+            {t('trust.subtitle')}
           </p>
         </div>
 
@@ -103,7 +103,7 @@ const TrustSection = () => {
           >
             <Lock className="w-5 h-5 shrink-0" style={{ color: 'hsl(var(--muted-foreground))' }} />
             <p className="text-sm" style={{ color: 'hsl(var(--muted-foreground))' }}>
-              256-bit SSL · Data lagras säkert inom EU · GDPR-kompatibel
+              {t('trust.footer')}
             </p>
           </div>
         </div>

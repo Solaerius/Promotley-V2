@@ -18,14 +18,28 @@ import {
 } from 'recharts';
 import {
   demoCompany, demoStats, demoSocialStats, demoChartData,
-  demoCalendarPosts, demoSalesRadar, demoAIAnalysis, demoChatMessages,
-  DEMO_LIMIT_MESSAGE, demoAIResponses,
+  demoCalendarPosts, demoSalesRadar, demoChatMessages,
+  demoAIResponses,
 } from '@/data/demoData';
 import logo from '@/assets/logo.png';
 import { cn } from '@/lib/utils';
 
+const demoAIResponsesEn: Record<string, string> = {
+  caption: `✨ Caption for @stockholmskaffet:\n\n"Monday tastes better with the right coffee ☕ We just got in our new single origin from Ethiopia — floral, bright and absolutely wonderful. Come in and try it, we'll treat you to the first tasting all Monday morning!\n\n#stockholmskaffet #newcoffee #ethiopiancoffee #specialtycoffee #stockholm #coffeelover #mondaymood #localcoffee"`,
+
+  hashtags: `🏷️ Recommended hashtags for Stockholms Kaffet:\n\n**Volume (1M+):** #coffee #fika #stockholm #café\n**Medium (100k–1M):** #specialtycoffee #coffeeculture #stockholmcafe #swedishcoffee\n**Niche (<100k):** #stockholmskaffet #ethiopiancoffee #singleorigincoffee #coffeeroasting\n\n💡 Tip: Mix 3–4 volume tags with 4–5 niche tags for best organic reach on Instagram.`,
+
+  contentIdeas: `💡 5 Content ideas for Stockholms Kaffet:\n\n1. **"Behind the scenes"** — Show the roasting process in a 30-sec Reel. Authentic and shareable.\n2. **"Coffee knowledge"** — Explain the difference between washed and natural process. Builds expert position.\n3. **"Customer portrait"** — Interview a regular about their morning routine. Strengthens community feel.\n4. **"Product teaser"** — A 3-part story series ahead of the next seasonal coffee. Creates anticipation.\n5. **"Before/after"** — Show the coffee bean from farm to cup in a single post. Storytelling that sells.`,
+
+  weeklyPlan: `📅 Weekly plan for Stockholms Kaffet (w.12):\n\n**Monday:** Instagram Reel — Launch of new Ethiopian single origin\n**Tuesday:** Story poll — "Filter or espresso?" (boosts engagement)\n**Wednesday:** Post — Behind the scenes in the roastery\n**Thursday:** TikTok — "3 things you didn't know about coffee"\n**Friday:** Story — Weekend menu + reminder of opening hours\n**Saturday:** Reel — Customer moments / café atmosphere\n**Sunday:** Quote post — Coffee thought of the week\n\n⏰ Best posting times: 7–9 and 17–19 for your audience.`,
+
+  campaign: `🎯 Campaign strategy: Easter launch 2025\n\n**Goal:** Increase store visits +20% during Easter weekend\n**Target audience:** Stockholm residents 25–45, coffee enthusiasts\n\n**Phase 1 – Teaser (w.13):** "Something new is coming" — mysterious stories, no details\n**Phase 2 – Launch (w.14):** Easter coffee + limited edition bag, Reel + press release\n**Phase 3 – Closing (w.15):** "Last chance" + UGC from customers, close with thank-you post\n\n**Channels:** Instagram (primary), TikTok (reach), email (loyal customers)\n**Budget:** 80% organic, 20% boosted content on Meta\n**KPIs:** Reach, store visits, UGC share`,
+
+  ufTips: `🚀 UF tips for Stockholms Kaffet:\n\n1. **Trade fairs:** Sign up for the UF fair well in advance — your stand is your brand in front of judges and visitors\n2. **Annual report:** Start documenting sales and marketing efforts now, not in the last week\n3. **Social media:** Show the UF journey! Followers love authentic "we're building a company" stories\n4. **Collaborations:** Reach out to other UF companies for cross-promo — no competitors, only partners\n5. **Pricing:** Always include your working time in the price. Don't sell too cheaply — it undervalues the entire UF movement`,
+};
+
 const Demo = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const demoNavTabs = useMemo(() => [
     { name: t('sections.demo.tab_dashboard'), value: "dashboard", icon: LayoutDashboard },
@@ -43,6 +57,28 @@ const Demo = () => {
     { icon: Target, title: t('tools.campaign_title'), description: t('tools.campaign_desc'), color: "from-amber-500 to-orange-500", responseKey: "campaign" },
     { icon: Lightbulb, title: t('tools.uf_title'), description: t('tools.uf_desc'), color: "from-indigo-500 to-purple-500", responseKey: "ufTips" },
   ], [t]);
+  const localizedLeads = useMemo(() => demoSalesRadar.leads.map((lead, i) => ({
+    ...lead,
+    titel: t(`demo_page.lead_${i}_title`),
+    beskrivning: t(`demo_page.lead_${i}_desc`),
+    action: t(`demo_page.lead_${i}_action`),
+    potential: t(`demo_page.lead_${i}_potential`),
+    prioritet: t(`demo_page.lead_${i}_priority`),
+  })), [t]);
+
+  const localizedTrends = useMemo(() => demoSalesRadar.trends.map((trend, i) => ({
+    ...trend,
+    titel: t(`demo_page.trend_${i}_title`),
+    beskrivning: t(`demo_page.trend_${i}_desc`),
+    tips: t(`demo_page.trend_${i}_tips`),
+  })), [t]);
+
+  const localizedCalendarPosts = useMemo(() => demoCalendarPosts.map((post, i) => ({
+    ...post,
+    title: t(`demo_page.cal_${i}_title`),
+    description: t(`demo_page.cal_${i}_desc`),
+  })), [t]);
+
   const [clickCounts, setClickCounts] = useState<Record<string, number>>({});
   const [showLimitAlert, setShowLimitAlert] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -66,14 +102,15 @@ const Demo = () => {
     setClickCounts(prev => ({ ...prev, [key]: count }));
 
     if (count === 1) {
-      const response = demoAIResponses[key];
+      const responses = i18n.language === 'sv' ? demoAIResponses : demoAIResponsesEn;
+      const response = responses[key];
       if (response) {
         setAiResponses(prev => ({ ...prev, [key]: response }));
       }
     } else {
       setShowRegisterModal(true);
     }
-  }, [clickCounts]);
+  }, [clickCounts, i18n.language]);
 
   const isLimited = (key: string) => (clickCounts[key] || 0) > 1;
 
@@ -204,7 +241,7 @@ const Demo = () => {
           <Alert className="border-primary/40 bg-background shadow-lg">
             <Lock className="h-4 w-4" />
             <AlertDescription className="flex items-center justify-between gap-2">
-              <span className="text-sm">{DEMO_LIMIT_MESSAGE}</span>
+              <span className="text-sm">{t('demo_page.limit_message')}</span>
               <Link to="/auth?mode=register">
                 <Button size="sm" variant="gradient" className="text-xs whitespace-nowrap">
                   {t('demo_page.create_account_free')}
@@ -224,9 +261,9 @@ const Demo = () => {
             <div className="rounded-2xl p-6 backdrop-blur-xl border border-white/20"
               style={{ background: 'linear-gradient(135deg, hsl(9 90% 55% / 0.2) 0%, hsl(331 70% 45% / 0.15) 100%)' }}>
               <h2 className="text-2xl font-bold text-foreground">{demoCompany.foretagsnamn}</h2>
-              <p className="text-muted-foreground text-sm mt-1">{demoCompany.branch} · {demoCompany.stad}</p>
+              <p className="text-muted-foreground text-sm mt-1">{t('demo_page.company_branch')} · {t('demo_page.company_stad')}</p>
               <div className="flex gap-2 mt-3 flex-wrap">
-                {demoCompany.nyckelord.map(k => (
+                {t('demo_page.company_keywords').split(',').map(k => (
                   <Badge key={k} variant="secondary" className="text-xs">{k}</Badge>
                 ))}
               </div>
@@ -299,14 +336,14 @@ const Demo = () => {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             <div className="rounded-2xl p-6 bg-card border border-border/40">
               <h3 className="text-lg font-semibold text-foreground mb-2">{t('demo_page.ai_analysis_of', { name: demoCompany.foretagsnamn })}</h3>
-              <p className="text-muted-foreground text-sm mb-4">{demoAIAnalysis.summary}</p>
+              <p className="text-muted-foreground text-sm mb-4">{t('demo_page.analysis_summary')}</p>
               <div className="space-y-4">
                 <div>
                   <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-green-400" /> {t('demo_page.strengths')}
                   </h4>
                   <ul className="space-y-1">
-                    {demoAIAnalysis.strengths.map((s, i) => (
+                    {[t('demo_page.strength_0'), t('demo_page.strength_1'), t('demo_page.strength_2')].map((s, i) => (
                       <li key={i} className="text-sm text-muted-foreground">{s}</li>
                     ))}
                   </ul>
@@ -316,7 +353,7 @@ const Demo = () => {
                     <TrendingUp className="w-4 h-4 text-yellow-400" /> {t('demo_page.improvements')}
                   </h4>
                   <ul className="space-y-1">
-                    {demoAIAnalysis.improvements.map((s, i) => (
+                    {[t('demo_page.improvement_0'), t('demo_page.improvement_1'), t('demo_page.improvement_2')].map((s, i) => (
                       <li key={i} className="text-sm text-muted-foreground">{s}</li>
                     ))}
                   </ul>
@@ -326,7 +363,7 @@ const Demo = () => {
                     <ArrowRight className="w-4 h-4 text-primary" /> {t('demo_page.next_steps')}
                   </h4>
                   <ul className="space-y-1">
-                    {demoAIAnalysis.nextSteps.map((s, i) => (
+                    {[t('demo_page.next_step_0'), t('demo_page.next_step_1'), t('demo_page.next_step_2')].map((s, i) => (
                       <li key={i} className="text-sm text-muted-foreground">{s}</li>
                     ))}
                   </ul>
@@ -391,7 +428,7 @@ const Demo = () => {
                           ? 'bg-primary/20 text-foreground'
                           : 'backdrop-blur-sm border border-white/10 text-muted-foreground'
                       }`}>
-                        {msg.message}
+                        {(msg.role as string) === 'assistant' ? t('demo_page.chat_message') : msg.message}
                       </div>
                     </div>
                   ))}
@@ -484,14 +521,14 @@ const Demo = () => {
             {aiSubTab === 'analys' && (
               <div className="rounded-2xl p-6 bg-card border border-border/40">
                 <h3 className="text-lg font-semibold text-foreground mb-2">{t('demo_page.ai_analysis_of', { name: demoCompany.foretagsnamn })}</h3>
-                <p className="text-muted-foreground text-sm mb-4">{demoAIAnalysis.summary}</p>
+                <p className="text-muted-foreground text-sm mb-4">{t('demo_page.analysis_summary')}</p>
                 <div className="space-y-4">
                   <div>
                     <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-green-400" /> {t('demo_page.strengths')}
                     </h4>
                     <ul className="space-y-1">
-                      {demoAIAnalysis.strengths.map((s, i) => (
+                      {[t('demo_page.strength_0'), t('demo_page.strength_1'), t('demo_page.strength_2')].map((s, i) => (
                         <li key={i} className="text-sm text-muted-foreground">{s}</li>
                       ))}
                     </ul>
@@ -501,7 +538,7 @@ const Demo = () => {
                       <TrendingUp className="w-4 h-4 text-yellow-400" /> {t('demo_page.improvements')}
                     </h4>
                     <ul className="space-y-1">
-                      {demoAIAnalysis.improvements.map((s, i) => (
+                      {[t('demo_page.improvement_0'), t('demo_page.improvement_1'), t('demo_page.improvement_2')].map((s, i) => (
                         <li key={i} className="text-sm text-muted-foreground">{s}</li>
                       ))}
                     </ul>
@@ -524,7 +561,7 @@ const Demo = () => {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             <Card className="liquid-glass-light border-primary/20">
               <CardContent className="p-5">
-                <p className="text-foreground text-sm leading-relaxed">{demoSalesRadar.sammanfattning}</p>
+                <p className="text-foreground text-sm leading-relaxed">{t('demo_page.radar_summary')}</p>
               </CardContent>
             </Card>
 
@@ -534,7 +571,7 @@ const Demo = () => {
                 <Users className="w-5 h-5 text-primary" /> {t('demo_page.leads_title')}
               </h3>
               <div className="grid gap-3 md:grid-cols-2">
-                {demoSalesRadar.leads.map((lead, i) => {
+                {localizedLeads.map((lead, i) => {
                   const Icon = getLeadIcon(lead.typ);
                   return (
                     <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
@@ -547,7 +584,7 @@ const Demo = () => {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1 flex-wrap">
                                 <h4 className="font-semibold text-foreground">{lead.titel}</h4>
-                                <Badge variant={lead.prioritet === 'hög' ? 'destructive' : 'default'} className="text-[10px]">{lead.prioritet}</Badge>
+                                <Badge variant={lead.prioritet === 'hög' || lead.prioritet === 'high' ? 'destructive' : 'default'} className="text-[10px]">{lead.prioritet}</Badge>
                               </div>
                               <p className="text-sm text-muted-foreground mb-2">{lead.beskrivning}</p>
                               <div className="flex items-center gap-1 text-xs text-primary font-medium">
@@ -570,7 +607,7 @@ const Demo = () => {
                 <TrendingUp className="w-5 h-5 text-primary" /> {t('demo_page.trends_title')}
               </h3>
               <div className="grid gap-3 md:grid-cols-2">
-                {demoSalesRadar.trends.map((trend, i) => {
+                {localizedTrends.map((trend, i) => {
                   const Icon = getTrendIcon(trend.typ);
                   return (
                     <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
@@ -614,10 +651,10 @@ const Demo = () => {
                 <Calendar className="w-5 h-5 text-primary" /> {t('demo_page.calendar_title')}
               </h3>
               <div className="space-y-3">
-                {demoCalendarPosts.map(post => (
+                {localizedCalendarPosts.map(post => (
                   <div key={post.id} className="flex items-center gap-4 p-3 rounded-xl border border-border/40 bg-background/50">
                     <div className="text-center min-w-[50px]">
-                      <p className="text-xs text-muted-foreground">{new Date(post.date).toLocaleDateString('sv-SE', { weekday: 'short' })}</p>
+                      <p className="text-xs text-muted-foreground">{new Date(post.date).toLocaleDateString(i18n.language === 'sv' ? 'sv-SE' : 'en-GB', { weekday: 'short' })}</p>
                       <p className="text-lg font-bold text-foreground">{new Date(post.date).getDate()}</p>
                     </div>
                     <div className="flex-1">

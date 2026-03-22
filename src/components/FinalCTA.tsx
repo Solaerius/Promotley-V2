@@ -3,14 +3,14 @@ import { ArrowRight, Sparkles, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 
-const benefits = [
-  "Gratis strategisession",
-  "Ingen betalmetod krävs",
-  "Avsluta när du vill",
-];
-
 const FinalCTA = () => {
   const { t } = useTranslation();
+
+  const benefits = [
+    t('final_cta.benefit1'),
+    t('final_cta.benefit2'),
+    t('final_cta.benefit3'),
+  ];
 
   return (
     <section className="relative py-14 md:py-20 overflow-hidden">
@@ -43,12 +43,12 @@ const FinalCTA = () => {
               }}
             >
               <Sparkles className="w-4 h-4 text-foreground" />
-              <span className="text-sm font-medium text-foreground">Börja din tillväxtresa idag</span>
+              <span className="text-sm font-medium text-foreground">{t('final_cta.badge')}</span>
             </div>
 
             {/* Headline */}
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6" style={{ textWrap: 'balance' }}>
-              Nästa virala inlägg <span className="text-gradient">börjar här</span>
+              {t('final_cta.title')} <span className="text-gradient">{t('final_cta.title_strong')}</span>
             </h2>
 
             {/* Subheadline */}
@@ -56,7 +56,7 @@ const FinalCTA = () => {
               className="text-lg md:text-xl mb-10 max-w-2xl mx-auto"
               style={{ color: 'hsl(var(--muted-foreground))', textWrap: 'balance' }}
             >
-              Få din personliga innehållsstrategi - anpassad efter din budget, bransch och tillgängliga tid
+              {t('final_cta.subtitle')}
             </p>
 
             {/* CTA Button */}

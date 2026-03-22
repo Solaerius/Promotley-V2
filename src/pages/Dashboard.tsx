@@ -116,10 +116,10 @@ const PlatformCard = ({
             <div style={{ color: "hsl(0 0% 28%)" }}>{icon}</div>
           </div>
           <p className="text-sm font-medium mb-1" style={{ color: "hsl(0 0% 52%)" }}>
-            Inget {title}-konto anslutet
+            {t('dashboard.no_account_connected', { platform: title })}
           </p>
           <p className="text-xs mb-4" style={{ color: "hsl(0 0% 33%)" }}>
-            Anslut för att se din statistik här
+            {t('dashboard.connect_to_see_stats')}
           </p>
           <Link to="/account">
             <Button size="sm" variant="outline" className="h-7 text-xs">
@@ -378,10 +378,10 @@ const Dashboard = () => {
               isLoading={tiktokData.loading}
               accentColor="hsl(0 0% 92%)"
               metrics={[
-                { label: "Följare", value: formatNumber(tiktokData.user?.follower_count ?? 0) },
-                { label: "Videor", value: tiktokData.user?.video_count ?? 0 },
-                { label: "Gillade", value: formatNumber(tiktokData.user?.likes_count ?? 0) },
-                { label: "Följer", value: tiktokData.user?.following_count ?? 0 },
+                { label: t('dashboard.metric_followers'), value: formatNumber(tiktokData.user?.follower_count ?? 0) },
+                { label: t('dashboard.metric_videos'), value: tiktokData.user?.video_count ?? 0 },
+                { label: t('dashboard.metric_likes'), value: formatNumber(tiktokData.user?.likes_count ?? 0) },
+                { label: t('dashboard.metric_following'), value: tiktokData.user?.following_count ?? 0 },
               ]}
             />
             <PlatformCard
@@ -392,9 +392,9 @@ const Dashboard = () => {
               isLoading={metaData.loading}
               accentColor="hsl(330 75% 68%)"
               metrics={[
-                { label: "Följare", value: formatNumber(metaData.instagram?.followers_count ?? 0) },
-                { label: "Följer", value: metaData.instagram?.follows_count ?? 0 },
-                { label: "Inlägg", value: metaData.instagram?.media_count ?? 0 },
+                { label: t('dashboard.metric_followers'), value: formatNumber(metaData.instagram?.followers_count ?? 0) },
+                { label: t('dashboard.metric_following'), value: metaData.instagram?.follows_count ?? 0 },
+                { label: t('dashboard.metric_posts'), value: metaData.instagram?.media_count ?? 0 },
                 { label: "@handle", value: `@${metaData.instagram?.username ?? "–"}` },
               ]}
             />
@@ -427,7 +427,7 @@ const Dashboard = () => {
                   className="text-xs px-2.5 py-0.5 rounded-full"
                   style={{ background: "hsl(var(--primary) / 0.2)", color: "hsl(var(--primary))" }}
                 >
-                  {followerHistory.length} datapunkter
+                  {t('dashboard.data_points', { count: followerHistory.length })}
                 </span>
               </div>
               <ResponsiveContainer width="100%" height={160}>
@@ -562,11 +562,11 @@ const Dashboard = () => {
                     {t('dashboard.no_posts')}
                   </p>
                   <p className="text-xs mb-4" style={{ color: "hsl(0 0% 33%)" }}>
-                    Planera ditt innehåll i kalendern
+                    {t('dashboard.plan_content_in_calendar')}
                   </p>
                   <Link to="/calendar">
                     <Button size="sm" variant="outline" className="h-7 text-xs">
-                      Schemalägg inlägg
+                      {t('dashboard.schedule_post')}
                     </Button>
                   </Link>
                 </div>
@@ -654,24 +654,24 @@ const Dashboard = () => {
           <div className="grid sm:grid-cols-3 gap-3">
             {[
               {
-                label: "Skapa caption",
-                desc: "AI-genererad text för ditt inlägg",
+                label: t('dashboard.quick_caption'),
+                desc: t('dashboard.quick_caption_desc'),
                 icon: MessageSquare,
                 href: "/ai/caption",
                 accent: "hsl(28 88% 60%)",
                 iconBg: "hsl(28 60% 13%)",
               },
               {
-                label: "Hashtag-förslag",
-                desc: "Hitta rätt taggar för din nisch",
+                label: t('dashboard.quick_hashtag'),
+                desc: t('dashboard.quick_hashtag_desc'),
                 icon: CheckCircle2,
                 href: "/ai/hashtags",
                 accent: "hsl(210 78% 62%)",
                 iconBg: "hsl(210 50% 13%)",
               },
               {
-                label: "Kampanjstrategi",
-                desc: "Planera din nästa kampanj med AI",
+                label: t('dashboard.quick_campaign'),
+                desc: t('dashboard.quick_campaign_desc'),
                 icon: Zap,
                 href: "/ai/campaign",
                 accent: "hsl(var(--primary))",

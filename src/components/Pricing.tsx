@@ -5,54 +5,54 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import PricingFAQ from "./PricingFAQ";
 
-const plans = [
-  {
-    name: "UF Starter",
-    price: "29",
-    credits: "50",
-    description: "Perfekt för nya UF-företag som precis börjat",
-    features: [
-      "AI-modell: Gemini Flash Lite",
-      "50 AI-krediter per månad",
-      "Enkel strategi (2 poster/vecka)",
-      "3 branschtips per månad",
-      "Grundläggande UF-vägledning",
-    ],
-    popular: false,
-  },
-  {
-    name: "UF Growth",
-    price: "49",
-    credits: "100",
-    description: "Idealisk för snabbväxande UF-team",
-    features: [
-      "AI-modell: Gemini Flash",
-      "100 AI-krediter per månad",
-      "Personlig innehållskalender",
-      "5 content-idéer per vecka",
-      "Enkel prestandaanalys",
-    ],
-    popular: true,
-  },
-  {
-    name: "UF Pro",
-    price: "99",
-    credits: "200",
-    description: "För etablerade företag med stora ambitioner",
-    features: [
-      "AI-modell: Gemini Pro",
-      "200 AI-krediter per månad",
-      "Premium AI för djupanalyser",
-      "Komplett strategi + kalender",
-      "Konkurrentanalys inkluderad",
-      "Premium rapporter & insikter",
-    ],
-    popular: false,
-  },
-];
-
 const Pricing = () => {
   const { t } = useTranslation();
+
+  const plans = [
+    {
+      name: "UF Starter",
+      price: "29",
+      credits: "50",
+      description: t('pricing.starter_desc'),
+      features: [
+        t('pricing.starter_f1'),
+        t('pricing.starter_f2'),
+        t('pricing.starter_f3'),
+        t('pricing.starter_f4'),
+        t('pricing.starter_f5'),
+      ],
+      popular: false,
+    },
+    {
+      name: "UF Growth",
+      price: "49",
+      credits: "100",
+      description: t('pricing.growth_desc'),
+      features: [
+        t('pricing.growth_f1'),
+        t('pricing.growth_f2'),
+        t('pricing.growth_f3'),
+        t('pricing.growth_f4'),
+        t('pricing.growth_f5'),
+      ],
+      popular: true,
+    },
+    {
+      name: "UF Pro",
+      price: "99",
+      credits: "200",
+      description: t('pricing.pro_desc'),
+      features: [
+        t('pricing.pro_f1'),
+        t('pricing.pro_f2'),
+        t('pricing.pro_f3'),
+        t('pricing.pro_f4'),
+        t('pricing.pro_f5'),
+        t('pricing.pro_f6'),
+      ],
+      popular: false,
+    },
+  ];
 
   return (
     <section id="pricing" className="relative py-14 md:py-20 px-4 overflow-hidden font-poppins">
@@ -194,7 +194,7 @@ const Pricing = () => {
                     </div>
                     <div className="flex items-center gap-2 mt-2">
                       <span className="text-2xl font-bold text-gradient">{plan.credits}</span>
-                      <span className="text-sm" style={{ color: 'hsl(0 0% 100% / 0.55)' }}>krediter/mån</span>
+                      <span className="text-sm" style={{ color: 'hsl(0 0% 100% / 0.55)' }}>{t('pricing.credits_month')}</span>
                     </div>
                   </div>
 
@@ -233,7 +233,7 @@ const Pricing = () => {
 
         {/* Bottom note */}
         <p className="text-center mt-12 text-sm md:text-base px-4" style={{ color: 'hsl(0 0% 100% / 0.55)' }}>
-          Skapa din första strategi gratis · Ingen betalmetod krävs · Avsluta när du vill
+          {t('pricing.bottom_note')}
         </p>
 
         {/* FAQ Section */}
