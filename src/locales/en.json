@@ -17,7 +17,7 @@
     "badge": "AI-powered marketing",
     "headline": "Marketing that actually works",
     "subheadline": "Promotley analyzes your social media and gives you personalized AI suggestions to maximize engagement and growth.",
-    "cta_primary": "Get started free",
+    "cta_primary": "Get started for free",
     "cta_secondary": "See how it works",
     "card_subheader": "No commitment. No credit card.",
     "email_register": "Register with email",
@@ -30,7 +30,6 @@
     },
     "feature_pills": [
       "AI-driven strategy",
-      "Swish payment",
       "TikTok & Meta",
       "Swedish UF companies"
     ],
@@ -91,7 +90,12 @@
     "has_account": "Already have an account?",
     "promo_code": "Promo code",
     "promo_code_placeholder": "Enter promo code (optional)",
-    "promo_code_toggle": "Have a promo code?"
+    "promo_code_toggle": "Have a promo code?",
+    "login_subtitle": "Log in to continue to your dashboard",
+    "register_subtitle": "Create your account and get 1 free AI suggestion",
+    "offers_label": "Offers and promotions",
+    "register_link": "Register",
+    "login_link": "Log in"
   },
   "verify": {
     "title": "Confirm your email",
@@ -305,6 +309,7 @@
     },
     "demo": {
       "title": "See Promotley in action",
+      "subtitle": "Try our interactive demo and see how AI-driven marketing can help your UF company grow",
       "cta": "Try for free",
       "tab_dashboard": "Dashboard",
       "tab_analytics": "Analytics",
@@ -1389,6 +1394,7 @@
     "buy_btn": "Buy more credits"
   },
   "password": {
+    "min_chars": "At least 8 characters",
     "uppercase": "Contains uppercase letter",
     "lowercase": "Contains lowercase letter",
     "number": "Contains number"

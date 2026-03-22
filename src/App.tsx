@@ -34,6 +34,8 @@ const RedeemPromotion = lazy(() => import("./pages/RedeemPromotion"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
+const About = lazy(() => import("./pages/About"));
+const Contact = lazy(() => import("./pages/Contact"));
 // AI tools
 const CaptionGenerator = lazy(() => import("./pages/ai/CaptionGenerator"));
 const HashtagSuggestions = lazy(() => import("./pages/ai/HashtagSuggestions"));

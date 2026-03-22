@@ -110,7 +110,7 @@ const Hero = () => {
           top: -180,
           left: -200,
           borderRadius: "50%",
-          background: "radial-gradient(circle, hsl(var(--primary)) 0%, transparent 68%)",
+          background: "radial-gradient(circle, hsl(0 84% 55%) 0%, transparent 68%)",
           filter: "blur(70px)",
         }}
       />
@@ -137,32 +137,6 @@ const Hero = () => {
 
           {/* ── LEFT COLUMN ── */}
           <div>
-            {/* Live badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45 }}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-8"
-              style={{
-                background: "hsl(var(--primary) / 0.15)",
-                border: "1px solid hsl(var(--primary) / 0.3)",
-              }}
-            >
-              <span className="relative flex h-1.5 w-1.5">
-                <span
-                  className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-                  style={{ background: "hsl(var(--primary-glow))" }}
-                />
-                <span
-                  className="relative inline-flex rounded-full h-1.5 w-1.5"
-                  style={{ background: "hsl(var(--primary-glow))" }}
-                />
-              </span>
-              <span className="text-xs font-medium" style={{ color: "hsl(var(--primary-glow))" }}>
-                {t('hero.badge')}
-              </span>
-            </motion.div>
-
             {/* Main heading */}
             <motion.h1
               initial={{ opacity: 0, y: 28 }}

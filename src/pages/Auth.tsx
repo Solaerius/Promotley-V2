@@ -385,8 +385,8 @@ const Auth = () => {
           </h1>
           <p className="text-muted-foreground">
             {isLogin
-              ? "Logga in för att fortsätta till din dashboard"
-              : "Skapa ditt konto och få 1 gratis AI-förslag"}
+              ? t('auth.login_subtitle')
+              : t('auth.register_subtitle')}
           </p>
         </div>
 
@@ -593,7 +593,7 @@ const Auth = () => {
                   onCheckedChange={(checked) => setEmailOffers(checked as boolean)}
                 />
                 <label htmlFor="offers" className="text-sm leading-none">
-                  Erbjudanden och kampanjer
+                  {t('auth.offers_label')}
                 </label>
               </div>
             </div>
@@ -673,12 +673,12 @@ const Auth = () => {
             {isLogin ? (
               <>
                 {t('auth.no_account')}{" "}
-                <span className="text-primary font-medium">Registrera dig</span>
+                <span className="text-primary font-medium">{t('auth.register_link')}</span>
               </>
             ) : (
               <>
                 {t('auth.has_account')}{" "}
-                <span className="text-primary font-medium">Logga in</span>
+                <span className="text-primary font-medium">{t('auth.login_link')}</span>
               </>
             )}
           </button>

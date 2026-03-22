@@ -76,18 +76,6 @@ const ProblemSection = () => {
               border: '1px solid hsl(var(--primary) / 0.25)',
             }}
           >
-            {/* Recommended badge */}
-            <div className="absolute -top-3 right-8">
-              <span
-                className="px-4 py-1.5 rounded-full text-xs font-semibold shadow-md text-white"
-                style={{
-                  background: 'linear-gradient(135deg, hsl(var(--accent-brand)), hsl(var(--primary)))',
-                }}
-              >
-                {t('problem.recommended')}
-              </span>
-            </div>
-
             <div className="flex items-center gap-4 mb-8">
               <div
                 className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"

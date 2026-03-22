@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "@/assets/logo.png";
 import { AlignRight, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,6 +18,18 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
   const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handlePricingClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setMobileOpen(false);
+    if (location.pathname === '/') {
+      document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate('/#pricing');
+    }
+  }, [location.pathname, navigate]);
 
   useEffect(() => {
     if (!logoStripRef?.current) {
@@ -48,6 +60,14 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
       borderColor: "rgba(255,255,255,0)",
       boxShadow: "none",
     },
+    mobileOpen: {
+      maxWidth: "100%",
+      borderRadius: 0,
+      marginTop: 0,
+      backgroundColor: "hsl(347 40% 4% / 0.97)",
+      borderColor: "rgba(255,255,255,0)",
+      boxShadow: "none",
+    },
     pill: {
       maxWidth: 720,
       borderRadius: 9999,
@@ -59,12 +79,13 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
   };
 
   const isPill = scrolled && !mobileOpen;
+  const navState = mobileOpen ? "mobileOpen" : isPill ? "pill" : "full";
 
   return (
     /* Outer fixed container — always full-width, just centers the pill */
     <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
       <motion.nav
-        animate={isPill ? "pill" : "full"}
+        animate={navState}
         variants={pillVariants}
         transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
         className="w-full pointer-events-auto border"
@@ -77,7 +98,7 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
               <img
                 src={logo}
                 alt="Promotley"
-                className="h-7 w-7 object-contain dark:invert transition-all duration-300"
+                className="h-7 w-7 object-contain transition-all duration-300"
               />
               {/* "PROMOTLEY" text fades out when scrolled into pill */}
               <motion.span
@@ -91,24 +112,25 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
 
             {/* Desktop nav links */}
             <div className="hidden md:flex items-center gap-6 flex-1 justify-center">
-              <Link
-                to="/pricing"
-                className="text-sm dark:text-white/70 text-gray-600 hover:dark:text-white hover:text-gray-900 transition-colors"
+              <a
+                href="#pricing"
+                onClick={handlePricingClick}
+                className="text-sm dark:text-white/70 text-gray-600 hover:dark:text-white hover:text-gray-900 transition-colors cursor-pointer"
               >
                 {t('nav.pricing')}
-              </Link>
+              </a>
               <Link
                 to="/demo"
                 className="text-sm dark:text-white/70 text-gray-600 hover:dark:text-white hover:text-gray-900 transition-colors"
               >
                 {t('nav.demo')}
               </Link>
-              <a
-                href="#om-oss"
+              <Link
+                to="/about"
                 className="text-sm dark:text-white/70 text-gray-600 hover:dark:text-white hover:text-gray-900 transition-colors"
               >
                 {t('nav.about')}
-              </a>
+              </Link>
             </div>
 
             {/* Desktop auth */}
@@ -161,34 +183,34 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
           <AnimatePresence>
             {mobileOpen && (
               <motion.div
-                className="md:hidden pt-4 pb-2 border-t dark:border-white/10 border-black/10 mt-4 flex flex-col gap-1"
+                className="md:hidden pt-4 pb-2 border-t border-white/10 mt-4 flex flex-col gap-1"
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.15 }}
               >
-                <Link
-                  to="/pricing"
-                  className="py-2.5 px-3 text-sm dark:text-white/80 text-gray-700 hover:dark:bg-white/5 hover:bg-black/5 rounded-lg transition-colors"
-                  onClick={() => setMobileOpen(false)}
+                <a
+                  href="#pricing"
+                  onClick={handlePricingClick}
+                  className="py-2.5 px-3 text-sm text-white/80 hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
                 >
                   {t('nav.pricing')}
-                </Link>
+                </a>
                 <Link
                   to="/demo"
-                  className="py-2.5 px-3 text-sm dark:text-white/80 text-gray-700 hover:dark:bg-white/5 hover:bg-black/5 rounded-lg transition-colors"
+                  className="py-2.5 px-3 text-sm text-white/80 hover:bg-white/5 rounded-lg transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   {t('nav.demo')}
                 </Link>
-                <a
-                  href="#om-oss"
-                  className="py-2.5 px-3 text-sm dark:text-white/80 text-gray-700 hover:dark:bg-white/5 hover:bg-black/5 rounded-lg transition-colors"
+                <Link
+                  to="/about"
+                  className="py-2.5 px-3 text-sm text-white/80 hover:bg-white/5 rounded-lg transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   {t('nav.about')}
-                </a>
-                <div className="flex flex-col gap-2 pt-3 border-t dark:border-white/10 border-black/10 mt-2">
+                </Link>
+                <div className="flex flex-col gap-2 pt-3 border-t border-white/10 mt-2">
                   {user ? (
                     <Link to="/dashboard" onClick={() => setMobileOpen(false)}>
                       <Button className="w-full bg-white text-black">{t('nav.dashboard')}</Button>
@@ -196,7 +218,7 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
                   ) : (
                     <>
                       <Link to="/auth?mode=login" onClick={() => setMobileOpen(false)}>
-                        <Button variant="ghost" className="w-full dark:hover:bg-white/10 hover:bg-black/10">{t('nav.login')}</Button>
+                        <Button variant="ghost" className="w-full text-white/80 hover:bg-white/10">{t('nav.login')}</Button>
                       </Link>
                       <Link to="/auth?mode=register" onClick={() => setMobileOpen(false)}>
                         <Button className="w-full bg-white text-black">{t('nav.register')}</Button>

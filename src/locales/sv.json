@@ -30,7 +30,6 @@
     },
     "feature_pills": [
       "AI-driven strategi",
-      "Swish-betalning",
       "TikTok & Meta",
       "Svenska UF-företag"
     ],
@@ -91,7 +90,12 @@
     "has_account": "Har du redan ett konto?",
     "promo_code": "Kampanjkod",
     "promo_code_placeholder": "Ange kampanjkod (valfritt)",
-    "promo_code_toggle": "Har du en kampanjkod?"
+    "promo_code_toggle": "Har du en kampanjkod?",
+    "login_subtitle": "Logga in för att fortsätta till din dashboard",
+    "register_subtitle": "Skapa ditt konto och få 1 gratis AI-förslag",
+    "offers_label": "Erbjudanden och kampanjer",
+    "register_link": "Registrera dig",
+    "login_link": "Logga in"
   },
   "verify": {
     "title": "Bekräfta din e-post",
@@ -305,6 +309,7 @@
     },
     "demo": {
       "title": "Se Promotley i aktion",
+      "subtitle": "Testa vår interaktiva demo och se hur AI-driven marknadsföring kan hjälpa ditt UF-företag växa",
       "cta": "Prova gratis",
       "tab_dashboard": "Dashboard",
       "tab_analytics": "Statistik",
@@ -1389,6 +1394,7 @@
     "buy_btn": "Köp fler krediter"
   },
   "password": {
+    "min_chars": "Minst 8 tecken",
     "uppercase": "Innehåller stor bokstav",
     "lowercase": "Innehåller liten bokstav",
     "number": "Innehåller siffra"

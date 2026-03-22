@@ -23,13 +23,13 @@ const DemoPreviewSection = () => {
             }}
           >
             <Play className="w-4 h-4 text-foreground" />
-            <span className="text-sm font-medium text-foreground">Se det i aktion</span>
+            <span className="text-sm font-medium text-foreground">{t('sections.demo.title')}</span>
           </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight">
             {t('sections.demo.title')}
           </h2>
           <p className="text-base md:text-lg max-w-2xl mx-auto" style={{ color: 'hsl(var(--muted-foreground))' }}>
-            Testa vår interaktiva demo och se hur AI-driven marknadsföring kan hjälpa ditt UF-företag växa
+            {t('sections.demo.subtitle')}
           </p>
         </div>
 

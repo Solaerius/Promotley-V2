@@ -3,11 +3,7 @@ import { forwardRef } from "react";
 const logos = [
   {
     name: "Meta",
-    svg: (
-      <svg viewBox="0 0 48 48" fill="none" className="h-5">
-        <path d="M24 8C15.163 8 8 15.163 8 24s7.163 16 16 16 16-7.163 16-16S32.837 8 24 8zm-4 22.4c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4zm8 0c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4z" fill="currentColor" />
-      </svg>
-    ),
+    img: "/meta-logo.png",
   },
   {
     name: "TikTok",
@@ -52,6 +48,7 @@ const logos = [
   {
     name: "Swish",
     img: "/swish-logo.png",
+    grayscale: true,
   },
 ];
 
@@ -88,7 +85,11 @@ const LogoStrip = forwardRef<HTMLDivElement>((_, ref) => {
             style={{ color: "hsl(var(--foreground))", minWidth: "56px" }}
           >
             {"img" in logo ? (
-              <img src={logo.img} alt={logo.name} className="h-7 w-auto object-contain" />
+              <img
+                src={logo.img}
+                alt={logo.name}
+                className={`h-5 w-auto object-contain${'grayscale' in logo && logo.grayscale ? ' grayscale' : ''}`}
+              />
             ) : (
               logo.svg
             )}

@@ -46,9 +46,11 @@ const Index = () => {
         <DemoPreviewSection />
       </AnimatedSection>
       
-      <AnimatedSection animation="fade-in" delay={100}>
-        <Pricing />
-      </AnimatedSection>
+      <div id="pricing">
+        <AnimatedSection animation="fade-in" delay={100}>
+          <Pricing />
+        </AnimatedSection>
+      </div>
       
       <AnimatedSection animation="slide-up">
         <Testimonials />

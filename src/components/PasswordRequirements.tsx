@@ -9,7 +9,7 @@ const PasswordRequirements = ({ password }: PasswordRequirementsProps) => {
   const { t } = useTranslation();
   const requirements = [
     {
-      text: "Minst 8 tecken",
+      text: t('password.min_chars'),
       met: password.length >= 8,
     },
     {
