@@ -42,19 +42,12 @@ const OAuthButton = ({
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay, duration: 0.35, ease: "easeOut" }}
     onClick={onClick}
-    className="group flex items-center gap-3 w-full px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer"
-    style={{
-      background: "hsl(0 0% 100% / 0.05)",
-      border: "1px solid hsl(0 0% 100% / 0.1)",
-      color: "hsl(0 0% 90%)",
-    }}
+    className="group flex items-center gap-3 w-full px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer bg-muted/60 dark:bg-white/5 border border-border dark:border-white/10 text-foreground"
     onMouseEnter={(e) => {
-      (e.currentTarget as HTMLButtonElement).style.background = "hsl(0 0% 100% / 0.1)";
-      (e.currentTarget as HTMLButtonElement).style.borderColor = "hsl(0 0% 100% / 0.18)";
+      (e.currentTarget as HTMLButtonElement).style.opacity = "0.85";
     }}
     onMouseLeave={(e) => {
-      (e.currentTarget as HTMLButtonElement).style.background = "hsl(0 0% 100% / 0.05)";
-      (e.currentTarget as HTMLButtonElement).style.borderColor = "hsl(0 0% 100% / 0.1)";
+      (e.currentTarget as HTMLButtonElement).style.opacity = "1";
     }}
   >
     {logo}
@@ -179,12 +172,7 @@ const Hero = () => {
               {(t('hero.feature_pills', { returnObjects: true }) as string[]).map((pill) => (
                 <span
                   key={pill}
-                  className="text-xs px-3 py-1.5 rounded-full font-medium"
-                  style={{
-                    background: "hsl(0 0% 100% / 0.05)",
-                    border: "1px solid hsl(0 0% 100% / 0.09)",
-                    color: "hsl(var(--muted-foreground))",
-                  }}
+                  className="text-xs px-3 py-1.5 rounded-full font-medium bg-muted/60 border border-border text-muted-foreground"
                 >
                   {pill}
                 </span>
@@ -240,10 +228,9 @@ const Hero = () => {
               initial={{ opacity: 0, x: 24, y: 8 }}
               animate={{ opacity: 1, x: 0, y: 0 }}
               transition={{ duration: 0.55, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-              className="relative rounded-2xl p-7"
+              className="relative rounded-2xl p-7 border border-border dark:border-white/8"
               style={{
-                background: "hsl(347 40% 7% / 0.75)",
-                border: "1px solid hsl(0 0% 100% / 0.08)",
+                background: "hsl(var(--card) / 0.85)",
                 backdropFilter: "blur(24px)",
                 boxShadow: "0 32px 80px hsl(347 40% 2% / 0.6), inset 0 1px 0 hsl(0 0% 100% / 0.06)",
               }}
@@ -255,10 +242,10 @@ const Hero = () => {
                 transition={{ delay: 0.3 }}
                 className="mb-6"
               >
-                <h2 className="text-xl font-bold mb-1" style={{ color: "hsl(0 0% 96%)" }}>
+                <h2 className="text-xl font-bold mb-1 text-foreground">
                   {t('hero.cta_primary')}
                 </h2>
-                <p className="text-sm" style={{ color: "hsl(0 0% 48%)" }}>
+                <p className="text-sm text-muted-foreground">
                   {t('hero.card_subheader')}
                 </p>
               </motion.div>
@@ -292,11 +279,11 @@ const Hero = () => {
                 transition={{ delay: 0.72 }}
                 className="flex items-center gap-3 my-5"
               >
-                <div className="flex-1 h-px" style={{ background: "hsl(0 0% 100% / 0.07)" }} />
-                <span className="text-xs font-medium" style={{ color: "hsl(0 0% 38%)" }}>
+                <div className="flex-1 h-px bg-border" />
+                <span className="text-xs font-medium text-muted-foreground">
                   {t('hero.or_divider')}
                 </span>
-                <div className="flex-1 h-px" style={{ background: "hsl(0 0% 100% / 0.07)" }} />
+                <div className="flex-1 h-px bg-border" />
               </motion.div>
 
               {/* Email option */}
@@ -305,19 +292,9 @@ const Hero = () => {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.78 }}
                 href="/auth?mode=register"
-                className="group flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-medium transition-all duration-200"
+                className="group flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-medium transition-all duration-200 text-foreground border border-border hover:border-border/80 hover:bg-muted/40"
                 style={{
-                  background: "hsl(0 0% 100% / 0.03)",
-                  border: "1px solid hsl(0 0% 100% / 0.07)",
-                  color: "hsl(0 0% 62%)",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color = "hsl(0 0% 80%)";
-                  (e.currentTarget as HTMLAnchorElement).style.borderColor = "hsl(0 0% 100% / 0.12)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color = "hsl(0 0% 62%)";
-                  (e.currentTarget as HTMLAnchorElement).style.borderColor = "hsl(0 0% 100% / 0.07)";
+                  background: "hsl(var(--muted) / 0.3)",
                 }}
               >
                 {t('hero.email_register')}
@@ -329,16 +306,12 @@ const Hero = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.85 }}
-                className="text-center text-xs mt-4 leading-relaxed"
-                style={{ color: "hsl(0 0% 33%)" }}
+                className="text-center text-xs mt-4 leading-relaxed text-muted-foreground"
               >
                 {t('hero.terms_text')}{" "}
                 <a
                   href="/terms-of-service"
-                  className="underline underline-offset-2 transition-colors"
-                  style={{ color: "hsl(0 0% 45%)" }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "hsl(0 0% 65%)")}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "hsl(0 0% 45%)")}
+                  className="underline underline-offset-2 transition-colors text-muted-foreground hover:text-foreground"
                 >
                   {t('hero.terms_link')}
                 </a>
