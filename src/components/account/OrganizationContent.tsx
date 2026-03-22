@@ -148,12 +148,12 @@ const OrganizationContent = () => {
                   </div>
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs text-muted-foreground">Lank</p>
+                      <p className="text-xs text-muted-foreground">{t('org.link')}</p>
                       <p className="text-xs text-muted-foreground truncate max-w-[200px]">{window.location.origin}/join/{activeOrganization.invite_code}</p>
                     </div>
                     <div className="flex gap-1">
                       <Button variant="ghost" size="sm" onClick={handleCopyInviteLink}><Copy className="h-4 w-4 mr-1" /> {t('org.copy')}</Button>
-                      <Button variant="ghost" size="sm" onClick={handleShareInviteLink}><Share2 className="h-4 w-4 mr-1" /> Dela</Button>
+                      <Button variant="ghost" size="sm" onClick={handleShareInviteLink}><Share2 className="h-4 w-4 mr-1" /> {t('org.share')}</Button>
                     </div>
                   </div>
                 </div>
@@ -166,7 +166,7 @@ const OrganizationContent = () => {
       {/* Members */}
       {activeTab === "members" && (
         <section className="space-y-3">
-          <h3 className="text-base font-medium text-foreground">Medlemmar ({members.length})</h3>
+          <h3 className="text-base font-medium text-foreground">{t('org.members_heading')} ({members.length})</h3>
           <div className="space-y-2">
             {members.map((member) => (
               <div key={member.id} className="flex items-center justify-between p-3 rounded-xl bg-card shadow-sm">
@@ -178,7 +178,7 @@ const OrganizationContent = () => {
                   <div>
                     <div className="flex items-center gap-2">
                       <p className="font-medium text-sm">{member.user_email}</p>
-                      {member.role === "founder" && <Badge variant="secondary" className="text-xs"><Crown className="h-3 w-3 mr-1" /> Grundare</Badge>}
+                      {member.role === "founder" && <Badge variant="secondary" className="text-xs"><Crown className="h-3 w-3 mr-1" /> {t('org.role_founder')}</Badge>}
                       {member.role === "admin" && <Badge variant="secondary" className="text-xs"><Shield className="h-3 w-3 mr-1" /> Admin</Badge>}
                     </div>
                   </div>
@@ -189,10 +189,10 @@ const OrganizationContent = () => {
                       <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10"><UserMinus className="h-4 w-4" /></Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
-                      <AlertDialogHeader><AlertDialogTitle>Ta bort medlem?</AlertDialogTitle></AlertDialogHeader>
+                      <AlertDialogHeader><AlertDialogTitle>{t('org.remove_member_confirm')}</AlertDialogTitle></AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Avbryt</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => removeMember(member.id)}>Ta bort</AlertDialogAction>
+                        <AlertDialogCancel>{t('org.cancel')}</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => removeMember(member.id)}>{t('org.remove')}</AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
@@ -207,23 +207,23 @@ const OrganizationContent = () => {
       {activeTab === "invites" && (
         <div className="space-y-4">
           <section className="space-y-3">
-            <h3 className="text-base font-medium text-foreground">Bjud in via e-post</h3>
+            <h3 className="text-base font-medium text-foreground">{t('org.invite_by_email')}</h3>
             <div className="flex gap-2">
               <Input type="email" placeholder="e-post@exempel.se" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} className="bg-background border-border" />
               <Button onClick={handleSendEmailInvite} disabled={isSendingInvite || !inviteEmail.trim()}>
                 {isSendingInvite ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4 mr-2" />}
-                Skicka
+                {t('org.send')}
               </Button>
             </div>
           </section>
           {invites.length > 0 && (
             <section className="space-y-3">
-              <h3 className="text-base font-medium text-foreground">Vantande inbjudningar</h3>
+              <h3 className="text-base font-medium text-foreground">{t('org.pending_invitations')}</h3>
               <div className="space-y-2">
                 {invites.map((invite) => (
                   <div key={invite.id} className="flex items-center justify-between p-3 rounded-xl bg-card shadow-sm">
                     <span className="text-sm">{invite.email}</span>
-                    <Badge variant="secondary" className="text-xs">Vantande</Badge>
+                    <Badge variant="secondary" className="text-xs">{t('org.pending')}</Badge>
                   </div>
                 ))}
               </div>
