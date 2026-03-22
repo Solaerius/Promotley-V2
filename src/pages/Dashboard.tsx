@@ -6,11 +6,10 @@ import DashboardLayout from "@/components/layouts/DashboardLayout";
 import {
   TrendingUp, Users, Calendar, Zap, BarChart3,
   MessageSquare, CheckCircle2, Sparkles, ChevronRight,
-  Instagram,
+  ExternalLink, MessageCircle, ThumbsUp,
 } from "lucide-react";
 import { useConnections } from "@/hooks/useConnections";
 import { useTikTokData } from "@/hooks/useTikTokData";
-import { useMetaData } from "@/hooks/useMetaData";
 import { useUserCredits } from "@/hooks/useUserCredits";
 import { useCalendar } from "@/hooks/useCalendar";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,7 +21,7 @@ import { sv } from "date-fns/locale";
 import { enUS } from "date-fns/locale/en-US";
 import {
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
-  AreaChart, Area,
+  AreaChart, Area, BarChart, Bar, Cell,
 } from "recharts";
 
 // ─────────────────────────────────────────────
@@ -108,7 +107,7 @@ const PlatformCard = ({
           <p className="text-xs mb-4 text-muted-foreground/70">
             {t('dashboard.connect_to_see_stats')}
           </p>
-          <Link to="/account">
+          <Link to="/settings?tab=app">
             <Button size="sm" variant="outline" className="h-7 text-xs">
               {t('dashboard.connect_account')}
             </Button>
@@ -160,7 +159,6 @@ const Dashboard = () => {
   const { user } = useAuth();
   const { isConnected, connections, loading: connectionsLoading } = useConnections();
   const tiktokData = useTikTokData({ enabled: !connectionsLoading && isConnected("tiktok") });
-  const metaData = useMetaData({ enabled: !connectionsLoading && (isConnected("meta_ig") || isConnected("meta_fb")) });
   const { credits } = useUserCredits();
   const { posts } = useCalendar();
   const [recentActivity, setRecentActivity] = useState<
@@ -170,9 +168,9 @@ const Dashboard = () => {
 
   const upcomingPosts = posts?.filter((p) => new Date(p.date) >= new Date()).slice(0, 4) || [];
 
-  const totalFollowers =
-    (isConnected("meta_ig") && metaData.instagram?.followers_count || 0) +
-    (isConnected("tiktok") && tiktokData.user?.follower_count || 0);
+  const totalFollowers = isConnected("tiktok")
+    ? (tiktokData.user?.follower_count || 0)
+    : 0;
 
   const firstName =
     user?.user_metadata?.full_name?.split(" ")[0] ||
@@ -350,36 +348,164 @@ const Dashboard = () => {
           </div>
 
           {/* ── Platform row ── */}
+          <PlatformCard
+            title="TikTok"
+            icon={<TikTokIcon className="h-4 w-4" style={{ color: "white" }} />}
+            iconBg="hsl(0 0% 50% / 0.15)"
+            isConnected={isConnected("tiktok")}
+            isLoading={tiktokData.loading}
+            accentColor="hsl(var(--foreground))"
+            metrics={[
+              { label: t('dashboard.metric_followers'), value: formatNumber(tiktokData.user?.follower_count ?? 0) },
+              { label: t('dashboard.metric_videos'), value: tiktokData.user?.video_count ?? 0 },
+              { label: t('dashboard.metric_likes'), value: formatNumber(tiktokData.user?.likes_count ?? 0) },
+              { label: t('dashboard.metric_following'), value: tiktokData.user?.following_count ?? 0 },
+            ]}
+          />
+
+          {/* ── Most Commented + Top Content row ── */}
           <div className="grid lg:grid-cols-2 gap-3">
-            <PlatformCard
-              title="TikTok"
-              icon={<TikTokIcon className="h-4 w-4" style={{ color: "white" }} />}
-              iconBg="hsl(0 0% 50% / 0.15)"
-              isConnected={isConnected("tiktok")}
-              isLoading={tiktokData.loading}
-              accentColor="hsl(var(--foreground))"
-              metrics={[
-                { label: t('dashboard.metric_followers'), value: formatNumber(tiktokData.user?.follower_count ?? 0) },
-                { label: t('dashboard.metric_videos'), value: tiktokData.user?.video_count ?? 0 },
-                { label: t('dashboard.metric_likes'), value: formatNumber(tiktokData.user?.likes_count ?? 0) },
-                { label: t('dashboard.metric_following'), value: tiktokData.user?.following_count ?? 0 },
-              ]}
-            />
-            <PlatformCard
-              title="Instagram"
-              icon={<Instagram className="h-4 w-4" style={{ color: "hsl(330 80% 72%)" }} />}
-              iconBg="hsl(330 50% 45% / 0.15)"
-              isConnected={isConnected("meta_ig")}
-              isLoading={metaData.loading}
-              accentColor="hsl(330 75% 68%)"
-              metrics={[
-                { label: t('dashboard.metric_followers'), value: formatNumber(metaData.instagram?.followers_count ?? 0) },
-                { label: t('dashboard.metric_following'), value: metaData.instagram?.follows_count ?? 0 },
-                { label: t('dashboard.metric_posts'), value: metaData.instagram?.media_count ?? 0 },
-                { label: "@handle", value: `@${metaData.instagram?.username ?? "–"}` },
-              ]}
-            />
+            {/* Most Commented */}
+            {isConnected("tiktok") && tiktokData.videos.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.32, duration: 0.32, ease: "easeOut" }}
+                className="rounded-2xl p-5 bg-card border border-border"
+              >
+                <div className="flex items-center gap-2.5 mb-4">
+                  <div className="w-6 h-6 rounded-md flex items-center justify-center bg-muted/60">
+                    <MessageCircle className="h-3.5 w-3.5" style={{ color: "hsl(210 78% 62%)" }} />
+                  </div>
+                  <h2 className="text-sm font-semibold text-foreground">
+                    {t('dashboard.most_commented')}
+                  </h2>
+                </div>
+                <div className="space-y-2.5">
+                  {[...tiktokData.videos]
+                    .sort((a, b) => b.comments - a.comments)
+                    .slice(0, 3)
+                    .map((video) => (
+                      <div key={video.id} className="flex items-center gap-3 rounded-xl p-2.5 bg-surface-raised border border-border/50">
+                        {video.cover_image_url ? (
+                          <img
+                            src={video.cover_image_url}
+                            alt=""
+                            className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-lg bg-muted flex-shrink-0" />
+                        )}
+                        <p className="text-xs font-medium flex-1 line-clamp-2 leading-tight text-foreground">
+                          {video.title || "—"}
+                        </p>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          <MessageCircle className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-xs font-semibold" style={{ color: "hsl(210 78% 62%)" }}>
+                            {formatNumber(video.comments)}
+                          </span>
+                        </div>
+                        {video.share_url && (
+                          <a href={video.share_url} target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
+                            <ExternalLink className="h-3 w-3 text-muted-foreground hover:text-foreground transition-colors" />
+                          </a>
+                        )}
+                      </div>
+                    ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Top Content */}
+            {isConnected("tiktok") && tiktokData.videos.length > 0 && (() => {
+              const topVideo = [...tiktokData.videos].sort((a, b) => b.likes - a.likes)[0];
+              const engRate = topVideo.views > 0
+                ? (((topVideo.likes + topVideo.comments) / topVideo.views) * 100).toFixed(1)
+                : "0.0";
+              return (
+                <motion.div
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.36, duration: 0.32, ease: "easeOut" }}
+                  className="rounded-2xl p-5 bg-card border border-border"
+                >
+                  <div className="flex items-center gap-2.5 mb-4">
+                    <div className="w-6 h-6 rounded-md flex items-center justify-center bg-muted/60">
+                      <ThumbsUp className="h-3.5 w-3.5" style={{ color: "hsl(var(--primary))" }} />
+                    </div>
+                    <h2 className="text-sm font-semibold text-foreground">
+                      {t('dashboard.top_content')}
+                    </h2>
+                  </div>
+                  <div className="flex gap-3">
+                    {topVideo.cover_image_url ? (
+                      <img src={topVideo.cover_image_url} alt="" className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
+                    ) : (
+                      <div className="w-16 h-16 rounded-xl bg-muted flex-shrink-0" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium line-clamp-2 leading-snug mb-2 text-foreground">{topVideo.title || "—"}</p>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {[
+                          { label: t('dashboard.metric_likes'), value: formatNumber(topVideo.likes) },
+                          { label: t('dashboard.metric_views'), value: formatNumber(topVideo.views) },
+                          { label: t('dashboard.metric_comments'), value: formatNumber(topVideo.comments) },
+                          { label: t('dashboard.metric_engagement_rate'), value: `${engRate}%` },
+                        ].map(({ label, value }) => (
+                          <div key={label} className="rounded-lg p-1.5 bg-surface-raised border border-border/50">
+                            <p className="text-[10px] text-muted-foreground">{label}</p>
+                            <p className="text-xs font-bold text-foreground">{value}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })()}
           </div>
+
+          {/* ── Engagement Sparkline ── */}
+          {isConnected("tiktok") && tiktokData.videos.length >= 3 && (() => {
+            const sparkData = [...tiktokData.videos]
+              .slice(0, 8)
+              .reverse()
+              .map((v, i) => ({
+                name: `${i + 1}`,
+                rate: v.views > 0 ? parseFloat((((v.likes + v.comments) / v.views) * 100).toFixed(2)) : 0,
+              }));
+            return (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.35 }}
+                className="rounded-2xl p-5 bg-card border border-border"
+              >
+                <div className="flex items-center gap-2.5 mb-4">
+                  <div className="w-6 h-6 rounded-md flex items-center justify-center bg-muted/60">
+                    <BarChart3 className="h-3.5 w-3.5" style={{ color: "hsl(var(--accent-brand))" }} />
+                  </div>
+                  <h2 className="text-sm font-semibold text-foreground">{t('dashboard.engagement_trend')}</h2>
+                  <span className="ml-auto text-xs text-muted-foreground">{t('dashboard.metric_engagement_rate')}</span>
+                </div>
+                <div style={{ height: 80 }}>
+                  <ResponsiveContainer width="100%" height={80}>
+                    <BarChart data={sparkData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                      <Tooltip
+                        contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 11 }}
+                        formatter={(val: number) => [`${val}%`, t('dashboard.metric_engagement_rate')]}
+                      />
+                      <Bar dataKey="rate" radius={[3, 3, 0, 0]}>
+                        {sparkData.map((_, idx) => (
+                          <Cell key={idx} fill={`hsl(var(--primary) / ${0.5 + (idx / sparkData.length) * 0.5})`} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </motion.div>
+            );
+          })()}
 
           {/* ── Follower chart ── */}
           {followerHistory.length > 0 && (
