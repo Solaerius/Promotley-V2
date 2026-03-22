@@ -77,14 +77,14 @@ const DashboardLayout = ({ children, pageTitle, hideFooter }: DashboardLayoutPro
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-72">
                 <div className="px-3 py-2 border-b flex items-center justify-between">
-                  <h3 className="font-semibold text-sm">Notiser</h3>
+                  <h3 className="font-semibold text-sm">{t('nav.notifications')}</h3>
                   <div className="flex items-center gap-2">
                     {unreadCount > 0 && (
                       <button
                         onClick={(e) => { e.preventDefault(); markAllAsRead(); }}
                         className="text-[10px] text-primary hover:underline"
                       >
-                        Markera alla som lästa
+                        {t('nav.mark_all_read')}
                       </button>
                     )}
                     {notifications.length > 0 && (
@@ -93,7 +93,7 @@ const DashboardLayout = ({ children, pageTitle, hideFooter }: DashboardLayoutPro
                         className="text-[10px] text-destructive hover:underline flex items-center gap-0.5"
                       >
                         <Trash2 className="h-2.5 w-2.5" />
-                        Rensa
+                        {t('nav.clear_all')}
                       </button>
                     )}
                   </div>
@@ -151,9 +151,9 @@ const DashboardLayout = ({ children, pageTitle, hideFooter }: DashboardLayoutPro
             <footer className="py-4 px-4 text-center text-xs text-muted-foreground border-t border-border/30">
               <p>
                 © {new Date().getFullYear()} Promotely UF ·{" "}
-                <Link to="/privacy-policy" className="hover:text-foreground transition-colors">Integritetspolicy</Link>
+                <Link to="/privacy-policy" className="hover:text-foreground transition-colors">{t('footer.privacy_policy')}</Link>
                 {" · "}
-                <Link to="/terms-of-service" className="hover:text-foreground transition-colors">Villkor</Link>
+                <Link to="/terms-of-service" className="hover:text-foreground transition-colors">{t('footer.terms_link')}</Link>
               </p>
             </footer>
           )}
