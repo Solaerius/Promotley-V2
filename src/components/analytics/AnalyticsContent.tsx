@@ -24,6 +24,7 @@ import {
   Clock,
   Calendar,
   Hash,
+  Sparkles,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,7 @@ import { useTikTokGrowth } from "@/hooks/useTikTokGrowth";
 import { Link } from "react-router-dom";
 import TikTokProfileSection from "@/components/TikTokProfileSection";
 import { useTranslation } from 'react-i18next';
+import { demoTikTokVideos, demoStats } from "@/data/demoData";
 
 const fmt = (n: number) => n >= 1_000_000 ? (n/1_000_000).toFixed(1)+'M' : n >= 1_000 ? (n/1_000).toFixed(1)+'k' : String(n);
 
@@ -68,27 +70,25 @@ const AnalyticsContent = () => {
     connectedStats.totalComments += tiktokData.stats.totalComments || 0;
   }
 
-  const stats = [];
-  if (connectedStats.totalFollowers > 0) stats.push({ title: t('analytics.total_followers'), value: connectedStats.totalFollowers.toLocaleString(), icon: Users });
-  if (connectedStats.totalViews > 0) stats.push({ title: t('analytics.views'), value: connectedStats.totalViews.toLocaleString(), icon: Eye });
-  if (connectedStats.totalLikes > 0) stats.push({ title: t('analytics.likes'), value: connectedStats.totalLikes.toLocaleString(), icon: Heart });
-  if (connectedStats.totalComments > 0) stats.push({ title: t('analytics.comments'), value: connectedStats.totalComments.toLocaleString(), icon: MessageCircle });
+  const isExampleMode = !hasConnections;
+  const effectiveVideos = isExampleMode ? demoTikTokVideos : tiktokData.videos;
 
-  if (!hasConnections) {
-    return (
-      <div className="rounded-xl bg-card shadow-sm p-12 text-center">
-        <Users className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
-        <h3 className="text-base font-medium text-foreground mb-1">{t('analytics.no_accounts_title')}</h3>
-        <p className="text-sm text-muted-foreground mb-4">{t('analytics.no_accounts_desc')}</p>
-        <Link to="/account">
-          <Button size="sm">{t('analytics.go_to_account')}</Button>
-        </Link>
-      </div>
-    );
-  }
+  const stats = [];
+  if (isConnected('meta_ig') || isConnected('tiktok') || isExampleMode) stats.push({ title: t('analytics.total_followers'), value: isExampleMode ? demoStats.followers.toLocaleString() : connectedStats.totalFollowers.toLocaleString(), icon: Users });
+  if (isConnected('tiktok') || isExampleMode) stats.push({ title: t('analytics.views'), value: isExampleMode ? demoStats.views.toLocaleString() : connectedStats.totalViews.toLocaleString(), icon: Eye });
+  if (isConnected('tiktok') || isExampleMode) stats.push({ title: t('analytics.likes'), value: isExampleMode ? demoStats.likes.toLocaleString() : connectedStats.totalLikes.toLocaleString(), icon: Heart });
+  if (isConnected('tiktok') || isExampleMode) stats.push({ title: t('analytics.comments'), value: isExampleMode ? demoStats.comments.toLocaleString() : connectedStats.totalComments.toLocaleString(), icon: MessageCircle });
 
   return (
     <div className="space-y-4">
+      {isExampleMode && (
+        <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-sm text-muted-foreground mb-4">
+          <Sparkles className="h-4 w-4 text-primary shrink-0" />
+          <span>Exempeldata — koppla TikTok för att se dina riktiga insikter</span>
+          <Link to="/settings?tab=app" className="ml-auto text-xs font-medium text-primary hover:underline shrink-0">Koppla TikTok</Link>
+        </div>
+      )}
+
       {/* Stats */}
       {stats.length > 0 && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -203,10 +203,10 @@ const AnalyticsContent = () => {
       </div>
 
       {/* Most Liked Analysis */}
-      {isConnected('tiktok') && tiktokData.videos.length >= 3 && (() => {
-        const sorted = [...tiktokData.videos].sort((a, b) => b.likes - a.likes);
+      {(isConnected('tiktok') || isExampleMode) && effectiveVideos.length >= 3 && (() => {
+        const sorted = [...effectiveVideos].sort((a, b) => b.likes - a.likes);
         const top5 = sorted.slice(0, 5);
-        const overall = tiktokData.videos;
+        const overall = effectiveVideos;
 
         // Average duration
         const avgDurTop = top5.filter(v => v.duration).reduce((s, v) => s + (v.duration || 0), 0) / (top5.filter(v => v.duration).length || 1);
@@ -287,8 +287,8 @@ const AnalyticsContent = () => {
       })()}
 
       {/* Engagement Breakdown Chart */}
-      {isConnected('tiktok') && tiktokData.videos.length > 0 && (() => {
-        const breakdownData = [...tiktokData.videos]
+      {(isConnected('tiktok') || isExampleMode) && effectiveVideos.length > 0 && (() => {
+        const breakdownData = [...effectiveVideos]
           .slice(0, 10)
           .reverse()
           .map((v, i) => ({
@@ -323,8 +323,8 @@ const AnalyticsContent = () => {
       })()}
 
       {/* Content Performance Table */}
-      {isConnected('tiktok') && tiktokData.videos.length > 0 && (() => {
-        const tableData = [...tiktokData.videos].map(v => ({
+      {(isConnected('tiktok') || isExampleMode) && effectiveVideos.length > 0 && (() => {
+        const tableData = [...effectiveVideos].map(v => ({
           ...v,
           rate: v.views > 0 ? parseFloat((((v.likes + v.comments) / v.views) * 100).toFixed(1)) : 0,
         })).sort((a, b) => {
