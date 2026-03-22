@@ -57,24 +57,24 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
       borderRadius: 0,
       marginTop: 0,
       backgroundColor: "rgba(0,0,0,0)",
-      borderColor: "rgba(255,255,255,0)",
+      borderColor: "rgba(0,0,0,0)",
       boxShadow: "none",
     },
     mobileOpen: {
       maxWidth: "100%",
       borderRadius: 0,
       marginTop: 0,
-      backgroundColor: "hsl(347 40% 4% / 0.97)",
-      borderColor: "rgba(255,255,255,0)",
+      backgroundColor: "hsl(var(--background) / 0.97)",
+      borderColor: "rgba(0,0,0,0)",
       boxShadow: "none",
     },
     pill: {
       maxWidth: 720,
       borderRadius: 9999,
       marginTop: 12,
-      backgroundColor: "hsl(347 40% 5% / 0.88)",
-      borderColor: "rgba(255,255,255,0.10)",
-      boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+      backgroundColor: "hsl(var(--background) / 0.88)",
+      borderColor: "hsl(var(--border))",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
     },
   };
 
@@ -141,7 +141,7 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
                 <Link to="/dashboard">
                   <Button
                     size="sm"
-                    className="bg-white text-black hover:bg-white/90 font-medium text-xs"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-xs"
                   >
                     {t('nav.dashboard')}
                   </Button>
@@ -152,7 +152,7 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="dark:text-white/80 text-gray-700 dark:hover:bg-white/10 hover:bg-black/10 text-xs"
+                      className="text-foreground/80 hover:text-foreground hover:bg-foreground/10 text-xs"
                     >
                       {t('nav.login')}
                     </Button>
@@ -160,7 +160,7 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
                   <Link to="/auth?mode=register">
                     <Button
                       size="sm"
-                      className="bg-white text-black hover:bg-white/90 font-medium text-xs"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-xs"
                     >
                       {t('nav.register')}
                     </Button>
@@ -183,7 +183,7 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
           <AnimatePresence>
             {mobileOpen && (
               <motion.div
-                className="md:hidden pt-4 pb-2 border-t border-white/10 mt-4 flex flex-col gap-1"
+                className="md:hidden pt-4 pb-2 border-t border-border mt-4 flex flex-col gap-1"
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
@@ -192,36 +192,36 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
                 <a
                   href="#pricing"
                   onClick={handlePricingClick}
-                  className="py-2.5 px-3 text-sm text-white/80 hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
+                  className="py-2.5 px-3 text-sm text-foreground/80 hover:bg-foreground/5 rounded-lg transition-colors cursor-pointer"
                 >
                   {t('nav.pricing')}
                 </a>
                 <Link
                   to="/demo"
-                  className="py-2.5 px-3 text-sm text-white/80 hover:bg-white/5 rounded-lg transition-colors"
+                  className="py-2.5 px-3 text-sm text-foreground/80 hover:bg-foreground/5 rounded-lg transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   {t('nav.demo')}
                 </Link>
                 <Link
                   to="/about"
-                  className="py-2.5 px-3 text-sm text-white/80 hover:bg-white/5 rounded-lg transition-colors"
+                  className="py-2.5 px-3 text-sm text-foreground/80 hover:bg-foreground/5 rounded-lg transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   {t('nav.about')}
                 </Link>
-                <div className="flex flex-col gap-2 pt-3 border-t border-white/10 mt-2">
+                <div className="flex flex-col gap-2 pt-3 border-t border-border mt-2">
                   {user ? (
                     <Link to="/dashboard" onClick={() => setMobileOpen(false)}>
-                      <Button className="w-full bg-white text-black">{t('nav.dashboard')}</Button>
+                      <Button className="w-full bg-primary text-primary-foreground">{t('nav.dashboard')}</Button>
                     </Link>
                   ) : (
                     <>
                       <Link to="/auth?mode=login" onClick={() => setMobileOpen(false)}>
-                        <Button variant="ghost" className="w-full text-white/80 hover:bg-white/10">{t('nav.login')}</Button>
+                        <Button variant="ghost" className="w-full text-foreground/80 hover:bg-foreground/10">{t('nav.login')}</Button>
                       </Link>
                       <Link to="/auth?mode=register" onClick={() => setMobileOpen(false)}>
-                        <Button className="w-full bg-white text-black">{t('nav.register')}</Button>
+                        <Button className="w-full bg-primary text-primary-foreground">{t('nav.register')}</Button>
                       </Link>
                     </>
                   )}
