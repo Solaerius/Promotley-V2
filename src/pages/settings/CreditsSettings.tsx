@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 
-export default function CreditsSettings() {
+export function CreditsSettingsInner() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -151,91 +151,89 @@ export default function CreditsSettings() {
   );
 
   return (
-    <DashboardLayout>
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-foreground mb-6">
-          {t("settings.credits_billing")}
-        </h1>
+    <div className="max-w-2xl mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold text-foreground mb-6">
+        {t("settings.credits_billing")}
+      </h1>
 
-        <div className="space-y-6">
-          <div className="rounded-xl bg-card shadow-sm p-4 space-y-3">
-            <CreditsDisplay variant="full" />
+      <div className="space-y-6">
+        <div className="rounded-xl bg-card shadow-sm p-4 space-y-3">
+          <CreditsDisplay variant="full" />
 
-            <div className="pt-3 border-t border-border">
-              <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
-                <Plus className="w-3.5 h-3.5" /> {t("account.top_up_credits")}
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {Object.entries(STRIPE_CREDIT_PACKAGES).map(([key, pkg]) => (
-                  <Button
-                    key={key}
-                    variant="outline"
-                    className="flex flex-col h-auto py-2"
-                    onClick={() =>
-                      navigate(`/checkout?package=${key}&type=credits`)
-                    }
-                  >
-                    <span className="text-base font-bold">{pkg.credits}</span>
-                    <span className="text-[10px] text-muted-foreground">
-                      {t("account.credits")}
-                    </span>
-                    <span className="text-sm font-semibold text-primary mt-0.5">
-                      {pkg.price} kr
-                    </span>
-                  </Button>
-                ))}
-              </div>
+          <div className="pt-3 border-t border-border">
+            <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
+              <Plus className="w-3.5 h-3.5" /> {t("account.top_up_credits")}
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {Object.entries(STRIPE_CREDIT_PACKAGES).map(([key, pkg]) => (
+                <Button
+                  key={key}
+                  variant="outline"
+                  className="flex flex-col h-auto py-2"
+                  onClick={() =>
+                    navigate(`/checkout?package=${key}&type=credits`)
+                  }
+                >
+                  <span className="text-base font-bold">{pkg.credits}</span>
+                  <span className="text-[10px] text-muted-foreground">
+                    {t("account.credits")}
+                  </span>
+                  <span className="text-sm font-semibold text-primary mt-0.5">
+                    {pkg.price} kr
+                  </span>
+                </Button>
+              ))}
             </div>
+          </div>
 
-            <div className="flex flex-wrap gap-2 pt-3 border-t border-border">
-              <Button onClick={() => navigate("/pricing")} size="sm">
+          <div className="flex flex-wrap gap-2 pt-3 border-t border-border">
+            <Button onClick={() => navigate("/pricing")} size="sm">
+              <CreditCard className="w-4 h-4 mr-1.5" />
+              {hasActivePlan
+                ? t("account.upgrade_plan")
+                : t("account.choose_plan")}
+            </Button>
+            {hasActiveStripeSubscription && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleOpenPortal}
+                disabled={isOpeningPortal}
+              >
                 <CreditCard className="w-4 h-4 mr-1.5" />
-                {hasActivePlan
-                  ? t("account.upgrade_plan")
-                  : t("account.choose_plan")}
+                {isOpeningPortal
+                  ? t("account.opening")
+                  : t("account.manage_subscription")}
               </Button>
-              {hasActiveStripeSubscription && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleOpenPortal}
-                  disabled={isOpeningPortal}
-                >
-                  <CreditCard className="w-4 h-4 mr-1.5" />
-                  {isOpeningPortal
-                    ? t("account.opening")
-                    : t("account.manage_subscription")}
-                </Button>
-              )}
-              {hasActivePlan && downgradeOptions.length > 0 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowDowngradeDialog(true)}
-                >
-                  <ArrowDown className="w-4 h-4 mr-1.5" />{" "}
-                  {t("account.downgrade")}
-                </Button>
-              )}
-              {hasActivePlan && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowCancelDialog(true)}
-                  className="text-destructive hover:text-destructive"
-                >
-                  <XCircle className="w-4 h-4 mr-1.5" />{" "}
-                  {t("account.cancel_plan")}
-                </Button>
-              )}
-            </div>
+            )}
+            {hasActivePlan && downgradeOptions.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowDowngradeDialog(true)}
+              >
+                <ArrowDown className="w-4 h-4 mr-1.5" />{" "}
+                {t("account.downgrade")}
+              </Button>
+            )}
+            {hasActivePlan && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowCancelDialog(true)}
+                className="text-destructive hover:text-destructive"
+              >
+                <XCircle className="w-4 h-4 mr-1.5" />{" "}
+                {t("account.cancel_plan")}
+              </Button>
+            )}
+          </div>
 
-            <div className="pt-3 border-t border-border">
-              <PromoCodeInput
-                variant="inline"
-                onSuccess={() => refetchCredits()}
-              />
-            </div>
+          <div className="pt-3 border-t border-border">
+            <PromoCodeInput
+              variant="inline"
+              onSuccess={() => refetchCredits()}
+            />
           </div>
         </div>
       </div>
@@ -313,6 +311,14 @@ export default function CreditsSettings() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+    </div>
+  );
+}
+
+export default function CreditsSettings() {
+  return (
+    <DashboardLayout>
+      <CreditsSettingsInner />
     </DashboardLayout>
   );
 }

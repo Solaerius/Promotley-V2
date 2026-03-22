@@ -10,12 +10,13 @@ import {
   TrendingUp,
   CalendarDays,
   Wand2,
-  CircleUser,
   Settings,
+  Settings2,
   LogOut,
   BrainCircuit,
   Moon,
   Sun,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -54,12 +55,13 @@ export function AppSidebar() {
   const { t } = useTranslation();
 
   const navItems = [
-    { title: t('nav.home'), href: "/dashboard", icon: Home },
-    { title: t('nav.analytics'), href: "/analytics", icon: TrendingUp },
-    { title: t('nav.tools'), href: "/ai", icon: Wand2 },
-    { title: t('nav.ai_chat'), href: "/ai/chat", icon: BrainCircuit },
-    { title: t('nav.calendar'), href: "/calendar", icon: CalendarDays },
-    { title: t('nav.account'), href: "/account", icon: CircleUser },
+    { title: t('nav.home'),          href: "/dashboard",        icon: Home },
+    { title: t('nav.analytics'),     href: "/analytics",        icon: TrendingUp },
+    { title: t('nav.tools'),         href: "/ai",               icon: Wand2 },
+    { title: t('nav.ai_chat'),       href: "/ai/chat",          icon: BrainCircuit },
+    { title: t('nav.calendar'),      href: "/calendar",         icon: CalendarDays },
+    { title: t('nav.company'),       href: "/settings/company", icon: Building2 },
+    { title: t('nav.settings_page'), href: "/settings",         icon: Settings2 },
   ];
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
@@ -98,7 +100,6 @@ export function AppSidebar() {
     if (path === "/dashboard") return location.pathname === "/dashboard" || location.pathname === "/";
     if (path === "/ai") return location.pathname === "/ai";
     if (path === "/ai/chat") return location.pathname === "/ai/chat";
-    if (path === "/account") return location.pathname.startsWith("/account") || location.pathname.startsWith("/settings") || location.pathname.startsWith("/organization");
     return location.pathname.startsWith(path);
   };
 

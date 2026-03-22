@@ -62,10 +62,7 @@ const OrganizationSettings = lazy(() => import("./pages/OrganizationSettings"));
 const CreateOrganization = lazy(() => import("./pages/CreateOrganization"));
 const JoinOrganization = lazy(() => import("./pages/JoinOrganization"));
 // Settings pages
-const ProfileSettings = lazy(() => import("./pages/settings/ProfileSettings"));
-const CompanySettings = lazy(() => import("./pages/settings/CompanySettings"));
-const CreditsSettings = lazy(() => import("./pages/settings/CreditsSettings"));
-const AppSettings = lazy(() => import("./pages/settings/AppSettings"));
+const Settings = lazy(() => import("./pages/Settings"));
 
 const DevAutoLogin = import.meta.env.DEV
   ? lazy(() => import("./pages/DevAutoLogin"))
@@ -155,16 +152,13 @@ function AppRoutes() {
           {/* Redirects for old routes */}
           <Route path="/ai-chat" element={<Navigate to="/ai" replace />} />
           <Route path="/ai-dashboard" element={<Navigate to="/ai" replace />} />
-          <Route
-            path="/account"
-            element={<Navigate to="/settings/profile" replace />}
-          />
+          <Route path="/account" element={<Navigate to="/settings?tab=profile" replace />} />
           {/* Settings pages */}
-          <Route path="/settings" element={<Navigate to="/settings/profile" replace />} />
-          <Route path="/settings/profile" element={<ProtectedRoute><PageTransition><ProfileSettings /></PageTransition></ProtectedRoute>} />
-          <Route path="/settings/company" element={<ProtectedRoute><PageTransition><CompanySettings /></PageTransition></ProtectedRoute>} />
-          <Route path="/settings/credits" element={<ProtectedRoute><PageTransition><CreditsSettings /></PageTransition></ProtectedRoute>} />
-          <Route path="/settings/app" element={<ProtectedRoute><PageTransition><AppSettings /></PageTransition></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><PageTransition><Settings /></PageTransition></ProtectedRoute>} />
+          <Route path="/settings/profile" element={<Navigate to="/settings?tab=profile" replace />} />
+          <Route path="/settings/company" element={<Navigate to="/settings?tab=company" replace />} />
+          <Route path="/settings/credits" element={<Navigate to="/settings?tab=credits" replace />} />
+          <Route path="/settings/app" element={<Navigate to="/settings?tab=app" replace />} />
           <Route
             path="/admin"
             element={
