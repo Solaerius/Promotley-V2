@@ -266,6 +266,8 @@ const App = () => (
             <Route path="/billing/success" element={<Navigate to="/checkout/success" replace />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
             {/* Organization routes */}
             <Route 
               path="/organization/onboarding" 
