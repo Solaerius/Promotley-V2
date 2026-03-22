@@ -66,24 +66,16 @@ const PlatformCard = ({
 }) => {
   const { t } = useTranslation();
   return (
-  <div
-    className="rounded-2xl overflow-hidden bg-card"
-    style={{
-      border: "1px solid hsl(0 0% 100% / 0.06)",
-    }}
-  >
+  <div className="rounded-2xl overflow-hidden bg-card border border-border">
     {/* Header */}
-    <div
-      className="flex items-center gap-3 px-5 py-3.5 border-b"
-      style={{ borderColor: "hsl(0 0% 100% / 0.05)" }}
-    >
+    <div className="flex items-center gap-3 px-5 py-3.5 border-b border-border">
       <div
         className="w-7 h-7 rounded-lg flex items-center justify-center"
         style={{ background: iconBg }}
       >
         {icon}
       </div>
-      <span className="text-sm font-semibold" style={{ color: "hsl(0 0% 88%)" }}>
+      <span className="text-sm font-semibold text-foreground">
         {title}
       </span>
       <div className="ml-auto">
@@ -96,7 +88,7 @@ const PlatformCard = ({
             {t('dashboard.connected')}
           </span>
         ) : (
-          <span className="text-xs" style={{ color: "hsl(0 0% 32%)" }}>
+          <span className="text-xs text-muted-foreground">
             {t('dashboard.not_connected')}
           </span>
         )}
@@ -107,19 +99,13 @@ const PlatformCard = ({
     <div className="p-5">
       {!connected ? (
         <div className="flex flex-col items-center justify-center py-5 text-center">
-          <div
-            className="w-10 h-10 rounded-2xl flex items-center justify-center mb-3"
-            style={{
-              background: "hsl(0 0% 100% / 0.04)",
-              border: "1px solid hsl(0 0% 100% / 0.07)",
-            }}
-          >
-            <div style={{ color: "hsl(0 0% 28%)" }}>{icon}</div>
+          <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-3 bg-muted/50 border border-border">
+            <div className="text-muted-foreground">{icon}</div>
           </div>
-          <p className="text-sm font-medium mb-1" style={{ color: "hsl(0 0% 52%)" }}>
+          <p className="text-sm font-medium mb-1 text-muted-foreground">
             {t('dashboard.no_account_connected', { platform: title })}
           </p>
-          <p className="text-xs mb-4" style={{ color: "hsl(0 0% 33%)" }}>
+          <p className="text-xs mb-4 text-muted-foreground/70">
             {t('dashboard.connect_to_see_stats')}
           </p>
           <Link to="/account">
@@ -133,11 +119,10 @@ const PlatformCard = ({
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="rounded-xl p-3 animate-pulse"
-              style={{ background: "hsl(var(--card))" }}
+              className="rounded-xl p-3 animate-pulse bg-muted/40"
             >
-              <div className="h-2.5 rounded w-14 mb-2.5" style={{ background: "hsl(0 0% 100% / 0.07)" }} />
-              <div className="h-5 rounded w-10" style={{ background: "hsl(0 0% 100% / 0.07)" }} />
+              <div className="h-2.5 rounded w-14 mb-2.5 bg-muted" />
+              <div className="h-5 rounded w-10 bg-muted" />
             </div>
           ))}
         </div>
@@ -146,12 +131,9 @@ const PlatformCard = ({
           {metrics.map(({ label, value }) => (
             <div
               key={label}
-              className="rounded-xl p-3 bg-surface-raised"
-              style={{
-                border: "1px solid hsl(0 0% 100% / 0.04)",
-              }}
+              className="rounded-xl p-3 bg-surface-raised border border-border/50"
             >
-              <p className="text-xs mb-1.5" style={{ color: "hsl(0 0% 42%)" }}>
+              <p className="text-xs mb-1.5 text-muted-foreground">
                 {label}
               </p>
               <p
@@ -264,8 +246,8 @@ const Dashboard = () => {
       sub: t('dashboard.available'),
       icon: Zap,
       accent: "hsl(var(--foreground))",
-      bg: "hsl(38 60% 13% / 0.5)",
-      border: "hsl(38 60% 38% / 0.2)",
+      bg: "hsl(var(--muted) / 0.5)",
+      border: "hsl(38 60% 38% / 0.25)",
       iconAccent: "hsl(var(--accent-brand))",
     },
     {
@@ -274,8 +256,8 @@ const Dashboard = () => {
       sub: t('dashboard.scheduled'),
       icon: Calendar,
       accent: "hsl(var(--foreground))",
-      bg: "hsl(174 40% 11% / 0.5)",
-      border: "hsl(174 40% 32% / 0.2)",
+      bg: "hsl(var(--muted) / 0.5)",
+      border: "hsl(174 40% 32% / 0.25)",
       iconAccent: "hsl(174 60% 50%)",
     },
     {
@@ -284,8 +266,8 @@ const Dashboard = () => {
       sub: t('dashboard.platforms'),
       icon: TrendingUp,
       accent: "hsl(var(--foreground))",
-      bg: "hsl(320 40% 12% / 0.5)",
-      border: "hsl(320 40% 34% / 0.2)",
+      bg: "hsl(var(--muted) / 0.5)",
+      border: "hsl(320 40% 34% / 0.25)",
       iconAccent: "hsl(320 65% 62%)",
     },
   ];
@@ -303,12 +285,12 @@ const Dashboard = () => {
           >
             <div>
               <div className="flex items-center gap-2 mb-0.5">
-                <h1 className="text-2xl font-bold tracking-tight" style={{ color: "hsl(0 0% 96%)" }}>
+                <h1 className="text-2xl font-bold tracking-tight text-foreground">
                   {t('dashboard.greeting', { name: firstName })}
                 </h1>
                 <span className="text-2xl select-none" role="img" aria-label="vink">👋</span>
               </div>
-              <p className="text-sm" style={{ color: "hsl(0 0% 45%)" }}>
+              <p className="text-sm text-muted-foreground">
                 {t('dashboard.overview_subtitle')} —{" "}
                 {format(new Date(), "EEEE d MMMM", { locale: dateLocale })}
               </p>
@@ -347,10 +329,7 @@ const Dashboard = () => {
                   style={{ background: iconAccent }}
                 />
                 <div className="flex items-start justify-between mb-3 pl-2.5">
-                  <span
-                    className="text-xs font-medium uppercase tracking-wider leading-tight"
-                    style={{ color: "hsl(0 0% 45%)" }}
-                  >
+                  <span className="text-xs font-medium uppercase tracking-wider leading-tight text-muted-foreground">
                     {label}
                   </span>
                   <div
@@ -360,10 +339,10 @@ const Dashboard = () => {
                     <Icon className="h-3.5 w-3.5" style={{ color: iconAccent }} />
                   </div>
                 </div>
-                <p className="text-3xl font-bold pl-2.5 leading-none mb-1" style={{ color: accent }}>
+                <p className="text-3xl font-bold pl-2.5 leading-none mb-1 text-foreground">
                   {value}
                 </p>
-                <p className="text-xs pl-2.5" style={{ color: "hsl(0 0% 38%)" }}>
+                <p className="text-xs pl-2.5 text-muted-foreground">
                   {sub}
                 </p>
               </motion.div>
@@ -375,10 +354,10 @@ const Dashboard = () => {
             <PlatformCard
               title="TikTok"
               icon={<TikTokIcon className="h-4 w-4" style={{ color: "white" }} />}
-              iconBg="hsl(0 0% 8%)"
+              iconBg="hsl(0 0% 50% / 0.15)"
               isConnected={isConnected("tiktok")}
               isLoading={tiktokData.loading}
-              accentColor="hsl(0 0% 92%)"
+              accentColor="hsl(var(--foreground))"
               metrics={[
                 { label: t('dashboard.metric_followers'), value: formatNumber(tiktokData.user?.follower_count ?? 0) },
                 { label: t('dashboard.metric_videos'), value: tiktokData.user?.video_count ?? 0 },
@@ -389,7 +368,7 @@ const Dashboard = () => {
             <PlatformCard
               title="Instagram"
               icon={<Instagram className="h-4 w-4" style={{ color: "hsl(330 80% 72%)" }} />}
-              iconBg="hsl(330 50% 14%)"
+              iconBg="hsl(330 50% 45% / 0.15)"
               isConnected={isConnected("meta_ig")}
               isLoading={metaData.loading}
               accentColor="hsl(330 75% 68%)"
@@ -408,10 +387,7 @@ const Dashboard = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.28, duration: 0.4 }}
-              className="rounded-2xl p-5 bg-card"
-              style={{
-                border: "1px solid hsl(0 0% 100% / 0.06)",
-              }}
+              className="rounded-2xl p-5 bg-card border border-border"
             >
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-2.5">
@@ -421,7 +397,7 @@ const Dashboard = () => {
                   >
                     <BarChart3 className="h-3.5 w-3.5" style={{ color: "hsl(var(--primary))" }} />
                   </div>
-                  <h2 className="text-sm font-semibold" style={{ color: "hsl(0 0% 88%)" }}>
+                  <h2 className="text-sm font-semibold text-foreground">
                     {t('dashboard.follower_history')}
                   </h2>
                 </div>
@@ -445,27 +421,27 @@ const Dashboard = () => {
                   </defs>
                   <CartesianGrid
                     strokeDasharray="2 4"
-                    stroke="hsl(0 0% 100% / 0.05)"
+                    stroke="hsl(var(--border))"
                     vertical={false}
                   />
                   <XAxis
                     dataKey="date"
-                    tick={{ fontSize: 10, fill: "hsl(0 0% 35%)" }}
+                    tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
                     axisLine={false}
                     tickLine={false}
                   />
                   <YAxis
-                    tick={{ fontSize: 10, fill: "hsl(0 0% 35%)" }}
+                    tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
                     axisLine={false}
                     tickLine={false}
                   />
                   <Tooltip
                     contentStyle={{
                       background: "hsl(var(--card))",
-                      border: "1px solid hsl(0 0% 100% / 0.1)",
+                      border: "1px solid hsl(var(--border))",
                       borderRadius: 8,
                       fontSize: 12,
-                      color: "hsl(0 0% 88%)",
+                      color: "hsl(var(--foreground))",
                     }}
                     cursor={{ stroke: "hsl(var(--primary) / 0.3)", strokeWidth: 1 }}
                   />
@@ -487,20 +463,14 @@ const Dashboard = () => {
           <div className="grid lg:grid-cols-[1fr_320px] gap-3">
             {/* Upcoming posts */}
             <div
-              className="rounded-2xl p-5 bg-card"
-              style={{
-                border: "1px solid hsl(0 0% 100% / 0.06)",
-              }}
+              className="rounded-2xl p-5 bg-card border border-border"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2.5">
-                  <div
-                    className="w-6 h-6 rounded-md flex items-center justify-center"
-                    style={{ background: "hsl(174 40% 13%)" }}
-                  >
+                  <div className="w-6 h-6 rounded-md flex items-center justify-center bg-muted/60 dark:bg-[hsl(174_40%_13%)]">
                     <Calendar className="h-3.5 w-3.5" style={{ color: "hsl(174 60% 52%)" }} />
                   </div>
-                  <h2 className="text-sm font-semibold" style={{ color: "hsl(0 0% 88%)" }}>
+                  <h2 className="text-sm font-semibold text-foreground">
                     {t('dashboard.upcoming_posts')}
                   </h2>
                 </div>
@@ -518,17 +488,14 @@ const Dashboard = () => {
                   {upcomingPosts.map((post) => (
                     <div
                       key={post.id}
-                      className="rounded-xl p-3.5 bg-surface-raised"
-                      style={{
-                        border: "1px solid hsl(0 0% 100% / 0.05)",
-                      }}
+                      className="rounded-xl p-3.5 bg-surface-raised border border-border/50"
                     >
                       <div className="flex items-center justify-between mb-2">
                         <span
                           className="text-xs font-semibold px-2 py-0.5 rounded-full"
                           style={{
-                            background: "hsl(174 40% 12%)",
-                            color: "hsl(174 60% 55%)",
+                            background: "hsl(174 60% 50% / 0.15)",
+                            color: "hsl(174 60% 40%)",
                           }}
                         >
                           {format(new Date(post.date), "d MMM", { locale: dateLocale })}
@@ -545,10 +512,7 @@ const Dashboard = () => {
                           </span>
                         )}
                       </div>
-                      <p
-                        className="text-sm font-medium line-clamp-2 leading-snug"
-                        style={{ color: "hsl(0 0% 82%)" }}
-                      >
+                      <p className="text-sm font-medium line-clamp-2 leading-snug text-foreground">
                         {post.title}
                       </p>
                     </div>
@@ -556,14 +520,13 @@ const Dashboard = () => {
                 </div>
               ) : (
                 <div
-                  className="flex flex-col items-center justify-center py-8 text-center rounded-xl bg-surface-raised"
-                  style={{ border: "1px solid hsl(0 0% 100% / 0.04)" }}
+                  className="flex flex-col items-center justify-center py-8 text-center rounded-xl bg-surface-raised border border-border/50"
                 >
-                  <Calendar className="h-7 w-7 mb-2.5" style={{ color: "hsl(0 0% 22%)" }} />
-                  <p className="text-sm font-medium mb-1" style={{ color: "hsl(0 0% 52%)" }}>
+                  <Calendar className="h-7 w-7 mb-2.5 text-muted-foreground" />
+                  <p className="text-sm font-medium mb-1 text-muted-foreground">
                     {t('dashboard.no_posts')}
                   </p>
-                  <p className="text-xs mb-4" style={{ color: "hsl(0 0% 33%)" }}>
+                  <p className="text-xs mb-4 text-muted-foreground/70">
                     {t('dashboard.plan_content_in_calendar')}
                   </p>
                   <Link to="/calendar">
@@ -578,29 +541,20 @@ const Dashboard = () => {
             {/* Recent activity — timeline */}
             {recentActivity.length > 0 && (
               <div
-                className="rounded-2xl p-5 bg-card"
-                style={{
-                  border: "1px solid hsl(0 0% 100% / 0.06)",
-                }}
+                className="rounded-2xl p-5 bg-card border border-border"
               >
                 <div className="flex items-center gap-2.5 mb-5">
-                  <div
-                    className="w-6 h-6 rounded-md flex items-center justify-center"
-                    style={{ background: "hsl(38 50% 13%)" }}
-                  >
+                  <div className="w-6 h-6 rounded-md flex items-center justify-center bg-muted/60 dark:bg-[hsl(38_50%_13%)]">
                     <Sparkles className="h-3.5 w-3.5" style={{ color: "hsl(var(--accent-brand))" }} />
                   </div>
-                  <h2 className="text-sm font-semibold" style={{ color: "hsl(0 0% 88%)" }}>
+                  <h2 className="text-sm font-semibold text-foreground">
                     {t('dashboard.recent_activity')}
                   </h2>
                 </div>
 
                 {/* Timeline */}
                 <div className="relative pl-5">
-                  <div
-                    className="absolute left-2 top-1.5 bottom-1.5 w-px"
-                    style={{ background: "hsl(0 0% 100% / 0.07)" }}
-                  />
+                  <div className="absolute left-2 top-1.5 bottom-1.5 w-px bg-border" />
                   <div className="space-y-4">
                     {recentActivity.map((activity, i) => {
                       const Icon = activity.icon;
@@ -621,22 +575,13 @@ const Dashboard = () => {
                             <Icon className="h-3 w-3" style={{ color: "hsl(var(--primary))" }} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p
-                              className="text-xs font-semibold leading-tight mb-0.5"
-                              style={{ color: "hsl(0 0% 82%)" }}
-                            >
+                            <p className="text-xs font-semibold leading-tight mb-0.5 text-foreground">
                               {activity.label}
                             </p>
-                            <p
-                              className="text-xs leading-tight truncate"
-                              style={{ color: "hsl(0 0% 42%)" }}
-                            >
+                            <p className="text-xs leading-tight truncate text-muted-foreground">
                               {activity.detail}
                             </p>
-                            <p
-                              className="text-xs mt-0.5"
-                              style={{ color: "hsl(0 0% 30%)" }}
-                            >
+                            <p className="text-xs mt-0.5 text-muted-foreground/60">
                               {formatDistanceToNow(new Date(activity.time), {
                                 addSuffix: true,
                                 locale: sv,
@@ -661,7 +606,7 @@ const Dashboard = () => {
                 icon: MessageSquare,
                 href: "/ai/caption",
                 accent: "hsl(28 88% 60%)",
-                iconBg: "hsl(28 60% 13%)",
+                iconBg: "hsl(28 60% 45% / 0.15)",
               },
               {
                 label: t('dashboard.quick_hashtag'),
@@ -669,7 +614,7 @@ const Dashboard = () => {
                 icon: CheckCircle2,
                 href: "/ai/hashtags",
                 accent: "hsl(210 78% 62%)",
-                iconBg: "hsl(210 50% 13%)",
+                iconBg: "hsl(210 50% 45% / 0.15)",
               },
               {
                 label: t('dashboard.quick_campaign'),
@@ -684,18 +629,7 @@ const Dashboard = () => {
                 <motion.div
                   whileHover={{ y: -2 }}
                   transition={{ duration: 0.15, ease: "easeOut" }}
-                  className="rounded-2xl p-4 group cursor-pointer transition-all duration-200 bg-card"
-                  style={{
-                    border: "1px solid hsl(0 0% 100% / 0.06)",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.borderColor =
-                      "hsl(0 0% 100% / 0.12)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.borderColor =
-                      "hsl(0 0% 100% / 0.06)";
-                  }}
+                  className="rounded-2xl p-4 group cursor-pointer transition-all duration-200 bg-card border border-border hover:border-border/80"
                 >
                   <div className="flex items-center gap-3">
                     <div
@@ -705,20 +639,14 @@ const Dashboard = () => {
                       <Icon className="h-4 w-4" style={{ color: accent }} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p
-                        className="text-sm font-semibold mb-0.5 leading-tight"
-                        style={{ color: "hsl(0 0% 88%)" }}
-                      >
+                      <p className="text-sm font-semibold mb-0.5 leading-tight text-foreground">
                         {label}
                       </p>
-                      <p className="text-xs leading-snug" style={{ color: "hsl(0 0% 42%)" }}>
+                      <p className="text-xs leading-snug text-muted-foreground">
                         {desc}
                       </p>
                     </div>
-                    <ChevronRight
-                      className="h-4 w-4 flex-shrink-0 transition-transform group-hover:translate-x-0.5"
-                      style={{ color: "hsl(0 0% 28%)" }}
-                    />
+                    <ChevronRight className="h-4 w-4 flex-shrink-0 transition-transform group-hover:translate-x-0.5 text-muted-foreground" />
                   </div>
                 </motion.div>
               </Link>
