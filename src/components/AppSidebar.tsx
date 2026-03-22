@@ -13,10 +13,10 @@ import {
   Settings,
   Settings2,
   LogOut,
-  BrainCircuit,
+  MessageSquare,
   Moon,
   Sun,
-  Building2,
+  BookOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -58,9 +58,9 @@ export function AppSidebar() {
     { title: t('nav.home'),          href: "/dashboard",        icon: Home },
     { title: t('nav.analytics'),     href: "/analytics",        icon: TrendingUp },
     { title: t('nav.tools'),         href: "/ai",               icon: Wand2 },
-    { title: t('nav.ai_chat'),       href: "/ai/chat",          icon: BrainCircuit },
+    { title: t('nav.chat'),          href: "/ai/chat",          icon: MessageSquare },
     { title: t('nav.calendar'),      href: "/calendar",         icon: CalendarDays },
-    { title: t('nav.company'),       href: "/settings/company", icon: Building2 },
+    { title: t('nav.guide'),         href: "/tutorial",         icon: BookOpen },
     { title: t('nav.settings_page'), href: "/settings",         icon: Settings2 },
   ];
   const { state } = useSidebar();

@@ -22,7 +22,9 @@
     "sign_out": "Sign out",
     "move_position": "Move:",
     "company": "Company Information",
-    "settings_page": "Settings"
+    "settings_page": "Settings",
+    "chat": "Chat",
+    "guide": "Guide"
   },
   "hero": {
     "badge": "AI-powered marketing",
@@ -1568,5 +1570,30 @@
     "social_accounts": "Connected accounts",
     "social_accounts_desc": "Connect your social media to see statistics",
     "connect_failed": "Connection failed"
+  },
+  "tutorial_page": {
+    "page_title": "Guide",
+    "intro_text": "Learn how to use Promotley to maximize your marketing.",
+    "restart_button": "Go through the introduction again",
+    "section_dashboard": "Dashboard",
+    "section_dashboard_body": "The dashboard gives you a quick overview of your most important metrics – followers, engagement, upcoming posts and AI credits.",
+    "section_dashboard_tip1": "Connect TikTok under Settings to see real data.",
+    "section_dashboard_tip2": "Click a quick link to open an AI tool directly.",
+    "section_analytics": "Analytics",
+    "section_analytics_body": "The analytics page shows in-depth analysis of your TikTok content – which videos perform best, engagement trends and key insights.",
+    "section_analytics_tip1": "Sort the content table by different columns to find patterns.",
+    "section_analytics_tip2": "The Most Liked analysis shows which day and video length works best.",
+    "section_ai": "AI Tools",
+    "section_ai_body": "The AI tools help you create captions, hashtags, campaign strategies and weekly plans tailored for your UF company.",
+    "section_ai_tip1": "Fill in company information under Settings for more relevant AI responses.",
+    "section_ai_tip2": "Each tool costs 1–3 credits. See your credit balance in the sidebar.",
+    "section_calendar": "Calendar",
+    "section_calendar_body": "The calendar tool lets you plan and schedule posts visually, and AI can auto-generate a content calendar.",
+    "section_calendar_tip1": "Click on a day to add a post directly.",
+    "section_calendar_tip2": "Use AI fill to automatically generate a week's content plan.",
+    "section_settings": "Settings",
+    "section_settings_body": "Under Settings you find your profile, account connections, company information and billing information.",
+    "section_settings_tip1": "Connect TikTok under the App tab.",
+    "section_settings_tip2": "Keep company information up to date for best AI results."
   }
 }

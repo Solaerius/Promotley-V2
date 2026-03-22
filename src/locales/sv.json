@@ -22,7 +22,9 @@
     "sign_out": "Logga ut",
     "move_position": "Flytta:",
     "company": "Företagsinformation",
-    "settings_page": "Inställningar"
+    "settings_page": "Inställningar",
+    "chat": "Chat",
+    "guide": "Guide"
   },
   "hero": {
     "badge": "AI-driven marknadsföring",
@@ -1568,5 +1570,30 @@
     "social_accounts": "Kopplade konton",
     "social_accounts_desc": "Anslut dina sociala medier för att se statistik",
     "connect_failed": "Anslutning misslyckades"
+  },
+  "tutorial_page": {
+    "page_title": "Guide",
+    "intro_text": "Lär dig hur du använder Promotley för att maximera din marknadsföring.",
+    "restart_button": "Gå igenom introduktionen igen",
+    "section_dashboard": "Dashboard",
+    "section_dashboard_body": "Dashboarden ger dig en snabb översikt av dina viktigaste mätvärden – följare, engagemang, kommande inlägg och AI-krediter.",
+    "section_dashboard_tip1": "Koppla TikTok under Inställningar för att se riktiga data.",
+    "section_dashboard_tip2": "Klicka på en snabblänk för att direkt öppna ett AI-verktyg.",
+    "section_analytics": "Statistik",
+    "section_analytics_body": "Statistiksidan visar djupanalys av ditt TikTok-innehåll – vilka videos presterar bäst, engagemangstrender och nyckelinsikter.",
+    "section_analytics_tip1": "Sortera innehållstabellen på olika kolumner för att hitta mönster.",
+    "section_analytics_tip2": "Mest Gillade-analysen visar vilken dag och videolängd som fungerar bäst.",
+    "section_ai": "AI-verktyg",
+    "section_ai_body": "AI-verktygen hjälper dig skapa captions, hashtags, kampanjstrategier och veckoplaneringar anpassade för ditt UF-företag.",
+    "section_ai_tip1": "Fyll i företagsinformation under Inställningar för mer relevanta AI-svar.",
+    "section_ai_tip2": "Varje verktyg kostar 1–3 krediter. Se din kreditbalans i sidofältet.",
+    "section_calendar": "Kalender",
+    "section_calendar_body": "Kalenderverktyget låter dig planera och schemalägga inlägg visuellt, och AI kan autogenerera en innehållskalender.",
+    "section_calendar_tip1": "Klicka på en dag för att lägga till ett inlägg direkt.",
+    "section_calendar_tip2": "Använd AI-fyllningen för att generera en veckas innehållsplan automatiskt.",
+    "section_settings": "Inställningar",
+    "section_settings_body": "Under Inställningar hittar du din profil, kontoanslutningar, företagsinformation och faktureringsinformation.",
+    "section_settings_tip1": "Koppla TikTok under fliken App.",
+    "section_settings_tip2": "Håll företagsinformationen uppdaterad för bästa AI-resultat."
   }
 }

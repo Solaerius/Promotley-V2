@@ -1,4 +1,4 @@
-import { Star } from "lucide-react";
+import { Heart } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 
 // 24×24 icon badges — one per UF company
@@ -102,7 +102,7 @@ const Testimonials = () => {
               border: '1px solid hsl(var(--primary) / 0.3)',
             }}
           >
-            <Star className="w-4 h-4 text-foreground fill-foreground" />
+            <Heart className="w-4 h-4 text-foreground fill-foreground" />
             <span className="text-sm font-medium text-foreground">{t('testimonials.badge')}</span>
           </div>
 
@@ -144,7 +144,7 @@ const Testimonials = () => {
               {/* Rating */}
               <div className="flex gap-1 mb-4 relative z-10">
                 {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  <Heart key={i} className="w-4 h-4 fill-pink-400 text-pink-400" />
                 ))}
               </div>
 
