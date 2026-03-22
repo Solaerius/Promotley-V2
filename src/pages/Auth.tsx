@@ -340,20 +340,20 @@ const Auth = () => {
           <img src={logo} alt="Promotley" className="w-16 h-16 mx-auto mb-6" />
           <h2 className="text-3xl font-bold mb-4">Promotley</h2>
           <p className="text-white/70 text-lg max-w-sm">
-            AI-driven marknadsföring för UF-företag
+            {t('auth.brand_tagline')}
           </p>
           <div className="mt-8 flex flex-col gap-3 text-sm text-white/60">
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--accent-brand))]" />
-              <span>Analysera sociala medier med AI</span>
+              <span>{t('auth.brand_feature_1')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--accent-brand))]" />
-              <span>Schemalägg och publicera innehåll</span>
+              <span>{t('auth.brand_feature_2')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--accent-brand))]" />
-              <span>Väx din publik organiskt</span>
+              <span>{t('auth.brand_feature_3')}</span>
             </div>
           </div>
         </div>

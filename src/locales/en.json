@@ -106,7 +106,11 @@
     "register_subtitle": "Create your account and get 1 free AI suggestion",
     "offers_label": "Offers and promotions",
     "register_link": "Register",
-    "login_link": "Log in"
+    "login_link": "Log in",
+    "brand_tagline": "AI-driven marketing for UF companies",
+    "brand_feature_1": "Analyze social media with AI",
+    "brand_feature_2": "Schedule and publish content",
+    "brand_feature_3": "Grow your audience organically"
   },
   "verify": {
     "title": "Confirm your email",

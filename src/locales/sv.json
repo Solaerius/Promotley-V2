@@ -106,7 +106,11 @@
     "register_subtitle": "Skapa ditt konto och få 1 gratis AI-förslag",
     "offers_label": "Erbjudanden och kampanjer",
     "register_link": "Registrera dig",
-    "login_link": "Logga in"
+    "login_link": "Logga in",
+    "brand_tagline": "AI-driven marknadsföring för UF-företag",
+    "brand_feature_1": "Analysera sociala medier med AI",
+    "brand_feature_2": "Schemalägg och publicera innehåll",
+    "brand_feature_3": "Väx din publik organiskt"
   },
   "verify": {
     "title": "Bekräfta din e-post",
