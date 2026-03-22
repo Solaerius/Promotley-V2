@@ -192,7 +192,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side={position === 'left' ? 'right' : 'left'}>
-                  <p>Flytta: {getPositionLabel(position)}</p>
+                  <p>{`${t('nav.move_position')} `}{getPositionLabel(position)}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -205,8 +205,8 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                 <Button variant="ghost" size="icon" className="relative w-9 h-9 rounded-xl text-foreground/60 hover:text-foreground hover:bg-foreground/10">
                   <Bell className="w-4 h-4" />
                   {unreadCount > 0 && (
-                    <Badge 
-                      variant="destructive" 
+                    <Badge
+                      variant="destructive"
                       className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]"
                     >
                       {unreadCount > 9 ? "9+" : unreadCount}
@@ -216,14 +216,14 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
               </DropdownMenuTrigger>
               <DropdownMenuContent side={position === 'left' ? 'right' : 'left'} className="w-72">
                 <div className="px-3 py-2 border-b flex items-center justify-between">
-                  <h3 className="font-semibold text-sm">Notiser</h3>
+                  <h3 className="font-semibold text-sm">{t('nav.notifications')}</h3>
                   <div className="flex items-center gap-2">
                     {unreadCount > 0 && (
                       <button
                         onClick={(e) => { e.preventDefault(); markAllAsRead(); }}
                         className="text-[10px] text-primary hover:underline"
                       >
-                        Markera alla som lästa
+                        {t('nav.mark_all_read')}
                       </button>
                     )}
                     {notifications.length > 0 && (
@@ -232,7 +232,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                         className="text-[10px] text-destructive hover:underline flex items-center gap-0.5"
                       >
                         <Trash2 className="h-2.5 w-2.5" />
-                        Rensa alla
+                        {t('nav.clear_all')}
                       </button>
                     )}
                   </div>
@@ -305,41 +305,41 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                 {/* Credit gauge */}
                 <div className="px-3 py-2">
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[11px] text-muted-foreground">Krediter</span>
+                    <span className="text-[11px] text-muted-foreground dark:text-white/90">{t('nav.credits_label')}</span>
                     <span className="text-[11px] font-semibold">{credits?.credits_left ?? 0} / {credits?.max_credits ?? 0}</span>
                   </div>
-                  <Progress 
-                    value={credits?.max_credits ? (credits.credits_left / credits.max_credits) * 100 : 0} 
-                    className="h-2" 
+                  <Progress
+                    value={credits?.max_credits ? (credits.credits_left / credits.max_credits) * 100 : 0}
+                    className="h-2"
                   />
                   <div className="flex justify-end mt-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       className="h-5 text-[10px] px-2 rounded"
                       onClick={() => navigate('/pricing')}
                     >
                       <Coins className="w-3 h-3 mr-1" />
-                      Köp
+                      {t('nav.buy_credits')}
                     </Button>
                   </div>
                 </div>
                 <DropdownMenuItem asChild>
                   <Link to="/account" className="cursor-pointer text-sm">
                     <Settings className="mr-2 h-3.5 w-3.5" />
-                    Inställningar
+                    {t('nav.settings')}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/" className="cursor-pointer text-sm">
                     <Home className="mr-2 h-3.5 w-3.5" />
-                    Till startsidan
+                    {t('nav.to_home')}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive text-sm">
                   <LogOut className="mr-2 h-3.5 w-3.5" />
-                  Logga ut
+                  {t('nav.sign_out')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -429,7 +429,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Flytta: {getPositionLabel(position)}</p>
+                    <p>{`${t('nav.move_position')} `}{getPositionLabel(position)}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -453,14 +453,14 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-72">
                   <div className="px-3 py-2 border-b flex items-center justify-between">
-                    <h3 className="font-semibold text-sm">Notiser</h3>
+                    <h3 className="font-semibold text-sm">{t('nav.notifications')}</h3>
                     <div className="flex items-center gap-2">
                       {unreadCount > 0 && (
                         <button
                           onClick={(e) => { e.preventDefault(); markAllAsRead(); }}
                           className="text-[10px] text-primary hover:underline"
                         >
-                          Markera alla som lästa
+                          {t('nav.mark_all_read')}
                         </button>
                       )}
                       {notifications.length > 0 && (
@@ -469,7 +469,7 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                           className="text-[10px] text-destructive hover:underline flex items-center gap-0.5"
                         >
                           <Trash2 className="h-2.5 w-2.5" />
-                          Rensa alla
+                          {t('nav.clear_all')}
                         </button>
                       )}
                     </div>
@@ -542,41 +542,41 @@ export function DashboardNavbar({ showBackButton, title }: DashboardNavbarProps)
                   {/* Credit gauge */}
                   <div className="px-3 py-2">
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[11px] text-muted-foreground">Krediter</span>
+                      <span className="text-[11px] text-muted-foreground dark:text-white/90">{t('nav.credits_label')}</span>
                       <span className="text-[11px] font-semibold">{credits?.credits_left ?? 0} / {credits?.max_credits ?? 0}</span>
                     </div>
-                    <Progress 
-                      value={credits?.max_credits ? (credits.credits_left / credits.max_credits) * 100 : 0} 
-                      className="h-2" 
+                    <Progress
+                      value={credits?.max_credits ? (credits.credits_left / credits.max_credits) * 100 : 0}
+                      className="h-2"
                     />
                     <div className="flex justify-end mt-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      <Button
+                        variant="outline"
+                        size="sm"
                         className="h-5 text-[10px] px-2 rounded"
                         onClick={() => navigate('/pricing')}
                       >
                         <Coins className="w-3 h-3 mr-1" />
-                        Köp
+                        {t('nav.buy_credits')}
                       </Button>
                     </div>
                   </div>
                   <DropdownMenuItem asChild>
                     <Link to="/account" className="cursor-pointer text-sm">
                       <Settings className="mr-2 h-3.5 w-3.5" />
-                      Inställningar
+                      {t('nav.settings')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/" className="cursor-pointer text-sm">
                       <Home className="mr-2 h-3.5 w-3.5" />
-                      Till startsidan
+                      {t('nav.to_home')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive text-sm">
                     <LogOut className="mr-2 h-3.5 w-3.5" />
-                    Logga ut
+                    {t('nav.sign_out')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
