@@ -589,7 +589,7 @@ const ChatWidget = () => {
                 <MessageCircle className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-semibold">Promotely Support</h3>
+                <h3 className="font-semibold">{t('chat_widget.support_title')}</h3>
                 <ConnectionIndicator />
               </div>
             </div>
@@ -609,22 +609,22 @@ const ChatWidget = () => {
                 <div className="mb-4 p-4 rounded-full bg-muted/50">
                   <X className="w-8 h-8 text-muted-foreground" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">Chatten har avslutats</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('chat_widget.chat_closed_heading')}</h3>
                 <p className="text-sm text-muted-foreground mb-6">
-                  Support har avslutat denna chatt. Du kan starta en ny chatt om du har fler frågor.
+                  {t('chat_widget.chat_closed_message')}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button
                     variant="outline"
                     onClick={handleCloseAndReset}
                   >
-                    Stäng chatt
+                    {t('chat_widget.close_chat')}
                   </Button>
                   <Button
                     onClick={handleStartNewChat}
                     className="bg-gradient-primary hover:opacity-90"
                   >
-                    Starta ny chatt
+                    {t('chat_widget.start_new_chat')}
                   </Button>
                 </div>
               </div>
@@ -633,9 +633,9 @@ const ChatWidget = () => {
                 <div className="mb-4 p-4 rounded-full bg-muted/50">
                   <MessageCircle className="w-8 h-8 text-muted-foreground" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">Hej!</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('chat_widget.greeting')}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Skriv ett meddelande så återkommer vi så snart vi kan!
+                  {t('chat_widget.greeting_message')}
                 </p>
               </div>
             ) : (
@@ -655,12 +655,12 @@ const ChatWidget = () => {
                             {isAutomated ? (
                               <>
                                 <Bot className="w-3 h-3" />
-                                <span>Automatiserat meddelande</span>
+                                <span>{t('chat_widget.automated')}</span>
                               </>
                             ) : (
                               <>
                                 <User className="w-3 h-3" />
-                                <span>Från support</span>
+                                <span>{t('chat_widget.from_support')}</span>
                               </>
                             )}
                           </div>
@@ -676,7 +676,7 @@ const ChatWidget = () => {
                           <p className={`text-[10px] mt-1 ${
                             msg.sender_type === "user" ? "text-primary-foreground/70" : "text-muted-foreground"
                           }`}>
-                            {msg.id.startsWith('temp-') ? 'Skickar...' : new Date(msg.created_at).toLocaleTimeString("sv-SE", {
+                            {msg.id.startsWith('temp-') ? t('chat_widget.sending') : new Date(msg.created_at).toLocaleTimeString("sv-SE", {
                               hour: "2-digit",
                               minute: "2-digit",
                             })}
@@ -704,7 +704,7 @@ const ChatWidget = () => {
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-                  placeholder="Skriv ett meddelande..."
+                  placeholder={t('chat_widget.message_placeholder')}
                   className="flex-1 bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-primary"
                   disabled={isLoading}
                 />
