@@ -24,7 +24,7 @@ import {
   Clock,
   Calendar,
   Hash,
-  Sparkles,
+  Wand2,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -73,6 +73,29 @@ const AnalyticsContent = () => {
   const isExampleMode = !hasConnections;
   const effectiveVideos = isExampleMode ? demoTikTokVideos : tiktokData.videos;
 
+  // Demo engagement trend data for example mode (8 weeks, realistic rates)
+  const demoEngagementData = [
+    { date: 'V1', engagementRate: 3.2, likes: 210, views: 6500 },
+    { date: 'V2', engagementRate: 3.8, likes: 290, views: 7600 },
+    { date: 'V3', engagementRate: 4.1, likes: 340, views: 8300 },
+    { date: 'V4', engagementRate: 3.6, likes: 280, views: 7800 },
+    { date: 'V5', engagementRate: 4.9, likes: 430, views: 8800 },
+    { date: 'V6', engagementRate: 5.3, likes: 510, views: 9600 },
+    { date: 'V7', engagementRate: 4.7, likes: 420, views: 8900 },
+    { date: 'V8', engagementRate: 5.8, likes: 580, views: 10000 },
+  ];
+
+  // Compute engagement rate from real growth data
+  const engagementChartData = isExampleMode
+    ? demoEngagementData
+    : (growthData || []).map((d: any) => ({
+        date: d.date,
+        engagementRate: d.views > 0 ? parseFloat(((d.likes / d.views) * 100).toFixed(1)) : 0,
+        likes: d.likes,
+        views: d.views,
+      }));
+  const hasEngagementData = engagementChartData.length > 0;
+
   const stats = [];
   if (isConnected('meta_ig') || isConnected('tiktok') || isExampleMode) stats.push({ title: t('analytics.total_followers'), value: isExampleMode ? demoStats.followers.toLocaleString() : connectedStats.totalFollowers.toLocaleString(), icon: Users });
   if (isConnected('tiktok') || isExampleMode) stats.push({ title: t('analytics.views'), value: isExampleMode ? demoStats.views.toLocaleString() : connectedStats.totalViews.toLocaleString(), icon: Eye });
@@ -83,15 +106,15 @@ const AnalyticsContent = () => {
     <div className="space-y-4">
       {isExampleMode && (
         <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-sm text-muted-foreground mb-4">
-          <Sparkles className="h-4 w-4 text-primary shrink-0" />
-          <span>Exempeldata — koppla TikTok för att se dina riktiga insikter</span>
-          <Link to="/settings?tab=app" className="ml-auto text-xs font-medium text-primary hover:underline shrink-0">Koppla TikTok</Link>
+          <Wand2 className="h-4 w-4 text-primary shrink-0" />
+          <span>{t('analytics.example_banner_text')}</span>
+          <Link to="/settings?tab=app" className="ml-auto text-xs font-medium text-primary hover:underline shrink-0">{t('analytics.example_connect_link')}</Link>
         </div>
       )}
 
       {/* Stats */}
       {stats.length > 0 && (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div data-tour="analytics-overview" className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
@@ -134,17 +157,33 @@ const AnalyticsContent = () => {
         </div>
 
         <div className="rounded-xl bg-card shadow-sm p-5">
-          <h3 className="text-sm font-medium text-foreground mb-3">{t('analytics.engagement_chart')}</h3>
-          {hasGrowthData ? (
+          <h3 className="text-sm font-medium text-foreground mb-1">{t('analytics.engagement_chart')}</h3>
+          <p className="text-xs text-muted-foreground mb-3">{t('analytics.engagement_rate_label')}</p>
+          {hasEngagementData ? (
             <ResponsiveContainer width="100%" height={160}>
-              <LineChart data={growthData}>
+              <LineChart data={engagementChartData} margin={{ top: 4, right: 8, left: -8, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 10 }} />
-                <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 10 }} />
-                <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} />
-                <Legend />
-                <Line type="monotone" dataKey="likes" stroke="hsl(var(--primary))" strokeWidth={2} name={t('analytics.likes')} dot={false} />
-                <Line type="monotone" dataKey="views" stroke="hsl(var(--muted-foreground))" strokeWidth={2} name={t('analytics.views')} dot={false} />
+                <YAxis
+                  stroke="hsl(var(--muted-foreground))"
+                  tick={{ fontSize: 10 }}
+                  tickFormatter={(v) => `${v}%`}
+                  domain={[0, 'auto']}
+                />
+                <Tooltip
+                  contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 11 }}
+                  formatter={(val: number) => [`${val}%`, t('analytics.engagement_rate')]}
+                />
+                <Legend formatter={() => t('analytics.engagement_rate')} wrapperStyle={{ fontSize: 11 }} />
+                <Line
+                  type="monotone"
+                  dataKey="engagementRate"
+                  stroke="hsl(var(--primary))"
+                  strokeWidth={2}
+                  name={t('analytics.engagement_rate')}
+                  dot={{ r: 3, fill: "hsl(var(--primary))" }}
+                  activeDot={{ r: 5 }}
+                />
               </LineChart>
             </ResponsiveContainer>
           ) : (
@@ -219,7 +258,7 @@ const AnalyticsContent = () => {
           const day = new Date(v.created_at).getDay();
           dayCounts[day] = (dayCounts[day] || 0) + 1;
         });
-        const dayNames = ['Sön', 'Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör'];
+        const dayNames = [t('analytics.day_sun'), t('analytics.day_mon'), t('analytics.day_tue'), t('analytics.day_wed'), t('analytics.day_thu'), t('analytics.day_fri'), t('analytics.day_sat')];
         const bestDay = Object.entries(dayCounts).sort((a, b) => b[1] - a[1])[0];
         const bestDayName = bestDay ? dayNames[parseInt(bestDay[0])] : '–';
 
@@ -242,7 +281,7 @@ const AnalyticsContent = () => {
             icon: Clock,
             label: t('analytics.avg_duration_top'),
             value: avgDurTop > 0 ? `${Math.round(avgDurTop)}s` : '–',
-            sub: avgDurAll > 0 && avgDurTop > 0 ? `${avgDurTop > avgDurAll ? '+' : ''}${Math.round(avgDurTop - avgDurAll)}s vs snitt` : undefined,
+            sub: avgDurAll > 0 && avgDurTop > 0 ? `${avgDurTop > avgDurAll ? '+' : ''}${Math.round(avgDurTop - avgDurAll)}s ${t('analytics.vs_average')}` : undefined,
             color: "hsl(var(--primary))",
           },
           {
@@ -301,20 +340,20 @@ const AnalyticsContent = () => {
         return (
           <div className="rounded-xl bg-card shadow-sm p-5">
             <h3 className="text-sm font-medium text-foreground mb-4">{t('analytics.engagement_breakdown')}</h3>
-            <div style={{ height: 200 }}>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={breakdownData} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <div style={{ height: 220 }}>
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={breakdownData} margin={{ top: 4, right: 4, left: -16, bottom: 0 }} barCategoryGap="25%" barGap={2}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
                   <XAxis dataKey="name" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
                   <Tooltip
                     contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: 11 }}
-                    formatter={(val: number, key: string) => [val, key === 'likes' ? t('analytics.col_likes') : key === 'comments' ? t('analytics.col_comments') : t('analytics.col_shares')]}
+                    formatter={(val: number, key: string) => [val.toLocaleString(), key === 'likes' ? t('analytics.col_likes') : key === 'comments' ? t('analytics.col_comments') : t('analytics.col_shares')]}
                   />
                   <Legend formatter={(key) => key === 'likes' ? t('analytics.col_likes') : key === 'comments' ? t('analytics.col_comments') : t('analytics.col_shares')} wrapperStyle={{ fontSize: 11 }} />
-                  <Bar dataKey="likes" stackId="a" fill="hsl(var(--primary))" />
-                  <Bar dataKey="comments" stackId="a" fill="hsl(210 78% 62%)" />
-                  <Bar dataKey="shares" stackId="a" fill="hsl(174 60% 50%)" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="likes" fill="hsl(326 56% 52%)" radius={[3, 3, 0, 0]} maxBarSize={16} />
+                  <Bar dataKey="comments" fill="hsl(260 55% 65%)" radius={[3, 3, 0, 0]} maxBarSize={16} />
+                  <Bar dataKey="shares" fill="hsl(174 45% 52%)" radius={[3, 3, 0, 0]} maxBarSize={16} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

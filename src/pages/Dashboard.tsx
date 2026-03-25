@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import {
   TrendingUp, Users, Calendar, Zap, BarChart3,
-  MessageSquare, CheckCircle2, Sparkles, ChevronRight,
+  MessageSquare, CheckCircle2, Wand2, ChevronRight,
   ExternalLink, MessageCircle, ThumbsUp,
 } from "lucide-react";
 import { demoTikTokVideos, demoStats } from "@/data/demoData";
@@ -188,7 +188,7 @@ const Dashboard = () => {
         aiMessages.forEach((msg) => {
           activities.push({
             type: "ai",
-            icon: Sparkles,
+            icon: Wand2,
             label: t('dashboard.activity_ai'),
             detail: msg.message.substring(0, 50) + (msg.message.length > 50 ? "…" : ""),
             time: msg.created_at,
@@ -321,14 +321,14 @@ const Dashboard = () => {
 
           {isExampleMode && (
             <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-sm text-muted-foreground">
-              <Sparkles className="h-4 w-4 text-primary shrink-0" />
-              <span>Exempeldata — koppla TikTok för att se dina riktiga insikter</span>
-              <Link to="/settings?tab=app" className="ml-auto text-xs font-medium text-primary hover:underline shrink-0">Koppla TikTok</Link>
+              <Wand2 className="h-4 w-4 text-primary shrink-0" />
+              <span>{t('analytics.example_banner_text')}</span>
+              <Link to="/settings?tab=app" className="ml-auto text-xs font-medium text-primary hover:underline shrink-0">{t('analytics.example_connect_link')}</Link>
             </div>
           )}
 
           {/* ── Stat cards ── */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div data-tour="stats-row" className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {statCards.map(({ label, value, sub, icon: Icon, accent, bg, border, iconAccent }, i) => (
               <motion.div
                 key={label}
@@ -381,7 +381,7 @@ const Dashboard = () => {
           />
 
           {/* ── Most Commented + Top Content row ── */}
-          <div className="grid lg:grid-cols-2 gap-3">
+          <div data-tour="growth-chart" className="grid lg:grid-cols-2 gap-3">
             {/* Most Commented */}
             {(isConnected("tiktok") || isExampleMode) && effectiveVideos.length > 0 && (
               <motion.div
@@ -688,7 +688,7 @@ const Dashboard = () => {
               >
                 <div className="flex items-center gap-2.5 mb-5">
                   <div className="w-6 h-6 rounded-md flex items-center justify-center bg-muted/60 dark:bg-[hsl(38_50%_13%)]">
-                    <Sparkles className="h-3.5 w-3.5" style={{ color: "hsl(var(--accent-brand))" }} />
+                    <Wand2 className="h-3.5 w-3.5" style={{ color: "hsl(var(--accent-brand))" }} />
                   </div>
                   <h2 className="text-sm font-semibold text-foreground">
                     {t('dashboard.recent_activity')}
@@ -741,7 +741,7 @@ const Dashboard = () => {
           </div>
 
           {/* ── Quick actions ── */}
-          <div className="grid sm:grid-cols-3 gap-3">
+          <div data-tour="quick-links" className="grid sm:grid-cols-3 gap-3">
             {[
               {
                 label: t('dashboard.quick_caption'),

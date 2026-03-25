@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FileText, Copy, Check, Sparkles } from 'lucide-react';
+import { FileText, Copy, Check, Wand2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -98,9 +98,9 @@ const CaptionGenerator = () => {
             disabled={loading || !topic.trim()}
           >
             {loading ? (
-              <><Sparkles className="w-4 h-4 mr-2 animate-spin" /> {t('ai_tool.generating')}</>
+              <><Wand2 className="w-4 h-4 mr-2 animate-spin" /> {t('ai_tool.generating')}</>
             ) : (
-              <><Sparkles className="w-4 h-4 mr-2" /> {t('caption.generate_btn')}</>
+              <><Wand2 className="w-4 h-4 mr-2" /> {t('caption.generate_btn')}</>
             )}
           </Button>
         </CardContent>

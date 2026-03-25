@@ -326,7 +326,30 @@
     "org_created": "Företag skapat!",
     "org_joined": "Du har anslutit till företaget!",
     "saved": "Sparad!",
-    "error": "Något gick fel."
+    "error": "Något gick fel.",
+    "could_not_send": "Kunde inte skicka meddelande.",
+    "could_not_implement": "Kunde inte implementera plan.",
+    "could_not_create_conv": "Kunde inte skapa konversation.",
+    "could_not_delete_conv": "Kunde inte ta bort konversation.",
+    "could_not_create_post": "Kunde inte skapa inlägg.",
+    "could_not_update_post": "Kunde inte uppdatera inlägg.",
+    "could_not_delete_post": "Kunde inte radera inlägg.",
+    "could_not_update_stats": "Kunde inte uppdatera statistik.",
+    "could_not_update_profile": "Kunde inte uppdatera profilen.",
+    "could_not_generate_radar": "Kunde inte generera Säljradar. Försök igen.",
+    "copied": "Kopierad!",
+    "link_copied": "Länken har kopierats",
+    "google_session_error": "Kunde inte hämta session från Google. Försök igen.",
+    "could_not_redeem": "Kunde inte lösa in koden. Försök igen.",
+    "could_not_generate_analysis": "Kunde inte generera analys. Försök igen.",
+    "could_not_generate_response": "Kunde inte generera svar.",
+    "could_not_create_marketing_plan": "Kunde inte skapa marknadsföringsplan.",
+    "could_not_implement_plan": "Kunde inte implementera plan.",
+    "could_not_fetch_meta": "Kunde inte hämta Meta-data",
+    "could_not_add_watch": "Kunde inte lägga till bevakning.",
+    "could_not_fetch_tiktok": "Kunde inte hämta TikTok-data",
+    "could_not_send_verification": "Kunde inte skicka",
+    "could_not_change_email": "Kunde inte ändra e-post"
   },
   "sections": {
     "problem": {
@@ -535,7 +558,19 @@
     "col_views": "Visningar",
     "col_engagement": "Engagemang",
     "top_videos_insight": "Dina topp {{count}} videor",
-    "no_tiktok_videos": "Inga TikTok-videor tillgängliga"
+    "no_tiktok_videos": "Inga TikTok-videor tillgängliga",
+    "example_banner_text": "Exempeldata — koppla TikTok för att se dina riktiga insikter",
+    "example_connect_link": "Koppla TikTok",
+    "vs_average": "vs snitt",
+    "day_sun": "Sön",
+    "day_mon": "Mån",
+    "day_tue": "Tis",
+    "day_wed": "Ons",
+    "day_thu": "Tor",
+    "day_fri": "Fre",
+    "day_sat": "Lör",
+    "engagement_rate": "Engagemangfrekvens",
+    "engagement_rate_label": "Engagemang %"
   },
   "calendar": {
     "title": "Innehållskalender",
@@ -604,7 +639,9 @@
     "upcoming_events": "Kommande händelser",
     "add_first_event": "Lägg till din första händelse ovan",
     "go_to_today": "Gå till idag",
-    "add_event": "Lägg till händelse"
+    "add_event": "Lägg till händelse",
+    "error_connect": "Kunde inte ansluta till servern. Kontrollera din internetanslutning.",
+    "error_load": "Kunde inte ladda kalendern"
   },
   "freetier": {
     "title": "Gratis plan – begränsad användning",

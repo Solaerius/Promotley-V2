@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   TrendingUp, Users, Calendar, Zap, BarChart3, MessageSquare,
-  ArrowRight, Sparkles, Radar, Hash, Film, MessageCircle, Star,
+  ArrowRight, Wand2, Radar, Hash, Film, MessageCircle, Star,
   Leaf, Handshake, CalendarDays, Share2, Send, Lock, LogIn,
   LayoutDashboard, User, Wand2, FileText, Image, Target, Lightbulb,
   ThumbsUp,
@@ -46,7 +46,7 @@ const Demo = () => {
   const demoNavTabs = useMemo(() => [
     { name: t('sections.demo.tab_dashboard'), value: "dashboard", icon: LayoutDashboard },
     { name: t('sections.demo.tab_analytics'), value: "analytics", icon: BarChart3 },
-    { name: t('sections.demo.tab_ai'), value: "ai", icon: Sparkles },
+    { name: t('sections.demo.tab_ai'), value: "ai", icon: Wand2 },
     { name: t('sections.demo.tab_radar'), value: "radar", icon: Radar },
     { name: t('sections.demo.tab_calendar'), value: "calendar", icon: Calendar },
   ], [t]);
@@ -674,7 +674,7 @@ const Demo = () => {
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center flex-shrink-0">
-                        <Sparkles className="w-6 h-6 text-white" />
+                        <Wand2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
                         <h3 className="font-semibold mb-1 text-foreground">{t('demo_page.unlock_tools_title')}</h3>
@@ -701,7 +701,7 @@ const Demo = () => {
                 <div className="space-y-4">
                   <div>
                     <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-green-400" /> {t('demo_page.strengths')}
+                      <Wand2 className="w-4 h-4 text-green-400" /> {t('demo_page.strengths')}
                     </h4>
                     <ul className="space-y-1">
                       {[t('demo_page.strength_0'), t('demo_page.strength_1'), t('demo_page.strength_2')].map((s, i) => (

@@ -11,7 +11,7 @@ import {
   BarChart3,
   Radar,
   ArrowRight,
-  Sparkles,
+  Wand2,
   AlertCircle,
 } from "lucide-react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
@@ -77,7 +77,7 @@ const AIPage = () => {
         )}
 
         {/* Tools grid */}
-        <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2.5 ${isBlocked ? "opacity-50 pointer-events-none" : ""}`}>
+        <div data-tour="ai-tabs" className={`grid grid-cols-1 sm:grid-cols-2 gap-2.5 ${isBlocked ? "opacity-50 pointer-events-none" : ""}`}>
           {tools.map((tool, index) => {
             const Icon = tool.icon;
             return (
@@ -107,7 +107,7 @@ const AIPage = () => {
         {/* AI profile tip */}
         <div className="rounded-2xl bg-primary/5 border border-primary/20 p-4 flex items-start gap-3">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary/15 shrink-0">
-            <Sparkles className="w-4.5 h-4.5 text-primary" />
+            <Wand2 className="w-4.5 h-4.5 text-primary" />
           </div>
           <div>
             <p className="text-sm font-medium text-foreground">{t('ai.profile_tip_title')}</p>

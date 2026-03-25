@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sparkles, TrendingUp, Calendar, Target, Lightbulb, CheckCircle2, AlertCircle, History } from 'lucide-react';
+import { Wand2, TrendingUp, Calendar, Target, Lightbulb, CheckCircle2, AlertCircle, History } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import { useTranslation } from 'react-i18next';
@@ -91,7 +91,7 @@ const AIAnalysisContent = () => {
             size="lg"
             className="gap-2"
           >
-            <Sparkles className="h-5 w-5" />
+            <Wand2 className="h-5 w-5" />
             {generating ? t('analysis.generating') : isAIBlocked ? t('analysis.fill_profile_first') : t('analysis.generate_btn')}
           </Button>
 
@@ -158,7 +158,7 @@ const AIAnalysisContent = () => {
         <Card className="liquid-glass-light">
           <CardContent className="pt-6">
             <div className="text-center py-12">
-              <Sparkles className="h-16 w-16 text-muted-foreground/40 mx-auto mb-4" />
+              <Wand2 className="h-16 w-16 text-muted-foreground/40 mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2 dashboard-heading-dark">{t('analysis.empty_title')}</h3>
               <p className="dashboard-subheading-dark">
                 {t('analysis.empty_desc')}

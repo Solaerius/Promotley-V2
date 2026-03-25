@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, CheckCircle } from "lucide-react";
+import { ArrowRight, Wand2, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 
@@ -42,7 +42,7 @@ const FinalCTA = () => {
                 border: '1px solid hsl(var(--primary) / 0.3)',
               }}
             >
-              <Sparkles className="w-4 h-4 text-foreground" />
+              <Wand2 className="w-4 h-4 text-foreground" />
               <span className="text-sm font-medium text-foreground">{t('final_cta.badge')}</span>
             </div>
 

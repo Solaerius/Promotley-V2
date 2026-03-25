@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   LayoutDashboard,
   BarChart3,
-  Sparkles,
+  Wand2,
   User
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -16,7 +16,7 @@ export function BottomTabBar() {
   const tabs = [
     { name: t('common.home'), href: "/dashboard", icon: LayoutDashboard },
     { name: t('nav.analytics'), href: "/analytics", icon: BarChart3 },
-    { name: "AI", href: "/ai", icon: Sparkles },
+    { name: "AI", href: "/ai", icon: Wand2 },
     { name: t('nav.account'), href: "/account", icon: User },
   ];
   

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, BarChart3, Calendar, Sparkles, Loader2 } from "lucide-react";
+import { AlertCircle, BarChart3, Calendar, Wand2, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
@@ -87,7 +87,7 @@ const FreeTierWarningModal = ({ open, onClose, usageType, onProceed, aiProfileDa
           ) : aiRecommendation ? (
             <div className="bg-muted/50 rounded-lg p-3 border border-border/50">
               <div className="flex items-center gap-1.5 mb-1">
-                <Sparkles className="w-3.5 h-3.5 text-primary" />
+                <Wand2 className="w-3.5 h-3.5 text-primary" />
                 <span className="text-xs font-medium">{t('freetier.recommendation')}</span>
               </div>
               <p className="text-xs text-muted-foreground">{aiRecommendation}</p>

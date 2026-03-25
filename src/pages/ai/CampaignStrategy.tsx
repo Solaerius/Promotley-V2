@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Target, Sparkles } from 'lucide-react';
+import { Target, Wand2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -84,7 +84,7 @@ const CampaignStrategy = () => {
             </div>
           </div>
           <Button variant="gradient" className="w-full" onClick={handleGenerate} disabled={loading || !goal.trim()}>
-            {loading ? <><Sparkles className="w-4 h-4 mr-2 animate-spin" /> {t('ai_tool.generating')}</> : <><Sparkles className="w-4 h-4 mr-2" /> {t('campaign.generate_btn')}</>}
+            {loading ? <><Wand2 className="w-4 h-4 mr-2 animate-spin" /> {t('ai_tool.generating')}</> : <><Wand2 className="w-4 h-4 mr-2" /> {t('campaign.generate_btn')}</>}
           </Button>
         </CardContent>
       </Card>

@@ -69,6 +69,7 @@ export const useTikTokData = ({ enabled = true }: { enabled?: boolean } = {}) =>
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const fetchTikTokData = async () => {
     // Deduplicate: if a fetch is already in flight, await it instead of starting another
@@ -106,11 +107,11 @@ export const useTikTokData = ({ enabled = true }: { enabled?: boolean } = {}) =>
       );
 
       if (fetchError) {
-        throw new Error(fetchError.message || 'Kunde inte hämta TikTok-data');
+        throw new Error(fetchError.message || t('toasts.could_not_fetch_tiktok'));
       }
 
       if (tiktokData && !tiktokData.success) {
-        throw new Error(tiktokData.error || 'Kunde inte hämta TikTok-data');
+        throw new Error(tiktokData.error || t('toasts.could_not_fetch_tiktok'));
       }
 
       const next: TikTokData = {
@@ -149,7 +150,7 @@ export const useTikTokData = ({ enabled = true }: { enabled?: boolean } = {}) =>
       // Only show toast if we have no cached data to fall back on
       if (!_cache) {
         toast({
-          title: 'Kunde inte hämta TikTok-data',
+          title: t('toasts.could_not_fetch_tiktok'),
           description: error.message,
           variant: 'destructive',
         });

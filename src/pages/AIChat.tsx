@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import {
   Send,
-  Sparkles,
+  Wand2,
   BarChart3,
   Calendar,
   FileText,
@@ -235,7 +235,7 @@ const AIChat = () => {
                     {msg.role === "assistant" && (
                       <div className="flex items-center gap-2 mb-1.5">
                         <div className="w-6 h-6 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center">
-                          <Sparkles className="w-3 h-3 text-primary" />
+                          <Wand2 className="w-3 h-3 text-primary" />
                         </div>
                         <span className="text-xs font-medium text-muted-foreground">Promotley AI</span>
                       </div>
@@ -270,7 +270,7 @@ const AIChat = () => {
                   <div className="max-w-[80%] lg:max-w-[65%]">
                     <div className="flex items-center gap-2 mb-1.5">
                       <div className="w-6 h-6 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center">
-                        <Sparkles className="w-3 h-3 text-primary" />
+                        <Wand2 className="w-3 h-3 text-primary" />
                       </div>
                       <span className="text-xs text-muted-foreground">{t('chat.thinking')}</span>
                     </div>

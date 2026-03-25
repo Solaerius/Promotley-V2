@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Sparkles, Copy, Check, AlertTriangle } from "lucide-react";
+import { Wand2, Copy, Check, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAIProfile } from "@/hooks/useAIProfile";
 import { useNavigate } from "react-router-dom";
@@ -150,7 +150,7 @@ export const AISuggestions = () => {
       <Card className="border-primary/20 bg-gradient-to-br from-background to-primary/5">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
+            <Wand2 className="h-5 w-5 text-primary" />
             {t("suggestions.title")}
           </CardTitle>
           <CardDescription>
@@ -212,7 +212,7 @@ export const AISuggestions = () => {
               variant="gradient"
               aria-label={t("suggestions.generate_btn")}
             >
-              <Sparkles className="h-4 w-4" />
+              <Wand2 className="h-4 w-4" />
               {loading ? t("suggestions.generating") : isAIBlocked ? t("suggestions.fill_profile_first") : t("suggestions.generate_btn")}
             </Button>
           </div>
@@ -221,7 +221,7 @@ export const AISuggestions = () => {
           {!suggestion && (
             <div className="mt-6 space-y-3 p-6 rounded-lg border border-dashed border-primary/30 bg-muted/20">
               <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="h-4 w-4 text-primary" />
+                <Wand2 className="h-4 w-4 text-primary" />
                 <p className="text-sm font-semibold text-muted-foreground">{t("suggestions.example_label")}</p>
               </div>
               <div className="space-y-2 opacity-75">

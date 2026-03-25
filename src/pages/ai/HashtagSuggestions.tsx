@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Hash, Copy, Check, Sparkles } from 'lucide-react';
+import { Hash, Copy, Check, Wand2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -88,7 +88,7 @@ const HashtagSuggestions = () => {
             />
           </div>
           <Button variant="gradient" className="w-full" onClick={handleGenerate} disabled={loading || !topic.trim()}>
-            {loading ? <><Sparkles className="w-4 h-4 mr-2 animate-spin" /> {t('ai_tool.generating')}</> : <><Sparkles className="w-4 h-4 mr-2" /> {t('hashtag.generate_btn')}</>}
+            {loading ? <><Wand2 className="w-4 h-4 mr-2 animate-spin" /> {t('ai_tool.generating')}</> : <><Wand2 className="w-4 h-4 mr-2" /> {t('hashtag.generate_btn')}</>}
           </Button>
         </CardContent>
       </Card>

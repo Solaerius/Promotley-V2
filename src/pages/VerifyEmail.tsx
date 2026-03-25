@@ -159,7 +159,7 @@ export default function VerifyEmail() {
     } catch (error: any) {
       console.error("Resend error:", error);
       toast({
-        title: "Kunde inte skicka",
+        title: t('toasts.could_not_send_verification'),
         description: error.message || "Försök igen om en stund.",
         variant: "destructive",
       });
@@ -190,7 +190,7 @@ export default function VerifyEmail() {
 
     } catch (error: any) {
       toast({
-        title: "Kunde inte ändra e-post",
+        title: t('toasts.could_not_change_email'),
         description: error.message || "Försök igen.",
         variant: "destructive",
       });

@@ -35,7 +35,7 @@ const PromoCodeInput = ({ variant = "inline", onSuccess, className = "" }: Promo
       });
 
       if (fnError) {
-        setError("Kunde inte lösa in koden. Försök igen.");
+        setError(t('toasts.could_not_redeem'));
         return;
       }
 

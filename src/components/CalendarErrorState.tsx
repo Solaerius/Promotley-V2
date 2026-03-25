@@ -20,7 +20,7 @@ export const CalendarErrorState = ({ error, onRetry }: CalendarErrorStateProps) 
       return t('calendar_error.session_expired');
     }
     if (message.includes("network") || message.includes("fetch")) {
-      return "Kunde inte ansluta till servern. Kontrollera din internetanslutning.";
+      return t('calendar.error_connect');
     }
     if (message.includes("not_authenticated")) {
       return t('calendar_error.auth_required');
@@ -36,7 +36,7 @@ export const CalendarErrorState = ({ error, onRetry }: CalendarErrorStateProps) 
           <AlertCircle className="w-8 h-8 text-destructive" />
         </div>
         <h3 className="text-xl font-semibold text-foreground mb-2">
-          Kunde inte ladda kalendern
+          {t('calendar.error_load')}
         </h3>
         <p className="text-muted-foreground text-center max-w-md mb-6">
           {getErrorMessage(error)}

@@ -326,7 +326,30 @@
     "org_created": "Company created!",
     "org_joined": "You've joined the company!",
     "saved": "Saved!",
-    "error": "Something went wrong."
+    "error": "Something went wrong.",
+    "could_not_send": "Could not send message.",
+    "could_not_implement": "Could not implement plan.",
+    "could_not_create_conv": "Could not create conversation.",
+    "could_not_delete_conv": "Could not delete conversation.",
+    "could_not_create_post": "Could not create post.",
+    "could_not_update_post": "Could not update post.",
+    "could_not_delete_post": "Could not delete post.",
+    "could_not_update_stats": "Could not update statistics.",
+    "could_not_update_profile": "Could not update profile.",
+    "could_not_generate_radar": "Could not generate Sales Radar. Please try again.",
+    "copied": "Copied!",
+    "link_copied": "Link copied",
+    "google_session_error": "Could not retrieve session from Google. Please try again.",
+    "could_not_redeem": "Could not redeem the code. Please try again.",
+    "could_not_generate_analysis": "Could not generate analysis. Please try again.",
+    "could_not_generate_response": "Could not generate response.",
+    "could_not_create_marketing_plan": "Could not create marketing plan.",
+    "could_not_implement_plan": "Could not implement plan.",
+    "could_not_fetch_meta": "Could not fetch Meta data",
+    "could_not_add_watch": "Could not add watch.",
+    "could_not_fetch_tiktok": "Could not fetch TikTok data",
+    "could_not_send_verification": "Could not send",
+    "could_not_change_email": "Could not change email"
   },
   "sections": {
     "problem": {
@@ -535,7 +558,19 @@
     "col_views": "Views",
     "col_engagement": "Engagement",
     "top_videos_insight": "Your top {{count}} videos",
-    "no_tiktok_videos": "No TikTok videos available"
+    "no_tiktok_videos": "No TikTok videos available",
+    "example_banner_text": "Example data — connect TikTok to see your real insights",
+    "example_connect_link": "Connect TikTok",
+    "vs_average": "vs avg",
+    "day_sun": "Sun",
+    "day_mon": "Mon",
+    "day_tue": "Tue",
+    "day_wed": "Wed",
+    "day_thu": "Thu",
+    "day_fri": "Fri",
+    "day_sat": "Sat",
+    "engagement_rate": "Engagement rate",
+    "engagement_rate_label": "Engagement %"
   },
   "calendar": {
     "title": "Content Calendar",
@@ -604,7 +639,9 @@
     "upcoming_events": "Upcoming events",
     "add_first_event": "Add your first event above",
     "go_to_today": "Go to today",
-    "add_event": "Add event"
+    "add_event": "Add event",
+    "error_connect": "Could not connect to the server. Check your internet connection.",
+    "error_load": "Could not load calendar"
   },
   "freetier": {
     "title": "Free plan – limited usage",

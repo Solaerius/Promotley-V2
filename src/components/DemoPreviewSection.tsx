@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play, TrendingUp, Users, BarChart3, Zap, MessageSquare, Sparkles } from "lucide-react";
+import { ArrowRight, Play, TrendingUp, Users, BarChart3, Zap, MessageSquare, Wand2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslation } from 'react-i18next';
 
@@ -169,7 +169,7 @@ const DemoPreviewSection = () => {
                   </div>
                   <div className="flex justify-start">
                     <div className="bg-muted border border-border rounded-2xl px-3 py-2 text-xs text-muted-foreground max-w-[80%]">
-                      <Sparkles className="w-3 h-3 inline mr-1 text-primary" />
+                      <Wand2 className="w-3 h-3 inline mr-1 text-primary" />
                       {t('sections.demo.sample_response')}
                     </div>
                   </div>

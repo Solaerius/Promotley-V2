@@ -50,7 +50,7 @@ const AccountPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-5xl mx-auto">
+      <div data-tour="account-section" className="max-w-5xl mx-auto">
         <h1 className="text-2xl font-bold text-foreground mb-1">{t('account.page_title')}</h1>
         <p className="text-sm text-muted-foreground mb-6">{t('account.page_subtitle')}</p>
 

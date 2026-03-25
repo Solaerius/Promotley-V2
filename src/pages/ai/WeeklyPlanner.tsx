@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Calendar, Sparkles, Clock } from 'lucide-react';
+import { Calendar, Wand2, Clock } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -77,7 +77,7 @@ const WeeklyPlanner = () => {
             </div>
           </div>
           <Button variant="gradient" className="w-full" onClick={handleGenerate} disabled={loading || platforms.length === 0}>
-            {loading ? <><Sparkles className="w-4 h-4 mr-2 animate-spin" /> {t('ai_tool.generating')}</> : <><Sparkles className="w-4 h-4 mr-2" /> {t('weekly.generate_btn')}</>}
+            {loading ? <><Wand2 className="w-4 h-4 mr-2 animate-spin" /> {t('ai_tool.generating')}</> : <><Wand2 className="w-4 h-4 mr-2" /> {t('weekly.generate_btn')}</>}
           </Button>
         </CardContent>
       </Card>

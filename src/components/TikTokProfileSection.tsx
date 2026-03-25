@@ -75,7 +75,7 @@ const TikTokProfileSection = () => {
     return (
       <div className="rounded-xl bg-card shadow-sm p-6 text-center">
         <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-destructive" />
-        <p className="text-sm font-medium text-foreground mb-1">Kunde inte ladda TikTok-data</p>
+        <p className="text-sm font-medium text-foreground mb-1">{t('toasts.could_not_fetch_tiktok')}</p>
         <p className="text-xs text-muted-foreground mb-3">{error.message}</p>
         <Button variant="outline" size="sm" onClick={refetch}>Forsok igen</Button>
       </div>

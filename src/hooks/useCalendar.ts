@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 interface CalendarPost {
   id: string;
@@ -68,6 +69,7 @@ export const useCalendar = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const fetchPosts = async () => {
     try {
@@ -141,9 +143,9 @@ export const useCalendar = () => {
       return result;
     } catch (err: any) {
       console.error('Error creating post:', err);
-      const errorMsg = err.message || "Kunde inte skapa inlägg.";
+      const errorMsg = err.message || t('toasts.could_not_create_post');
       toast({
-        title: "Fel",
+        title: t('common.error'),
         description: errorMsg,
         variant: "destructive",
       });
@@ -229,9 +231,9 @@ export const useCalendar = () => {
       return result;
     } catch (err: any) {
       console.error('Error updating post:', err);
-      const errorMsg = err.message || "Kunde inte uppdatera inlägg.";
+      const errorMsg = err.message || t('toasts.could_not_update_post');
       toast({
-        title: "Fel",
+        title: t('common.error'),
         description: errorMsg,
         variant: "destructive",
       });
@@ -251,9 +253,9 @@ export const useCalendar = () => {
       await fetchPosts();
     } catch (err: any) {
       console.error('Error deleting post:', err);
-      const errorMsg = err.message || "Kunde inte radera inlägg.";
+      const errorMsg = err.message || t('toasts.could_not_delete_post');
       toast({
-        title: "Fel",
+        title: t('common.error'),
         description: errorMsg,
         variant: "destructive",
       });

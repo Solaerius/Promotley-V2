@@ -7,7 +7,7 @@ import {
   Calendar, 
   Lightbulb, 
   Target,
-  Sparkles,
+  Wand2,
   ArrowRight
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -81,7 +81,7 @@ const AIToolsContent = () => {
         <CardContent className="p-6">
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center flex-shrink-0">
-              <Sparkles className="w-6 h-6 text-white" />
+              <Wand2 className="w-6 h-6 text-white" />
             </div>
             <div>
               <h3 className="font-semibold mb-1 dashboard-heading-dark">AI-profil viktigt!</h3>

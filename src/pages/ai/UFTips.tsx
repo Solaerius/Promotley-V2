@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Lightbulb, Sparkles, ChevronDown } from 'lucide-react';
+import { Lightbulb, Wand2, ChevronDown } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -71,7 +71,7 @@ const UFTips = () => {
             </Select>
           </div>
           <Button variant="gradient" className="w-full" onClick={handleGenerate} disabled={loading}>
-            {loading ? <><Sparkles className="w-4 h-4 mr-2 animate-spin" /> {t('ai_tool.generating')}</> : <><Sparkles className="w-4 h-4 mr-2" /> {t('uf_tips.generate_btn')}</>}
+            {loading ? <><Wand2 className="w-4 h-4 mr-2 animate-spin" /> {t('ai_tool.generating')}</> : <><Wand2 className="w-4 h-4 mr-2" /> {t('uf_tips.generate_btn')}</>}
           </Button>
         </CardContent>
       </Card>

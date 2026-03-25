@@ -109,7 +109,7 @@ const Auth = () => {
             console.error('Session error:', error);
             toast({
               title: "Inloggning misslyckades",
-              description: "Kunde inte hämta session från Google. Försök igen.",
+              description: t('toasts.google_session_error'),
               variant: "destructive",
             });
             return true;
@@ -128,7 +128,7 @@ const Auth = () => {
             if (attempts >= maxAttempts) {
               toast({
                 title: "Timeout",
-                description: "Kunde inte slutföra inloggning. Försök igen.",
+                description: t('toasts.google_session_error'),
                 variant: "destructive",
               });
             }
@@ -197,7 +197,7 @@ const Auth = () => {
         let errorMessage = "Ett fel uppstod. Försök igen.";
         
         if (result.error.message.includes("Invalid login credentials")) {
-          errorMessage = "Felaktig e-post eller lösenord.";
+          errorMessage = t('errors.invalid_credentials');
         } else if (result.error.message.includes("User already registered")) {
           errorMessage = "Ett konto med denna e-post finns redan.";
         } else if (result.error.message.includes("Email not confirmed")) {
@@ -232,8 +232,8 @@ const Auth = () => {
       }
     } catch (error) {
       toast({
-        title: "Fel",
-        description: "Något gick fel. Försök igen.",
+        title: t('common.error'),
+        description: t('common.error_generic'),
         variant: "destructive",
       });
     } finally {
@@ -250,7 +250,7 @@ const Auth = () => {
 
       if (error) {
         toast({
-          title: "Fel vid inloggning",
+          title: t('toasts.login_failed'),
           description: error.message,
           variant: "destructive",
         });
@@ -273,7 +273,7 @@ const Auth = () => {
 
       if (error) {
         toast({
-          title: "Fel vid inloggning",
+          title: t('toasts.login_failed'),
           description: error.message,
           variant: "destructive",
         });
@@ -305,13 +305,13 @@ const Auth = () => {
 
       if (error) {
         toast({
-          title: "Fel",
+          title: t('common.error'),
           description: error.message,
           variant: "destructive",
         });
       } else {
         toast({
-          title: "Email skickat!",
+          title: t('toasts.email_sent'),
           description: "Kolla din inkorg för att återställa ditt lösenord",
         });
         setIsResetDialogOpen(false);
@@ -319,8 +319,8 @@ const Auth = () => {
       }
     } catch (error) {
       toast({
-        title: "Fel",
-        description: "Något gick fel. Försök igen.",
+        title: t('common.error'),
+        description: t('common.error_generic'),
         variant: "destructive",
       });
     } finally {

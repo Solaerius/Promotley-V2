@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import {
-  Plus, Sparkles, Trash2, Edit, Loader2, AlertCircle,
+  Plus, Wand2, Trash2, Edit, Loader2, AlertCircle,
   PenLine, Store, CalendarDays, Flag, LayoutGrid,
   ChevronLeft, ChevronRight, Instagram, Facebook, Music2, CalendarCheck,
 } from "lucide-react";
@@ -271,7 +271,7 @@ const Calendar = () => {
               >
                 {isGeneratingPlan
                   ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  : <Sparkles className="w-3.5 h-3.5" />}
+                  : <Wand2 className="w-3.5 h-3.5" />}
                 {isGeneratingPlan ? t('calendar.generating') : t('calendar.generate_plan')}
               </Button>
 
@@ -394,7 +394,7 @@ const Calendar = () => {
               <div className="p-4 rounded-2xl bg-card border border-border/40 space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-medium flex items-center gap-2">
-                    <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
+                    <Wand2 className="w-3.5 h-3.5 text-primary animate-pulse" />
                     {t('calendar.generating_plan')}
                   </span>
                   <span className="text-muted-foreground tabular-nums">{Math.round(generationProgress)}%</span>
@@ -406,7 +406,7 @@ const Calendar = () => {
         </AnimatePresence>
 
         {/* ── Calendar panel ── */}
-        <div className="rounded-2xl bg-card border border-border/40 overflow-hidden">
+        <div data-tour="calendar-view" className="rounded-2xl bg-card border border-border/40 overflow-hidden">
           {/* Month navigation */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
             <div className="flex items-center gap-3">

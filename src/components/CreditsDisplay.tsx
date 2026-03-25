@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Coins, Sparkles } from 'lucide-react';
+import { Coins, Wand2 } from 'lucide-react';
 import { useUserCredits } from '@/hooks/useUserCredits';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -39,7 +39,7 @@ const CreditsDisplay = ({ variant = 'compact', showUpgrade = true }: CreditsDisp
         "flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors",
         isLow ? 'bg-destructive/10 text-destructive' : 'bg-primary/10 text-primary'
       )}>
-        <Sparkles className="w-4 h-4" />
+        <Wand2 className="w-4 h-4" />
         <span>{credits.credits_left} {t('common.credits')}</span>
       </div>
     );

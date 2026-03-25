@@ -221,4 +221,38 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+
+  /* Hero ambient orb CSS animations — GPU-composited, no Framer Motion jank */
+  @keyframes hero-orb-pulse-a {
+    0%, 100% { transform: translateZ(0) scale(1); opacity: var(--orb-opacity-lo); }
+    50% { transform: translateZ(0) scale(1.12); opacity: var(--orb-opacity-hi); }
+  }
+  @keyframes hero-orb-pulse-b {
+    0%, 100% { transform: translateZ(0) scale(1); opacity: var(--orb-opacity-lo-b); }
+    50% { transform: translateZ(0) scale(1.18); opacity: var(--orb-opacity-hi-b); }
+  }
+
+  /* Light mode (default) — low opacity */
+  .hero-orb-a {
+    will-change: transform, opacity;
+    animation: hero-orb-pulse-a 9s ease-in-out infinite;
+    --orb-opacity-lo: 0.06;
+    --orb-opacity-hi: 0.08;
+  }
+  .hero-orb-b {
+    will-change: transform, opacity;
+    animation: hero-orb-pulse-b 12s ease-in-out infinite 3s;
+    --orb-opacity-lo-b: 0.04;
+    --orb-opacity-hi-b: 0.06;
+  }
+
+  /* Dark mode — higher opacity */
+  .dark .hero-orb-a {
+    --orb-opacity-lo: 0.28;
+    --orb-opacity-hi: 0.38;
+  }
+  .dark .hero-orb-b {
+    --orb-opacity-lo-b: 0.12;
+    --orb-opacity-hi-b: 0.20;
+  }
 }

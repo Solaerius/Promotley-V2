@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRight } from "lucide-react";
@@ -107,15 +106,13 @@ const FoodieBoxLogo = () => (
 const Hero = () => {
   const { toast } = useToast();
   const { t } = useTranslation();
-  const { resolvedTheme } = useTheme();
-  const isLight = resolvedTheme === 'light';
 
   const handleGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
-    if (error) toast({ title: "Fel", description: error.message, variant: "destructive" });
+    if (error) toast({ title: t('common.error'), description: error.message, variant: "destructive" });
   };
 
   const handleApple = async () => {
@@ -123,7 +120,7 @@ const Hero = () => {
       provider: "apple",
       options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
-    if (error) toast({ title: "Fel", description: error.message, variant: "destructive" });
+    if (error) toast({ title: t('common.error'), description: error.message, variant: "destructive" });
   };
 
   return (
@@ -133,11 +130,9 @@ const Hero = () => {
         background: "radial-gradient(ellipse 90% 70% at 50% -5%, hsl(var(--gradient-hero-bg)) 0%, hsl(var(--gradient-hero-bg)) 55%, hsl(var(--gradient-hero-bg)) 100%)",
       }} />
 
-      {/* Ambient orb — violet, top-left */}
-      <motion.div
-        className="absolute pointer-events-none"
-        animate={{ scale: [1, 1.12, 1], opacity: isLight ? [0.06, 0.08, 0.06] : [0.28, 0.38, 0.28] }}
-        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+      {/* Ambient orb — violet, top-left (CSS animation for smooth GPU compositing) */}
+      <div
+        className="absolute pointer-events-none hero-orb-a"
         style={{
           width: 680,
           height: 680,
@@ -149,11 +144,9 @@ const Hero = () => {
         }}
       />
 
-      {/* Ambient orb — teal, bottom-right */}
-      <motion.div
-        className="absolute pointer-events-none"
-        animate={{ scale: [1, 1.18, 1], opacity: isLight ? [0.04, 0.06, 0.04] : [0.12, 0.2, 0.12] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+      {/* Ambient orb — teal, bottom-right (CSS animation for smooth GPU compositing) */}
+      <div
+        className="absolute pointer-events-none hero-orb-b"
         style={{
           width: 520,
           height: 520,
