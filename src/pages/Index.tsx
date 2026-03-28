@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import Hero from "@/components/Hero";
 import LogoStrip from "@/components/LogoStrip";
@@ -18,9 +18,24 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 const Index = () => {
   const logoStripRef = useRef<HTMLDivElement>(null);
+  const heroSentinelRef = useRef<HTMLDivElement>(null);
   const { resolvedTheme } = useTheme();
   const isLight = resolvedTheme === 'light';
   const gridColor = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.04)';
+  const [heroPassed, setHeroPassed] = useState(false);
+
+  // Show chat bubble only after user scrolls past the hero section
+  useEffect(() => {
+    const sentinel = heroSentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { setHeroPassed(!entry.isIntersecting); },
+      { threshold: 0 }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
+
   return <div className="min-h-screen relative bg-[hsl(var(--gradient-hero-bg))]">
       {/* Single continuous grid texture for the whole page */}
       <div
@@ -33,6 +48,8 @@ const Index = () => {
       />
       <Navbar logoStripRef={logoStripRef} />
       <Hero />
+      {/* Sentinel: when this div leaves the viewport the chat bubble fades in */}
+      <div ref={heroSentinelRef} style={{ height: 1, marginTop: -1 }} aria-hidden="true" />
       <LogoStrip ref={logoStripRef} />
       
       <AnimatedSection animation="slide-up">
@@ -69,8 +86,8 @@ const Index = () => {
 
       <CookieConsent />
 
-      {/* Chat Widget */}
-      <ChatWidget />
+      {/* Chat Widget — only visible after scrolling past the hero */}
+      <ChatWidget visible={heroPassed} />
       
       {/* Back to Top Button */}
       <BackToTop />

@@ -232,18 +232,18 @@
     50% { transform: translateZ(0) scale(1.18); opacity: var(--orb-opacity-hi-b); }
   }
 
-  /* Light mode (default) — low opacity */
+  /* Light mode (default) — increased opacity for readability */
   .hero-orb-a {
     will-change: transform, opacity;
     animation: hero-orb-pulse-a 9s ease-in-out infinite;
-    --orb-opacity-lo: 0.06;
-    --orb-opacity-hi: 0.08;
+    --orb-opacity-lo: 0.16;
+    --orb-opacity-hi: 0.24;
   }
   .hero-orb-b {
     will-change: transform, opacity;
     animation: hero-orb-pulse-b 12s ease-in-out infinite 3s;
-    --orb-opacity-lo-b: 0.04;
-    --orb-opacity-hi-b: 0.06;
+    --orb-opacity-lo-b: 0.12;
+    --orb-opacity-hi-b: 0.18;
   }
 
   /* Dark mode — higher opacity */

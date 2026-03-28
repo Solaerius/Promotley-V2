@@ -48,7 +48,7 @@ const Pricing = () => {
     {
       slug: "starter",
       name: "UF Starter",
-      price: "29",
+      price: t("pricing.starter_price"),
       creditsNum: 50,
       credits: "50",
       description: t("pricing.starter_desc"),
@@ -65,7 +65,7 @@ const Pricing = () => {
     {
       slug: "growth",
       name: "UF Growth",
-      price: "49",
+      price: t("pricing.growth_price"),
       creditsNum: 100,
       credits: "100",
       description: t("pricing.growth_desc"),
@@ -84,7 +84,7 @@ const Pricing = () => {
     {
       slug: "pro",
       name: "UF Pro",
-      price: "99",
+      price: t("pricing.pro_price"),
       creditsNum: 200,
       credits: "200",
       description: t("pricing.pro_desc"),
@@ -296,7 +296,7 @@ const CardInner = ({ plan, isFeatured }: CardInnerProps) => {
             {plan.price}
           </span>
           <span className="text-base font-medium text-muted-foreground ml-1">
-            kr{t("pricing.per_month")}
+            {t("pricing.currency_symbol")}{t("pricing.per_month")}
           </span>
         </div>
         <p className="text-sm text-muted-foreground mt-2">{plan.description}</p>

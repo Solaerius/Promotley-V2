@@ -1,6 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 import Stripe from 'https://esm.sh/stripe@14.21.0';
+import { checkRateLimit } from '../_shared/rateLimit.ts';
+import { logger } from '../_shared/logger.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -62,6 +64,11 @@ serve(async (req) => {
     return jsonResponse({ error: 'invalid_token' }, 401);
   }
 
+  if (checkRateLimit(user.id, 'billing', 3, 60)) {
+    await logger.warn('billing', 'Rate limit hit', { userId: user.id });
+    return jsonResponse({ error: 'rate_limited' }, 429);
+  }
+
   let body: Record<string, unknown> = {};
   try {
     body = await req.json();
@@ -120,18 +127,24 @@ serve(async (req) => {
   }
 
   // Create Checkout Session
-  const session = await stripe.checkout.sessions.create({
-    mode: type === 'subscription' ? 'subscription' : 'payment',
-    customer: stripeCustomerId,
-    line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${SITE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${SITE_URL}/checkout/cancel`,
-    metadata: {
-      userId: user.id,
-      planKey,
-      type,
-    },
-  });
+  let session;
+  try {
+    session = await stripe.checkout.sessions.create({
+      mode: type === 'subscription' ? 'subscription' : 'payment',
+      customer: stripeCustomerId,
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: `${SITE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${SITE_URL}/checkout/cancel`,
+      metadata: {
+        userId: user.id,
+        planKey,
+        type,
+      },
+    });
+  } catch (err) {
+    await logger.error('billing', 'Stripe checkout session creation failed', { userId: user.id, planKey, error: (err as Error).message });
+    return jsonResponse({ error: 'checkout_failed' }, 500);
+  }
 
   return jsonResponse({ url: session.url });
 });

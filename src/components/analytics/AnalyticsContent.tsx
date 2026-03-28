@@ -25,7 +25,10 @@ import {
   Calendar,
   Hash,
   Wand2,
+  Flame,
+  BookOpen,
 } from "lucide-react";
+import { useHookDatabase } from "@/hooks/useHookDatabase";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useMetaData } from "@/hooks/useMetaData";
@@ -40,11 +43,131 @@ import { demoTikTokVideos, demoStats } from "@/data/demoData";
 
 const fmt = (n: number) => n >= 1_000_000 ? (n/1_000_000).toFixed(1)+'M' : n >= 1_000 ? (n/1_000).toFixed(1)+'k' : String(n);
 
+// Accent colours per hook archetype for bar chart cells
+const HOOK_COLORS: Record<string, string> = {
+  question:  'hsl(326 56% 52%)',
+  number:    'hsl(210 78% 62%)',
+  pov:       'hsl(174 60% 50%)',
+  story:     'hsl(35 90% 58%)',
+  challenge: 'hsl(280 55% 62%)',
+  other:     'hsl(var(--muted-foreground))',
+};
+
+const HookDatabaseSection = ({ videos, t }: { videos: any[]; t: (key: string) => string }) => {
+  const { hookStats, topVideos, bestArchetype } = useHookDatabase(videos);
+
+  if (videos.length < 3) {
+    return (
+      <div className="rounded-xl bg-card shadow-sm p-8 text-center">
+        <Flame className="w-8 h-8 text-primary mx-auto mb-3" />
+        <h3 className="text-sm font-semibold mb-1">{t('hooks.no_data_title')}</h3>
+        <p className="text-xs text-muted-foreground">{t('hooks.no_data_desc')}</p>
+      </div>
+    );
+  }
+
+  // Static UF hook templates
+  const templates = [
+    t('hooks.template_1'),
+    t('hooks.template_2'),
+    t('hooks.template_3'),
+    t('hooks.template_4'),
+    t('hooks.template_5'),
+  ];
+
+  return (
+    <div className="rounded-xl bg-card shadow-sm p-5 space-y-5">
+      <div className="flex items-center gap-2.5">
+        <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+          <Flame className="h-4 w-4 text-primary" />
+        </div>
+        <div>
+          <h3 className="text-sm font-semibold text-foreground">{t('hooks.title')}</h3>
+          <p className="text-[11px] text-muted-foreground">{t('hooks.subtitle')}</p>
+        </div>
+        {bestArchetype && (
+          <span
+            className="ml-auto text-[11px] font-medium px-2 py-0.5 rounded-full"
+            style={{ background: `color-mix(in srgb, ${HOOK_COLORS[bestArchetype]} 18%, transparent)`, color: HOOK_COLORS[bestArchetype] }}
+          >
+            {t('hooks.best_hook')}: {t(`hooks.type_${bestArchetype}`)}
+          </span>
+        )}
+      </div>
+
+      {/* Bar chart: avg views per hook type */}
+      {hookStats.length > 0 && (
+        <div style={{ height: 180 }}>
+          <ResponsiveContainer width="100%" height={180}>
+            <BarChart data={hookStats} margin={{ top: 4, right: 4, left: -16, bottom: 0 }} barCategoryGap="30%">
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+              <XAxis dataKey="archetype" tickFormatter={(v) => t(`hooks.type_${v}`)} tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={fmt} axisLine={false} tickLine={false} />
+              <Tooltip
+                contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: 11 }}
+                formatter={(val: number, _: string, entry: any) => [fmt(val), t('hooks.avg_views')]}
+                labelFormatter={(label) => t(`hooks.type_${label}`)}
+              />
+              <Bar dataKey="avgViews" radius={[4, 4, 0, 0]} maxBarSize={40}>
+                {hookStats.map((entry) => (
+                  <Cell key={entry.archetype} fill={HOOK_COLORS[entry.archetype] ?? HOOK_COLORS.other} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
+      {/* Top 5 videos with archetype badge */}
+      {topVideos.length > 0 && (
+        <div>
+          <p className="text-xs font-medium text-muted-foreground mb-2">{t('hooks.top_videos')}</p>
+          <div className="space-y-2">
+            {topVideos.map((v) => (
+              <div key={v.id} className="flex items-center gap-2.5 p-2 rounded-lg bg-muted/40">
+                {v.cover_image_url ? (
+                  <img src={v.cover_image_url} alt="" className="w-8 h-8 rounded object-cover flex-shrink-0" />
+                ) : (
+                  <div className="w-8 h-8 rounded bg-muted flex-shrink-0" />
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-foreground truncate">{v.title || '–'}</p>
+                  <p className="text-[10px] text-muted-foreground">{fmt(v.views || 0)} {t('hooks.avg_views').toLowerCase()}</p>
+                </div>
+                <span
+                  className="text-[10px] font-medium px-1.5 py-0.5 rounded-full flex-shrink-0"
+                  style={{ background: `color-mix(in srgb, ${HOOK_COLORS[v.archetype] ?? HOOK_COLORS.other} 18%, transparent)`, color: HOOK_COLORS[v.archetype] ?? HOOK_COLORS.other }}
+                >
+                  {t(`hooks.type_${v.archetype}`)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Static hook templates for UF companies */}
+      <div>
+        <div className="flex items-center gap-1.5 mb-2">
+          <BookOpen className="h-3.5 w-3.5 text-muted-foreground" />
+          <p className="text-xs font-medium text-muted-foreground">{t('hooks.templates_title')}</p>
+        </div>
+        <ul className="space-y-1.5">
+          {templates.map((tpl, i) => (
+            <li key={i} className="text-xs text-foreground/80 bg-muted/40 rounded-lg px-3 py-1.5 italic">{tpl}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
+
 const AnalyticsContent = () => {
   const { t } = useTranslation();
-  const { isConnected, connections } = useConnections();
-  const metaData = useMetaData();
-  const tiktokData = useTikTokData();
+  const { isConnected, connections, loading: connectionsLoading } = useConnections();
+  // Only fetch platform data when connections are confirmed — avoids error toasts for unconnected accounts
+  const metaData = useMetaData({ enabled: !connectionsLoading && isConnected('meta_ig') });
+  const tiktokData = useTikTokData({ enabled: !connectionsLoading && isConnected('tiktok') });
   const { data: analyticsData, loading: analyticsLoading } = useAnalytics();
   const { data: growthData, hasData: hasGrowthData } = useTikTokGrowth();
 
@@ -360,6 +483,9 @@ const AnalyticsContent = () => {
           </div>
         );
       })()}
+
+      {/* Hook Database */}
+      {(isConnected('tiktok') || isExampleMode) && <HookDatabaseSection videos={effectiveVideos} t={t} />}
 
       {/* Content Performance Table */}
       {(isConnected('tiktok') || isExampleMode) && effectiveVideos.length > 0 && (() => {

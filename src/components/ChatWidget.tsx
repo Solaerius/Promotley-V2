@@ -19,7 +19,12 @@ interface Message {
   is_automated?: boolean;
 }
 
-const ChatWidget = () => {
+interface ChatWidgetProps {
+  // Controls whether the trigger button is visible (used on landing page to hide until hero is scrolled past)
+  visible?: boolean;
+}
+
+const ChatWidget = ({ visible = true }: ChatWidgetProps) => {
   const { t } = useTranslation();
   const { position: navbarPosition } = useNavbarPosition();
   const [isOpen, setIsOpen] = useState(false);
@@ -532,10 +537,16 @@ const ChatWidget = () => {
 
   return (
     <>
-      {/* Chat Button */}
+      {/* Chat Button — fades in smoothly when visible prop becomes true */}
       {!isOpen && (
         <button
           onClick={handleOpen}
+          style={{
+            opacity: visible ? 1 : 0,
+            transform: visible ? 'scale(1) translateY(0)' : 'scale(0.8) translateY(8px)',
+            pointerEvents: visible ? 'auto' : 'none',
+            transition: 'opacity 0.4s ease, transform 0.4s ease',
+          }}
           className={`fixed z-[60] w-14 h-14 rounded-full bg-gradient-primary text-primary-foreground shadow-elegant hover:shadow-glow transition-all duration-300 hover:scale-110 flex items-center justify-center group ${
             navbarPosition === 'bottom' ? 'bottom-20 right-6' :
             navbarPosition === 'right' ? 'bottom-6 right-20' :

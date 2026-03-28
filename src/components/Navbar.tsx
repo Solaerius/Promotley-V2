@@ -83,7 +83,7 @@ const Navbar = ({ logoStripRef }: NavbarProps) => {
 
   return (
     /* Outer fixed container — always full-width, just centers the pill */
-    <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
+    <div className={`fixed top-0 left-0 right-0 ${mobileOpen ? 'z-[70]' : 'z-50'} flex justify-center pointer-events-none`}>
       <motion.nav
         animate={navState}
         variants={pillVariants}

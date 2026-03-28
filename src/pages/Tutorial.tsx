@@ -1,8 +1,7 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
-import OnboardingTutorial from "@/components/OnboardingTutorial";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,8 +18,9 @@ import {
 const Tutorial = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const [showTutorial, setShowTutorial] = useState(false);
+  const navigate = useNavigate();
 
+  // Reset tutorial_seen in DB then navigate to dashboard — GlobalTutorial picks it up automatically
   const handleRestartTutorial = async () => {
     if (user?.id) {
       await supabase
@@ -28,7 +28,7 @@ const Tutorial = () => {
         .update({ tutorial_seen: false })
         .eq("user_id", user.id);
     }
-    setShowTutorial(true);
+    navigate("/dashboard");
   };
 
   const sections = [
@@ -71,9 +71,6 @@ const Tutorial = () => {
 
   return (
     <DashboardLayout>
-      {showTutorial && (
-        <OnboardingTutorial onComplete={() => setShowTutorial(false)} />
-      )}
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Header */}
         <motion.div
@@ -95,8 +92,8 @@ const Tutorial = () => {
           </div>
           <Button
             onClick={handleRestartTutorial}
-            variant="outline"
-            size="sm"
+            variant="default"
+            size="default"
             className="gap-2 shrink-0"
           >
             <RotateCcw className="h-3.5 w-3.5" />

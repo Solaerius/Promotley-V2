@@ -4,8 +4,6 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowRight } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import { Link } from "react-router-dom";
-import logo from "@/assets/logo.png";
-
 // Platform SVG logos
 const TikTokLogo = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 shrink-0">
@@ -164,25 +162,6 @@ const Hero = () => {
 
           {/* ── LEFT COLUMN ── */}
           <div>
-            {/* Brand logo + wordmark */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.04, ease: [0.22, 1, 0.36, 1] }}
-              className="flex items-center gap-3 mb-8"
-            >
-              <img
-                src={logo}
-                alt="Promotley"
-                className="w-16 h-16"
-              />
-              <motion.span
-                className="text-2xl font-bold text-foreground"
-              >
-                Promotley
-              </motion.span>
-            </motion.div>
-
             {/* Main heading */}
             <motion.h1
               initial={{ opacity: 0, y: 28 }}

@@ -16,6 +16,13 @@ const GlobalTutorial = () => {
 
   const isOnDashboardRoute = DASHBOARD_ROUTES.some(r => location.pathname.startsWith(r));
 
+  // Force a profile refetch whenever the user lands on a dashboard route — catches tutorial restarts
+  useEffect(() => {
+    if (user && isOnDashboardRoute) {
+      refetch();
+    }
+  }, [location.pathname, user]);
+
   useEffect(() => {
     if (!dismissed && !profileLoading && profile && profile.tutorial_seen === false && user && isOnDashboardRoute) {
       setShowTutorial(true);

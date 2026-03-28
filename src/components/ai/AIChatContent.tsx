@@ -293,9 +293,9 @@ const AIChatContent = ({ prefillMessage, onPrefillConsumed }: AIChatContentProps
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="mb-6 px-2"
+              className="mb-3 px-2"
             >
-              <div className="text-center mb-6">
+              <div className="text-center mb-3">
                 <h2 className="text-2xl font-bold mb-2 dashboard-heading-dark">{t('chat.how_can_help')}</h2>
                 <p className="dashboard-subheading-dark">{t('chat.choose_quick_command')}</p>
               </div>
@@ -330,7 +330,7 @@ const AIChatContent = ({ prefillMessage, onPrefillConsumed }: AIChatContentProps
           <div
             ref={scrollRef}
             onScroll={handleScroll}
-            className="h-full overflow-y-auto px-2 md:px-4 py-4 space-y-4 scroll-smooth"
+            className="h-full overflow-y-auto px-2 md:px-3 py-2 space-y-2 scroll-smooth"
           >
             <AnimatePresence mode="popLayout">
               {messages.map((msg) => (
@@ -428,6 +428,7 @@ const AIChatContent = ({ prefillMessage, onPrefillConsumed }: AIChatContentProps
               ref={textareaRef}
               placeholder={isAIBlocked ? t('chat.placeholder_blocked') : t('chat.placeholder')}
               value={inputMessage}
+              maxLength={2000}
               onChange={(e) => {
                 setInputMessage(e.target.value);
                 const el = e.target;

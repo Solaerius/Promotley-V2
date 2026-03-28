@@ -295,7 +295,6 @@ const Dashboard = () => {
                 <h1 className="text-2xl font-bold tracking-tight text-foreground">
                   {t('dashboard.greeting', { name: firstName })}
                 </h1>
-                <span className="text-2xl select-none" role="img" aria-label="vink">👋</span>
               </div>
               <p className="text-sm text-muted-foreground">
                 {t('dashboard.overview_subtitle')} —{" "}

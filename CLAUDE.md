@@ -298,3 +298,60 @@ Config is intentionally lenient (`noImplicitAny: false`, `strictNullChecks: fals
 - **RTK paths use forward slashes** — When using `rtk` with file paths on Windows, use `/` not `\`.
 - **Supabase RLS** — All new tables need Row Level Security policies. Missing RLS will block queries for authenticated users.
 - **`ai_knowledge` categories must match exactly** — Category strings like `uf_rules` are matched with `.eq()`. A mismatch (e.g. `uf-rules`) silently returns no results, causing generic AI responses.
+- **Calendar table is `calendar_posts`** — Not `calendar_events`. The hook is `useCalendar`, but the DB table is `calendar_posts`.
+- **Analytics page pattern** — `src/pages/Analytics.tsx` is dead code (not imported in App.tsx). The live pattern is `AnalyticsPage.tsx` → `AnalyticsContent.tsx`.
+- **Hook Database location** — The viral hook analysis is a section inside `AnalyticsContent.tsx`, not a separate route.
+
+---
+
+## Common Mistakes & Pattern Recognition
+
+These are recurring issues identified from git history. Check before implementing similar patterns.
+
+### 1. Missing `useTranslation` import in hooks
+**Pattern:** A hook uses `const { t } = useTranslation()` but has no `import { useTranslation } from 'react-i18next'`.
+**Symptom:** "useTranslation is not defined" — crashes every component that uses the hook.
+**Prevention:** Any file with `t(` must have `import { useTranslation } from 'react-i18next'` at the top.
+**Historical example:** `useTikTokData.ts` caused entire dashboard crash (fixed 2026-03-27).
+
+### 2. Data hooks firing without connection guards
+**Pattern:** `useMetaData()` or `useTikTokData()` called without `enabled` parameter in analytics components.
+**Symptom:** Error toasts appear even when the user hasn't connected the platform.
+**Prevention:** Always pass `enabled: !connectionsLoading && isConnected('platform_key')` when calling platform data hooks.
+**Good pattern (from Dashboard.tsx):**
+```ts
+const tiktokData = useTikTokData({ enabled: !connectionsLoading && isConnected("tiktok") });
+```
+
+### 3. Hardcoded Swedish strings instead of i18n keys
+**Pattern:** Swedish text (`"Hej"`, `"Välkommen"`, etc.) written directly in JSX.
+**Symptom:** Text not translated when user switches to English.
+**Prevention:** Grep for Swedish characters (Å/Ä/Ö) in `.tsx` files before committing. All UI text must go through `t('key')`.
+
+### 4. Light mode contrast / visibility issues
+**Pattern:** Glass effects, backdrop-blur, and orb gradients designed for dark mode become invisible or unreadable in light mode.
+**Symptom:** User reports that text is hard to read or elements are invisible in light mode.
+**Prevention:** Always test glass/blur components in both dark AND light mode. Use higher opacity values for light mode (see `index.css` `.hero-orb-*`).
+
+### 5. Tutorial restart not triggering the overlay
+**Pattern:** `handleRestartTutorial` setting local state instead of navigating to a dashboard route.
+**Symptom:** "Go through intro again" button shows a popup on the wrong page, then nothing on the actual dashboard.
+**Prevention:** After setting `tutorial_seen = false` in DB, always navigate to `/dashboard`. `GlobalTutorial` picks up the change automatically on route mount.
+
+### 6. Pricing displayed in wrong currency for English
+**Pattern:** Hardcoded `"kr"` or SEK prices in JSX not behind i18n keys.
+**Symptom:** English users see Swedish krona prices.
+**Prevention:** Always use `t('pricing.currency_symbol')` and `t('pricing.X_price')` — both locale files have these keys.
+
+### 7. Settings `company_name` ≠ AI profile `foretagsnamn`
+**Pattern:** `CompanySettings.tsx` has TWO company name fields: `users.company_name` (displayed to user) and `ai_profile.foretagsnamn` (used by AI). They are separate.
+**Save pattern:** On save, write `company_name` to `users` table explicitly AND pass `companyName.trim() || foretagsnamn` to `updateAIProfile`.
+**i18n keys:** `settings.company_name_label` / `settings.company_name_placeholder` in both locale files.
+
+### 8. Navbar z-index vs ChatWidget bubble
+**Pattern:** Navbar is `fixed z-50`, ChatWidget trigger is `fixed z-[60]`. Elements inside a stacking context at z-50 paint beneath elements at z-60 — the mobile menu would appear behind the chat bubble.
+**Fix pattern:** Conditionally increase the navbar container's z-index when mobile menu is open:
+```tsx
+className={`fixed ... ${mobileOpen ? 'z-[70]' : 'z-50'} ...`}
+```
+**Rule:** Any fixed overlay (modals, drawers, dropdowns) that must render above the chat bubble (z-[60]) needs z-[70] or higher on its root container, not just a child element.

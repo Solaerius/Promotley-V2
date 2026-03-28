@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 import Stripe from 'https://esm.sh/stripe@14.21.0';
+import { logger } from '../_shared/logger.ts';
 
 // Keep in sync with src/lib/planConfig.ts
 const PLAN_CREDITS: Record<string, number> = {
@@ -53,6 +54,7 @@ serve(async (req) => {
     event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     console.error('[stripe-webhook] Signature verification failed:', err);
+    await logger.critical('stripe-webhook', 'Signature verification failed', { error: (err as Error).message });
     return new Response(JSON.stringify({ error: 'invalid_signature' }), { status: 400 });
   }
 
@@ -292,6 +294,7 @@ serve(async (req) => {
 
   } catch (err) {
     console.error('[stripe-webhook] Processing error:', err);
+    await logger.error('stripe-webhook', 'Event processing failed', { eventType: event?.type, error: (err as Error).message });
     return new Response(JSON.stringify({ error: 'processing_error' }), { status: 500 });
   }
 

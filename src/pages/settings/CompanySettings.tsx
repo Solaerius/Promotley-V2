@@ -78,6 +78,12 @@ export function CompanySettingsInner() {
   const handleSaveAIProfile = async () => {
     setIsSavingAIProfile(true);
     try {
+      if (user?.id && companyName.trim()) {
+        await supabase
+          .from("users")
+          .update({ company_name: companyName.trim() })
+          .eq("id", user.id);
+      }
       const { nyckelord, foretagsnamn, ...rest } = aiFormData;
       await updateAIProfile({
         ...rest,
@@ -105,6 +111,16 @@ export function CompanySettingsInner() {
 
       <div className="space-y-4">
         <AIProfileProgress />
+
+        <div className="space-y-1">
+          <Label className="text-sm">{t('settings.company_name_label')}</Label>
+          <Input
+            value={companyName}
+            onChange={(e) => setCompanyName(e.target.value)}
+            placeholder={t('settings.company_name_placeholder')}
+            className="bg-background border-border"
+          />
+        </div>
 
         <div className="grid grid-cols-2 gap-2">
           {[
