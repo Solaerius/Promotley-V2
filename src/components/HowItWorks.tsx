@@ -73,14 +73,6 @@ const HowItWorks = () => {
                   (e.currentTarget as HTMLDivElement).style.borderColor = 'hsl(0 0% 100% / 0.08)';
                 }}
               >
-                {/* Large oversized step number */}
-                <div
-                  className="absolute -top-2 left-4 text-8xl font-bold leading-none select-none pointer-events-none"
-                  style={{ color: 'hsl(0 0% 100% / 0.06)' }}
-                >
-                  {item.number}
-                </div>
-
                 {/* Desktop connector line (right border on first two cards) */}
                 {index < 2 && (
                   <div
@@ -89,15 +81,23 @@ const HowItWorks = () => {
                   />
                 )}
 
-                {/* Icon */}
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 mt-6 relative z-10 transition-transform duration-300 group-hover:scale-110"
-                  style={{
-                    background: 'linear-gradient(135deg, hsl(var(--accent-brand) / 0.2), hsl(var(--primary) / 0.15))',
-                    border: '1px solid hsl(var(--accent-brand) / 0.2)',
-                  }}
-                >
-                  <Icon className="w-6 h-6 text-foreground" />
+                {/* Top row: number left, icon right */}
+                <div className="flex items-start justify-between mb-5">
+                  <span
+                    className="text-8xl font-bold leading-none select-none pointer-events-none"
+                    style={{ color: 'hsl(var(--foreground) / 0.08)' }}
+                  >
+                    {item.number}
+                  </span>
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 mt-1 relative z-10 transition-transform duration-300 group-hover:scale-110"
+                    style={{
+                      background: 'linear-gradient(135deg, hsl(var(--accent-brand) / 0.2), hsl(var(--primary) / 0.15))',
+                      border: '1px solid hsl(var(--accent-brand) / 0.2)',
+                    }}
+                  >
+                    <Icon className="w-6 h-6 text-foreground" />
+                  </div>
                 </div>
 
                 {/* Content */}
